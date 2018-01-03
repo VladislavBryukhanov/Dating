@@ -1,0 +1,25 @@
+{
+  "name": "new_app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "cookie-session": "file:node_modules/cookie-session",
+    "rc-menu": "^6.2.3",
+    "react": "^16.0.0",
+    "react-bootstrap": "file:node_modules/react-bootstrap",
+    "react-context-menu": "^1.1.0",
+    "react-dom": "^16.0.0",
+    "react-menu": "0.0.10",
+    "react-redux": "5.0.6",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "file:node_modules/react-router-redux",
+    "react-scripts": "1.0.17",
+    "universal-cookie": "^2.1.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

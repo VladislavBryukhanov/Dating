@@ -1,0 +1,133 @@
+﻿@*<div>
+    <label>Введите email</label><br />
+    <input type="email" id="email" /> <br /><br />
+    <label>Введите пароль</label><br />
+    <input type="password" id="password" /><br /><br />
+    <label>Подтвердите пароль</label><br />
+    <input type="password" id="confirmpassword" /><br /><br />
+    <input type="submit" id="submit" value="Регистрация" />
+</div>
+
+<div class="userInfo" style="display:none;">
+    <p>Вы вошли как: <span class="userName"></span></p>
+    <input type="button" value="Выйти" id="logOut" />
+</div>
+<div class="loginForm">
+    <h3>Вход на сайт</h3>
+    <label>Введите email</label><br />
+    <input type="email" id="emailLogin" /> <br /><br />
+    <label>Введите пароль</label><br />
+    <input type="password" id="passwordLogin" /><br /><br />
+    <input type="submit" id="submitLogin" value="Логин" />
+</div>
+
+<div>
+    <input type="submit" id="getItemsButton" value="Получить данные" />
+</div>
+@section scripts{
+    <script type="text/javascript">
+   
+                //var loginData = {
+                //    grant_type: 'password',
+                //    username: $('#emailLogin').val(),
+                //    password: $('#passwordLogin').val()
+                //};
+                var loginData = {
+                    grant_type: 'password',
+                    username: 'qwe',
+                    password: 'qwe'
+                };
+                //$.ajax({
+                //    type: 'POST',
+                //    url: '/Token',
+                //    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                //    data: loginData
+                //})
+
+
+
+                //var formData = new FormData();
+
+                //for (var k in loginData) {
+                //    formData.append(k, loginData[k]);
+                //}
+
+                //fetch("/Token", {
+                //    method: 'post',
+                //    headers: {
+                //        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                //    },
+                //    body: formData
+
+                //})
+
+                fetch('/Token', {
+                    method: 'post',
+                    body: new  URLSearchParams(loginData)
+                })
+
+                //var xhr = new XMLHttpRequest();
+                //xhr.open("post","/Token", true);
+                //xhr.send(loginData);
+
+
+        //var loginData = {
+        //    grant_type: 'password',
+        //    username: 'qwe',
+        //    password: 'qwe'
+        //};
+
+        //fetch("http://localhost:59088/Token", {
+        //    // fetch(this.props.Store.Url["Users"], {
+        //    method: 'post',
+        //    body: loginData,
+        //    headers: {
+        //        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        //        // 'Content-Type': 'application/json;charset=utf-8'
+        //    }
+        //})
+
+    </script>
+}*@
+
+
+@*<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Простой чат</title>
+</head>
+<body>
+    <input type="text" id="user" />
+    <input type="text" id="message" />
+    <input type="button" value="send" id="send" />
+    <div id='messages'></div>
+
+    <script type="text/javascript">
+        var socket,
+            $txt = document.getElementById('message'),
+            $user = document.getElementById('user'),
+            $messages = document.getElementById('messages');
+
+        if (typeof (WebSocket) !== 'undefined') {
+            //socket = new WebSocket("ws://localhost:59088/api/WebSocketMessages");
+            socket = new WebSocket("ws://localhost:59088/Controllers/Handler1.ashx");
+        }
+
+        socket.onmessage = function (msg) {
+            var $el = document.createElement('p');
+            $el.innerHTML = msg.data;
+            $messages.appendChild($el);
+        };
+
+        socket.onclose = function (event) {
+            alert('Мы потеряли её. Пожалуйста, обновите страницу');
+        };
+
+        document.getElementById('send').onclick = function () {
+            socket.send($user.value + ' : ' + $txt.value);
+            $txt.value = '';
+        };
+    </script>
+</body>
+</html>*@
