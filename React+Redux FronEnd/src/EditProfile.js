@@ -48,6 +48,7 @@ class MyProfile extends  Component{
       var avatarTmp;
       var idUser;
 
+      console.log(this.props.match.params.id);
       if(this.props.match.params.id!=undefined){
         idUser=this.props.match.params.id;
         userTmp=Object.assign({},this.props.Store.users.filter(x=>x.id==idUser)[0]);
@@ -351,11 +352,18 @@ class MyProfile extends  Component{
       btnGetOldAvatar=<button onClick={this.onGetOldtAva}>Return to the old avatar</button>
 
     return <form encType="multipart/form-data">
-                <input type="file" onChange={this.onAvatarChange}/>
-                <button onClick={(e)=>{e.preventDefault();
-                                      this.props.ownProps.history.push('/HomePage/MyGallery'+ownerOfGal);}}>
-                                      Gallery
-                </button>
+                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                    <label>Change avatar</label>
+                    <input type="file" onChange={this.onAvatarChange}/>
+                </div>
+
+                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                    <button onClick={(e)=>{e.preventDefault();
+                                          this.props.ownProps.history.push('/HomePage/MyGallery'+ownerOfGal);}}>
+                                          Edit gallery
+                    </button>
+                </div>
+
                 <select onChange={this.onGenderChange} value={this.state.user.gender} >
                     <option value=""></option>
                     <option value="Male">Male</option>

@@ -18,6 +18,13 @@ import Filter from './Filter.js'
 import AdminList from './AdminList.js'
 import MassMessage from './MassMessage.js'
 
+import Logo from './Layout/logo.svg';
+import Gift from './Layout/hand-with-gift-box-icon_1978785.svg';
+import NewFaces from './Layout/newfaces.png';
+import Chat from './Layout/chat.png';
+import Birthday from './Layout/birthday.png';
+import ChatRoom from './Layout/chat-room.png';
+import Exit from './Layout/arrow-button-right-next-green-round.png';
 // import "bootstrap/dist/css/bootstrap.min.css";
 // import Button from 'react-bootstrap/lib/button';
 
@@ -40,16 +47,20 @@ class MyMenu extends  Component{
       this.unauthorizedInterface=this.unauthorizedInterface.bind(this);
   }
 
+  componentWillReceiveProps(){
+    if(this.props.Store.myPage!=null && this.state.dialogList==null){
+      this.loadDialogList();
+    }
+  }
 
   componentWillMount(){
       console.log("LoadMenu");
-      if(this.props.Store.myPage==null){
+      if(this.props.Store.myPage!=null){
         // this.props.ownProps.history.push('/');
         // const cookies = new Cookies();
         // if(cookies.get('UserSession')!= undefined)
         // this.SignIn();
-      }
-      else{
+
           // this.state.onlineCheckSocket.onopen= function (msg) {
           //   this.state.onlineCheckSocket.send(this.props.Store.myPage.id);
           // }.bind(this);
@@ -77,21 +88,28 @@ class MyMenu extends  Component{
       else
         otherUserId=dialogs.firstUserId;
       user=this.props.Store.users.filter(x=>x.id==otherUserId)[0];//[0] потому что такое значение будет только 1 в массиве
+
+      var isOnline="Offline";
+      if(user.online)
+        isOnline="Online";
+
       if(user==undefined){
         user={};
         user.avatar={};
         user.avatar.base64=this.props.Store.avatar.filter(x=>x.siteUserId==0)[0].base64;
       }
-      return <div onClick={()=>{this.onOpenDialog(dialogs)}}>
+      return <div class="Dialog" onClick={()=>{this.onOpenDialog(dialogs)}}>
                 <img height="50px" src={user.avatar.base64}/>
                 {user.name}
+                <div class={isOnline}></div>
              </div>
         }.bind(this))
-        list= <div>
-                  {list}
-                  <button onClick={()=>{this.setState({ShowDialogForm:false});
+        list= <div class="DialogList">
+                  <img class="CloseDialogList" src={Exit} onClick={()=>{this.setState({ShowDialogForm:false});
                                         this.setState({dialog:null});
-                                        this.setState({dialogList:null});}}>X</button>
+                                        this.setState({dialogList:null});}}/>
+                  <p class="Conversaciones">Conversaciones</p>
+                  {list}
               </div>
         this.setState({dialogList: list});
     });
@@ -106,12 +124,30 @@ class MyMenu extends  Component{
 
   onOpenDialog(dialog){
     // console.log(id);
-    var msg=   <div>
-                  <Messages dialog={dialog}/>
-                  <button onClick={()=>{this.setState({dialog:null});}}>Back</button>
-                  <button onClick={()=>{this.setState({ShowDialogForm:false});
+    var user;
+    if(dialog.firstUserId!=this.props.Store.myPage.id)
+      user=this.props.Store.users.filter(x=>x.id==dialog.firstUserId)[0];
+    else
+      user=this.props.Store.users.filter(x=>x.id==dialog.secondUserId)[0];
+
+    var isOnline="Offline";
+    if(user.online)
+      isOnline="Online";
+
+    var msg=   <div class="DialogList">
+                  <img class="CloseDialogList" src={Exit} onClick={()=>{this.setState({ShowDialogForm:false});
                                         this.setState({dialog:null});
-                                        this.setState({dialogList:null})}}>X</button>
+                                        this.setState({dialogList:null});}}/>
+                  <p class="Conversaciones">Conversaciones</p>
+                  <div  class="Messages">
+                    <div class="Dialog" onClick={()=>{this.setState({dialog:null});}}>
+                        <img height="50px" src={user.avatar.base64}/>
+                        {user.name}
+                        <div class={isOnline}></div>
+                    </div>
+                    <Messages dialog={dialog}/>
+                  </div>
+
                </div>
     this.setState({dialog:msg});
     this.setState({ShowDialogForm:true});
@@ -137,57 +173,176 @@ class MyMenu extends  Component{
             </div>
   }
   userInterface(){
+    var iLike=0;
+    var likeMe=0;
+    var mutualLike=0;
+    var messages=this.props.Store.myDialogList.length;
+    for(var i=0; i<this.props.Store.likes.length; i++){
+        if(this.props.Store.likes[i].to==this.props.Store.myPage.id){
+          for(var j=0; j<this.props.Store.likes.length; j++){
+            if(this.props.Store.likes[i].from==this.props.Store.likes[j].to){
+                  mutualLike++;
+            }
+          }
+        }
+     }
+
+    this.props.Store.likes.map(function(like){
+      if(like.to!=this.props.Store.myPage.id)
+        iLike++;
+      else if(like.to==this.props.Store.myPage.id)
+        likeMe++;
+      }.bind(this))
+
     return <div>
-             <button bsStyle="link" onClick={this.logOut}>Log Out</button>
-             <button bsStyle="link" onClick={()=>{this.setState({ShowDialogForm:!this.state.ShowDialogForm});
-                                   this.setState({dialog:null});
-                                   this.setState({dialogList:null});}}>Messages</button>
-             <button bsStyle="link" onClick={()=>{this.props.ownProps.history.push('/HomePage')}}>Home Page</button>
-             <button bsStyle="link" onClick={()=>{this.props.ownProps.history.push('/HomePage/Profile/'+this.props.Store.myPage.id)}}>My page</button>
-             <button bsStyle="link" onClick={()=>{this.props.ownProps.history.push('/HomePage/Favorites/')}}>Favorites</button>
-             <button bsStyle="link" onClick={()=>{this.props.ownProps.history.push('/HomePage/MyLikes/')}}>Likes</button>
-             <button bsStyle="link" onClick={()=>{this.props.ownProps.history.push('/HomePage/MyGuests/')}}>Guests</button>
-             <button bsStyle="link" onClick={()=>{this.props.ownProps.history.push('/HomePage/Filter/')}}>Filter</button>
+             <div class="menu">
+                 <img class="logoImg" onClick={()=>{this.props.ownProps.history.push('/HomePage')}} src={Logo}/>
+                 <img class="Avatar" src={this.props.Store.myPage.avatar.base64} height="100px" width="100px"
+                      onClick={()=>{this.props.ownProps.history.push('/HomePage/EditProfile');}}/>
+                 <div class="subMenu">
+                     <p>Configuration</p>
+                     <div class="subMenuBody">
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/Profile/'+this.props.Store.myPage.id)}}>My page</p>
+                         <p onClick={()=>{this.setState({ShowDialogForm:!this.state.ShowDialogForm});
+                                               this.setState({dialog:null});
+                                               this.setState({dialogList:null});}}>Messages</p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/Favorites/')}}>Favorites</p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/MyLikes/All')}}>Likes</p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/MyGuests/')}}>Guests</p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/Filter/')}}>Filter</p>
+                         <p onClick={this.logOut}>Log Out</p>
+                     </div>
+                 </div>
 
-             <img src={this.props.Store.myPage.avatar.base64} height="100px" width="100px"
-                  onClick={()=>{this.props.ownProps.history.push('/HomePage/EditProfile');}}/>
-             <Switch>
-               <Route exact path='/HomePage' component={Users}/>
-               <Route path='/HomePage/EditProfile' component={EditProfile}/>
-               <Route path='/HomePage/MyGallery' component={MyGallery}/>
-               <Route path='/HomePage/Profile/:id' render={(props)=><Profile{...props}msg={this.onOpenDialog}/>}/>
+             </div>
 
-               <Route path='/HomePage/MyGuests' component={MyGuests}/>
-               <Route path='/HomePage/MyLikes' component={MyLikes}/>
-               <Route path='/HomePage/Favorites' component={MyFavorites}/>
-               <Route path='/HomePage/Filter' component={Filter}/>
-             </Switch>
-             {
-                  this.showDialogForm()
-             }
+             <div class="InterfaceBody">
+                 <div class="RightNavbar hidden-xs sm-hidden">
+                     <div class="FirstBlock">
+                         <p class="Title">
+                            Earn VIP Membership
+                            <img src={Gift}/>
+                         </p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/EditProfile');}}>
+                              Add your profile avatar</p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/EditProfile');}}>
+                              Complete profile text</p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/EditProfile');}}>
+                              Complete social data</p>
+                     </div>
+                     <div class="SecondBlock">
+                         <p>Recommended</p>
+                         <p onClick={()=>{this.setState({ShowDialogForm:!this.state.ShowDialogForm});
+                                               this.setState({dialog:null});
+                                               this.setState({dialogList:null});}}>
+                                               Conversations
+                            <span>{messages}</span>
+                         </p>
+                         <p  onClick={()=>{this.props.ownProps.history.push('/HomePage/MyLikes/'+"iLike")}}>
+                            I like them
+                            <span>{iLike}</span>
+                         </p>
+                         <p  onClick={()=>{this.props.ownProps.history.push('/HomePage/MyLikes/'+"meLike")}}>
+                            They like me
+                            <span>{likeMe}</span>
+                         </p>
+                         <p  onClick={()=>{this.props.ownProps.history.push('/HomePage/MyLikes/'+"mutualLike")}}>
+                            Mutual Interest
+                            <span>{mutualLike}</span>
+                         </p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/MyGuests/')}}>
+                              They visited me
+                              <span>{this.props.Store.guests.length}</span>
+                         </p>
+                     </div>
+                     <div class="Search"  onClick={()=>{this.props.ownProps.history.push('/HomePage/Filter/')}}>
+                          Search users</div>
+
+                     <div class="ThirdBlock">
+                         <p class="Title">
+                            New Faces
+                            <img src={NewFaces}/>
+                         </p>
+                         <p>
+                            Online Users
+                            <img src={Chat}/>
+                         </p>
+                         <p>
+                            Birthday
+                            <img src={Birthday}/>
+                         </p>
+                         <p>
+                            Chat Rooms
+                            <img src={ChatRoom}/>
+                         </p>
+                     </div>
+                 </div>
+
+                 <div class="Pages">
+                   <Switch>
+                     <Route exact path='/HomePage' component={Users}/>
+                     <Route path='/HomePage/EditProfile' component={EditProfile}/>
+                     <Route path='/HomePage/MyGallery' component={MyGallery}/>
+                     <Route path='/HomePage/Profile/:id' render={(props)=><Profile{...props}msg={this.onOpenDialog}/>}/>
+
+                     <Route path='/HomePage/MyGuests' component={MyGuests}/>
+                     <Route path='/HomePage/MyLikes/:action' render={(props)=><MyLikes{...props}msg={this.onOpenDialog}/>}/>
+
+                     <Route path='/HomePage/Favorites' component={MyFavorites}/>
+                     <Route path='/HomePage/Filter' component={Filter}/>
+                  </Switch>
+                </div>
+                {
+                     this.showDialogForm()
+                }
+             </div>
+
           </div>
   }
   adminInterface(){
     return <div>
-             <button bsStyle="link" onClick={this.logOut}>Log Out</button>
-             <button bsStyle="link" onClick={()=>{this.setState({ShowDialogForm:!this.state.ShowDialogForm});
-                                   this.setState({dialog:null});
-                                   this.setState({dialogList:null});}}>Dialogs</button>
-             <button bsStyle="link" onClick={()=>{this.props.ownProps.history.push('/HomePage')}}>Home Page</button>
-             <button bsStyle="link" onClick={()=>{this.props.ownProps.history.push('/HomePage/MassMessage')}}>Mass Messages</button>
-             <button bsStyle="link" onClick={()=>{this.props.ownProps.history.push('/HomePage/Profile/'+this.props.Store.myPage.id)}}>My page</button>
+             <div class="menu">
+                 <img class="logoImg" onClick={()=>{this.props.ownProps.history.push('/HomePage')}} src={Logo}/>
+                 <img class="Avatar" src={this.props.Store.myPage.avatar.base64} height="100px" width="100px"
+                      onClick={()=>{this.props.ownProps.history.push('/HomePage/EditProfile/'+this.props.Store.myPage.id);}}/>
+                 <div class="subMenu">
+                     <p>Configuration</p>
+                     <div class="subMenuBody">
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/Profile/'+this.props.Store.myPage.id)}}>My page</p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/Favorites/')}}>Favorites</p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/MyLikes/')}}>Likes</p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/MyGuests/')}}>Guests</p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/Filter/')}}>Filter</p>
 
-             <Switch>
-               <Route exact path='/HomePage' component={AdminList}/>
-               <Route path='/HomePage/EditProfile/:id' render={(props)=><EditProfile{...props}msg={this.onOpenDialog}/>}/>
-               <Route path='/HomePage/Profile/:id' render={(props)=><Profile{...props}msg={this.onOpenDialog}/>}/>
-               <Route path='/HomePage/MyGallery/:id' render={(props)=><MyGallery{...props}msg={this.onOpenDialog}/>}/>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/Profile/'+this.props.Store.myPage.id)}}>My page</p>
+                         <p onClick={()=>{this.setState({ShowDialogForm:!this.state.ShowDialogForm});
+                                               this.setState({dialog:null});
+                                               this.setState({dialogList:null});}}>Dialogs</p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/MassMessage')}}>Mass Messages</p>
+                         <p onClick={this.logOut}>Log Out</p>
+                     </div>
+                 </div>
+             </div>
 
-               <Route path='/HomePage/MassMessage' component={MassMessage}/>
-             </Switch>
-             {
-                  this.showDialogForm()
-             }
+             <div class="adminBody">
+
+               <Switch>
+                 <Route path='/HomePage/MyGuests' component={MyGuests}/>
+                 <Route path='/HomePage/MyLikes' component={MyLikes}/>
+                 <Route path='/HomePage/Favorites' component={MyFavorites}/>
+                 <Route path='/HomePage/Filter' component={Filter}/>
+
+                 <Route exact path='/HomePage' component={AdminList}/>
+                 <Route path='/HomePage/EditProfile/:id' render={(props)=><EditProfile{...props}msg={this.onOpenDialog}/>}/>
+                 <Route path='/HomePage/Profile/:id' render={(props)=><Profile{...props}msg={this.onOpenDialog}/>}/>
+                 <Route path='/HomePage/MyGallery/:id' render={(props)=><MyGallery{...props}msg={this.onOpenDialog}/>}/>
+                 <Route path='/HomePage/MassMessage' component={MassMessage}/>
+               </Switch>
+               {
+                    this.showDialogForm()
+               }
+             </div>
+
           </div>
   }
 
@@ -199,14 +354,13 @@ class MyMenu extends  Component{
     if(this.props.Store.myPage==null )//|| this.state.access==null//Если не все данные были загружены или мы не авторизировались, то ожидаем загрузки
         return this.unauthorizedInterface();
         // return <div>waiting...</div>
-
-  const cookies = new Cookies();
-  if(cookies.get('UserSession').roleId==this.getRoleId("Admin") || cookies.get('UserSession').roleId==this.getRoleId("Moder"))
-    return this.adminInterface();
-  else if (cookies.get('UserSession').roleId==this.getRoleId("User"))
-    return this.userInterface();
-  else if (cookies.get('UserSession').roleId==this.getRoleId("Banned"))
-    return this.bannedInterface();
+    const cookies = new Cookies();
+    if(cookies.get('UserSession').roleId==this.getRoleId("Admin") || cookies.get('UserSession').roleId==this.getRoleId("Moder"))
+      return this.adminInterface();
+    else if (cookies.get('UserSession').roleId==this.getRoleId("User"))
+      return this.userInterface();
+    else if (cookies.get('UserSession').roleId==this.getRoleId("Banned"))
+      return this.bannedInterface();
   }
 }
 export default connect(

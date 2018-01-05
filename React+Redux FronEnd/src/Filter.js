@@ -99,37 +99,54 @@ class Filter extends  Component{
   }
 
   render(){
-    return <form encType="multipart/form-data">
-              <input type="text"
-                     value={this.state.nameFilter}
-                     onChange={this.onFilterNameChange}/>
+    return <form encType="multipart/form-data" class="Filter  form-group col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
 
-                <select onChange={this.onGenderForSearchChange} value={this.state.user.genderForSearch}>
-                    <option value="All">All</option>
-                    <option value="Couple">Couple</option>
-                    <option value="Friends">Friends</option>
-                    <option value="Chat">Chat</option>
-                </select>
+                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                    <label>Find by name</label>
+                    <input class="form-control" type="text"
+                           value={this.state.nameFilter}
+                           onChange={this.onFilterNameChange}/>
+                </div>
 
-                <select onChange={this.onAgeForSearchChange} value={this.state.user.ageForSearch}>
-                    <option value="All">All</option>
-                    <option value="18 to 24 years">18 to 24 years</option>
-                    <option value="25 to 31 years">25 to 31 years</option>
-                    <option value="32 to 38 years">32 to 38 years</option>
-                    <option value="39 to 45 years">39 to 45 years</option>
-                    <option value="46 to 52 years">46 to 52 years</option>
-                    <option value="53 years and more">53 years and more</option>
-                </select>
+                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                    <label>I search for</label>
+                    <select class="form-control" onChange={this.onGenderForSearchChange} value={this.state.user.genderForSearch}>
+                        <option value="All">All</option>
+                        <option value="Couple">Couple</option>
+                        <option value="Friends">Friends</option>
+                        <option value="Chat">Chat</option>
+                    </select>
+                </div>
 
-                <select onChange={this.onCityForSearch} value={this.state.user.cityForSearch}>
-                    <option value="All">All</option>
-                    <option value="Washington">Washington</option>
-                    <option value="Moscow">Moscow</option>
-                    <option value="Pekin">Pekin</option>
-                </select>
-                <input checked={this.state.onlineFilter} onChange={this.onStatusFilterChange} type="checkbox"/>Online
+                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                    <label>The age range</label>
+                    <select class="form-control" onChange={this.onAgeForSearchChange} value={this.state.user.ageForSearch}>
+                        <option value="All">All</option>
+                        <option value="18 to 24 years">18 to 24 years</option>
+                        <option value="25 to 31 years">25 to 31 years</option>
+                        <option value="32 to 38 years">32 to 38 years</option>
+                        <option value="39 to 45 years">39 to 45 years</option>
+                        <option value="46 to 52 years">46 to 52 years</option>
+                        <option value="53 years and more">53 years and more</option>
+                    </select>
+                </div>
 
-                <button onClick={(e)=>{
+                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                    <label>City of living</label>
+                    <select class="form-control" onChange={this.onCityForSearch} value={this.state.user.cityForSearch}>
+                        <option value="All">All</option>
+                        <option value="Washington">Washington</option>
+                        <option value="Moscow">Moscow</option>
+                        <option value="Pekin">Pekin</option>
+                    </select>
+                </div>
+
+                <div >
+                    <label>Online </label>
+                    <input   checked={this.state.onlineFilter} onChange={this.onStatusFilterChange} type="checkbox"/>
+                </div>
+
+                <button class="btn btn-primary col-md-12  col-sm-12  col-xs-12" onClick={(e)=>{
                                   e.preventDefault();
                                   this.onEditUser(this.state.user);
                                   this.props.ownProps.history.push('/HomePage')}}>

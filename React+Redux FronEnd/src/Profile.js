@@ -273,19 +273,15 @@ onRejectAva(){
 }
 showUserProfile(){//отображения профиля для юзера
 return    this.props.Store.users.map(function(user){
-          //userInterface- функции взаимодействия с юзером,
           var userInterface= "";
-
-          //если же страница не наша, то вместо отображения новой аватарки мы отрисует интерфейс взаимодействия с пользователем
           if(user.id!=this.props.Store.myPage.id){
-            userInterface=<div>
-                            <button onClick={()=>{this.props.msg(this.state.currentDialog)}}>Start chat</button>
-                            <button onClick={this.onLike}>{this.state.likeBtnName}</button>
-                            <button onClick={this.onFavorite}>{this.state.favBtnName}</button>
+            userInterface=<div class="UI">
+                            <button class="btn btn-primary" onClick={()=>{this.props.msg(this.state.currentDialog)}}>Send Message</button>
+                            <button class="btn btn-success" onClick={this.onLike}>{this.state.likeBtnName}</button>
+                            <button class="btn btn-warning" onClick={this.onFavorite}>{this.state.favBtnName}</button>
                           </div>
           }
           else{
-            //если выбранный юзер= наша страница то мы можем просмотреть аватурку, которую отправили на модерацию
                 userInterface=<div>
                                   {
                                       this.props.Store.avatar.map(function(ava){
@@ -302,47 +298,63 @@ return    this.props.Store.users.map(function(user){
                                      }.bind(this))
                                    }
                               </div>
-                              // this.props.Store.avatar.map(function(ava){
-                              //                   if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
-                              //                     return <img height="100px" src={ava.base64}/>
-                              //                   }
-                              //                 }.bind(this))
           }
-          var status="offline";
+          var status="Offline";
           if(user.online)
-              status="online";
-          if(user.id==this.props.match.params.id){
-            return <td key={user.id}>
-                      <img height="100px" src={user.avatar.base64}/>
-                      {user.welcome}<br/>
-                      {user.name}<br/>
-                      {user.birthDay}<br/>
-                      {user.gender}<br/>
-                      {user.weight}<br/>
-                      {user.height}<br/>
-                      {user.education}<br/>
-                      {status}<br/>
-                      <ul>
-                      {
-                        this.getHobby().map(function(hobby){
-                          return hobby;
-                        })
-                      }
-                      </ul>
-                      {userInterface}
-                      <table>
-                        <tr>
-                          {
-                            this.state.Gallery.map(function(img){
-                                  return <td>
-                                            <img height="100px" src={img.content}/>
-                                         </td>
-                            }.bind(this))
+              status="Online";
 
-                          }
-                        </tr>
-                     </table>
-                   </td>
+          var now = new Date();
+          var age;
+          age=parseInt(user.birthDay.split('-')[0]);
+          age=parseInt(now.getFullYear())-age;
+          if(user.id==this.props.match.params.id){
+            return <div class="Profile">
+                      <div class="BodyLeft">
+                        <img class="Ava" height="100px" src={user.avatar.base64}/>
+                        {userInterface}
+                        <div class="Gallery">
+                            {
+                              this.state.Gallery.map(function(img){
+                                    return <img height="100px" src={img.content}/>
+                              }.bind(this))
+                            }
+                        </div>
+                      </div>
+
+                      <div class="BodyRight">
+                        <p class="MainData">{user.name}, {age} years old</p>
+                        <p>{user.welcome}</p>
+                        <p>  <div class={status}></div>{status}</p>
+
+                        <p class="MainData">My hobbies</p>
+                        <ul>
+                        {
+                          this.getHobby().map(function(hobby){
+                            return hobby;
+                          })
+                        }
+                        </ul>
+
+                        <p class="MainData">More information about {user.name}</p>
+                        <table class="table table-striped">
+                          <tbody>
+                            <tr>
+                                <td>Gender: {user.gender}</td>
+                                <td>Education: {user.education}</td>
+                            </tr>
+                            <tr>
+                                <td>Weight: {user.weight}</td>
+                                <td>Height: {user.height}</td>
+                            </tr>
+                            <tr>
+                                <td>City: {user.city}</td>
+                                <td>Age: {age} years old</td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                      </div>
+                   </div>
 
           }
         }.bind(this)
@@ -355,12 +367,11 @@ showAdminProfile(){//отображение профиля для админа
               if(user.id!=this.props.Store.myPage.id &&
                 ( this.props.Store.myPage.roleId!=this.getRoleId("Moder") || user.roleId!=this.getRoleId("Admin") ))
                 adminInterface=<div>
-                                  <button onClick={()=>{this.props.msg(this.state.currentDialog)}}>Start chat</button>
-                                  <button onClick={this.onLike}>{this.state.likeBtnName}</button>
-                                  <button onClick={this.onFavorite}>{this.state.favBtnName}</button>
-
-                                  <button onClick={()=>{this.props.ownProps.history.push('/HomePage/EditProfile/'+this.props.match.params.id);}}>Edit user</button>
-                                  <button onClick={()=>{this.onBanUser(user);}}>{this.state.banBtn}</button>
+                                  <button class="btn btn-primary" onClick={()=>{this.props.msg(this.state.currentDialog)}}>Start chat</button>
+                                  <button class="btn btn-success" onClick={this.onLike}>{this.state.likeBtnName}</button>
+                                  <button class="btn btn-warning" onClick={this.onFavorite}>{this.state.favBtnName}</button>
+                                  <button class="btn btn-light" onClick={()=>{this.props.ownProps.history.push('/HomePage/EditProfile/'+this.props.match.params.id);}}>Edit user</button>
+                                  <button class="btn btn-danger" onClick={()=>{this.onBanUser(user);}}>{this.state.banBtn}</button>
                               </div>
               //Запрещаем модератору банить и/или редактировать профиль администратора
               else if(user.id!=this.props.Store.myPage.id &&
@@ -372,80 +383,89 @@ showAdminProfile(){//отображение профиля для админа
                               </div>
 
 
-              var status="offline";
-              if(user.online)
-                  status="online";
-              if(user.id==this.props.match.params.id){
-                return <td key={user.id}>
-                          <img height="100px" src={user.avatar.base64}/>
-                          {user.welcome}<br/>
-                          {user.name}<br/>
-                          {user.birthDay}<br/>
-                          {user.gender}<br/>
-                          {user.weight}<br/>
-                          {user.height}<br/>
-                          {user.education}<br/>
-                          {status}<br/>
-                          <ul>
-                          {
-                            this.getHobby().map(function(hobby){
-                              return hobby;
-                            })
-                          }
-                          </ul>
+                              var status="Offline";
+                              if(user.online)
+                                  status="Online";
 
-                          {user.dateOfEdit}<br/>
-                          {user.avatar.dateOfChange}<br/>
-                          <div>
-                                {
-                                    this.props.Store.avatar.map(function(ava){
-                                      if(ava.confirmState=="PrevAva" && ava.siteUserId==this.props.match.params.id){
-                                        return <img height="100px" src={ava.base64}/>
-                                      }
-                                    }.bind(this))
-                                 }
-                                {
-                                  this.props.Store.avatar.map(function(ava){
-                                    if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
-                                      return  <div>
-                                                  <img height="100px" src={ava.base64}/>
-                                                  <button onClick={this.onConfirmAva}>Confirm avatar</button>
-                                                  <button onClick={this.onRejectAva}>Reject avatar</button>
+                              var now = new Date();
+                              var age;
+                              age=parseInt(user.birthDay.split('-')[0]);
+                              age=parseInt(now.getFullYear())-age;
+                              if(user.id==this.props.match.params.id){
+                                return <div class="Profile">
+                                          <div class="BodyLeft">
+                                            <img class="Ava" height="100px" src={user.avatar.base64}/>
+                                            {adminInterface}
+                                            <div class="Gallery">
+                                                {
+                                                  this.state.Gallery.map(function(img){
+                                                        return <img height="100px" src={img.content}/>
+                                                  }.bind(this))
+                                                }
+                                            </div>
+                                          </div>
+
+
+                                          <div class="BodyRight">
+                                            <p class="MainData">{user.name}, {age} years old</p>
+                                            <p>{user.welcome}</p>
+                                            <p>  <div class={status}></div>{status}</p>
+
+                                            <p class="MainData">My hobbies</p>
+                                            <ul>
+                                            {
+                                              this.getHobby().map(function(hobby){
+                                                return hobby;
+                                              })
+                                            }
+                                            </ul>
+
+                                            <p class="MainData">More information about {user.name}</p>
+                                            <table class="table table-striped">
+                                              <tbody>
+                                                <tr>
+                                                    <td>Gender: {user.gender}</td>
+                                                    <td>Education: {user.education}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Weight: {user.weight}</td>
+                                                    <td>Height: {user.height}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>City: {user.city}</td>
+                                                    <td>Age: {age} years old</td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
+                                            <p>Date of Edit: {user.dateOfEdit.split('T')[0]}</p>
+                                            <p>Date of change avatar: {user.avatar.dateOfChange.split('T')[0]}</p>
+                                            <div>
+                                                  {
+                                                      this.props.Store.avatar.map(function(ava){
+                                                        if(ava.confirmState=="PrevAva" && ava.siteUserId==this.props.match.params.id){
+                                                          return <img height="100px" src={ava.base64}/>
+                                                        }
+                                                      }.bind(this))
+                                                   }
+                                                  {
+                                                    this.props.Store.avatar.map(function(ava){
+                                                      if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
+                                                        return  <div>
+                                                                    <img height="100px" src={ava.base64}/>
+                                                                    <button onClick={this.onConfirmAva}>Confirm avatar</button>
+                                                                    <button onClick={this.onRejectAva}>Reject avatar</button>
+                                                                </div>
+                                                      }
+                                                    }.bind(this))
+                                                  }
                                               </div>
-                                    }
-                                  }.bind(this))
-                                }
-                            </div>
 
-                          {adminInterface}
-                          <table>
-                            <tr>
-                              {
-                                this.state.Gallery.map(function(img){
-                                      return <td>
-                                                <img height="100px" src={img.content}/>
-                                             </td>
-                                }.bind(this))
+                                          </div>
+                                       </div>
+
                               }
-                            </tr>
-                         </table>
-
-
-                       </td>
-              }
-            }.bind(this)
-          )
-          // {
-          //   this.props.Store.avatar.map(function(ava){
-          //     if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
-          //       return <div>
-          //                   <img height="100px" src={ava.base64}/>
-          //                   <button onClick={this.onConfirmAva}>Confirm avatar</button>
-          //                   <button onClick={this.onRejectAva}>Reject avatar</button>
-          //               </div>
-          //     }
-          //   }.bind(this))
-          // }
+                            }.bind(this)
+                          )
 }
 
 
@@ -459,15 +479,11 @@ showAdminProfile(){//отображение профиля для админа
       profileForRender=this.showUserProfile();
 
     return <div>
-             <table>
-               <tr>
                  {
                     profileForRender
                      // return showAdminProfile()
                      // return this.showUserProfile();
                  }
-               </tr>
-            </table>
            </div>
   }
 }

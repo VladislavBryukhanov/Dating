@@ -106,6 +106,7 @@ var store;
 			likes:[],
 			favorites:[],
 			myDialogList: [],
+			guests:[],
 			myPage:null
 		}
 			 store  = createStore(Reducer,initialState, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());//создаем стор только после выкачивания данных из бэекенда и закидываем эти данные в стор, это будет его начальный контент
@@ -272,6 +273,12 @@ if(action.type==='LoadMessage'){
 		return{
 			...state,
 			 roles: action.Role
+		};
+	}
+	if(action.type==='LoadGuests'){
+		return{
+			...state,
+			 guests: action.Guest
 		};
 	}
 	return state;

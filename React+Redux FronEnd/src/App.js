@@ -30,10 +30,13 @@ constructor(props) {
     this.onEmailChange=this.onEmailChange.bind(this);
     this.onPasswordChange=this.onPasswordChange.bind(this);
     this.onAuthorisation=this.onAuthorisation.bind(this);
+    this.onResetPassword=this.onResetPassword.bind(this);
     this.SignIn=this.SignIn.bind(this);
 
     this.getLikeList=this.getLikeList.bind(this);
     this.getFavoritesList=this.getFavoritesList.bind(this);
+    this.getGuestsList=this.getGuestsList.bind(this);
+
 }
 
 componentWillMount() {
@@ -48,6 +51,15 @@ componentWillMount() {
   })
   .then(result => {this.props.DispatchLoadRoles(result);
   });
+}
+getGuestsList(id){
+  fetch(this.props.Store.Url["GuestsList"]+"/"+id, {credentials: 'include'})
+  .then(function(response){
+   return(response.json());
+  })
+  .then(result => {
+    this.props.DispatchLoadGuests(result);
+   })
 }
 getUsers(){
   fetch(this.props.Store.Url["Users"])
@@ -182,6 +194,8 @@ onAuthorisation(e)
      if(user.roleId!=this.props.Store.roles.filter(x=> x.roleName=="Banned")[0].id){
        this.getLikeList(user.id);
        this.getFavoritesList(user.id);
+       this.getGuestsList(user.id);
+
        this.state.onlineCheckSocket.onopen= function (msg) {
          this.state.onlineCheckSocket.send(user.id);
        }.bind(this);
@@ -192,7 +206,26 @@ onAuthorisation(e)
    })
  })
 }
+onResetPassword(e)
+{
+  if(e!=null)
+    e.preventDefault();
 
+  fetch(this.props.Store.Url["Authorize"], {
+  method: 'put',
+  body:  JSON.stringify(this.state.email),
+  headers: {
+  'Content-Type': 'application/json;charset=utf-8'
+  },
+  credentials: 'include'
+  })
+  .then(function(response){
+    return(response.json());
+  })
+  .then(result => {
+    console.log(result);
+  })
+}
 SignIn()
 {
   fetch(this.props.Store.Url["Authorize"], {
@@ -215,6 +248,7 @@ SignIn()
      if(user.roleId!=this.props.Store.roles.filter(x=> x.roleName=="Banned")[0].id){
        this.getLikeList(user.id);
        this.getFavoritesList(user.id);
+       this.getGuestsList(user.id);
        this.state.onlineCheckSocket.onopen= function (msg) {
          this.state.onlineCheckSocket.send(user.id);
        }.bind(this);
@@ -234,7 +268,7 @@ render() {
             if(this.props.withoutGUI!=undefined)
               return <h1>Loading...</h1>
             return  <div>
-                        <div class="menu">
+                        <div class="AuthorizePanel">
                             <div class="logo">
                               <img src={Logo}/>
                               <p>Find your ideal partner</p>
@@ -246,7 +280,7 @@ render() {
                                     <input type="password" placeholder="Password" onChange={this.onPasswordChange}/>
                                     <button class="logIn" onChange={()=>{this.onAuthorisation}}>Log in</button>
                                 </form>
-                                <button class="btn btn-link">Forgot password?</button>
+                                <button class="btn btn-link" onClick={this.onResetPassword}>Forgot password?</button>
                             </div>
                         </div>
                         <div class="registrationBody">
@@ -289,6 +323,9 @@ export default connect(
       },
       DispatchLoadRoles:(role)=>{
         dispatch({type:'LoadRoles', Role: role});
+      },
+      DispatchLoadGuests:(guest)=>{
+        dispatch({type:"LoadGuests", Guest:guest});
       }
     })
 )(Users);

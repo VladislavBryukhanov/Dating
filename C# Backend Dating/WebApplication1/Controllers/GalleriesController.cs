@@ -20,11 +20,18 @@ namespace WebApplication1.Controllers
     {
         private DatingContext db = new DatingContext();
 
-        // GET: api/Galleries
-        //public IQueryable<Gallery> GetGalleries()
-        //{
-        //    return db.Galleries;
-        //}
+        //GET: api/Galleries
+        public object GetCountGalleries()
+        {
+            List<object> counter=new List<object>();
+            List<int> siteUserid = db.Galleries.Select(x=>x.siteUserid).Distinct().ToList();
+            foreach(int id in siteUserid)
+            {
+                int count = db.Galleries.Count(x => x.siteUserid == id);
+                counter.Add(new { id, count });
+            }
+            return counter.ToArray();
+        }
 
         // GET: api/Galleries/5
         [ResponseType(typeof(Gallery))]

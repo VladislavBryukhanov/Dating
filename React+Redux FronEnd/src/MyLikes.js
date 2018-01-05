@@ -28,19 +28,28 @@ class MyLikes extends  Component{
 
 
   showUsers(user, answer){
-    return <td key={user.id}>
-                <div>
+    var now = new Date();
+    var age;
+    age=parseInt(user.birthDay.split('-')[0]);
+    age=parseInt(now.getFullYear())-age;
+    var isOnline="Offline";
+    if(user.online)
+      isOnline="Online";
+    return <div class="LikeUser">
                    <img height="100px" src={user.avatar.base64}
                            onClick={()=>{this.props.ownProps.history.push('/HomePage/Profile/'+user.id);}}/>
-                   <p>{user.name+' '+user.genderForSearch}</p>
-                   {user.city}<br/>
-                   {answer}
-               </div>
-           </td>
+                   <p class="userName">{user.name}</p>
+                   <p class="userAge">{age} years old</p>
+                   <p>{user.genderForSearch}<div class={isOnline}></div></p>
+                   <p>{user.city}</p>
+                   <p>{answer}</p>
+            </div>
   }
-  showLikes(user){
-    var id=[];
 
+
+  showLikes(user){
+    var answer=null;
+    var id=[];
     for(var i=0; i<this.props.Store.likes.length; i++){
         if(this.props.Store.likes[i].to==this.props.Store.myPage.id){
           for(var j=0; j<this.props.Store.likes.length; j++){
@@ -49,29 +58,55 @@ class MyLikes extends  Component{
                 id[id.length]={ my:this.props.Store.likes[i].id,
                                 other:this.props.Store.likes[j].id
                   }
-                 // console.log(this.props.Store.likes[i].id+" "+this.props.Store.likes[j].id);
-                 // console.log(this.props.Store.likes[i].from+" "+this.props.Store.likes[j].to);
-
             }
         }
       }
     }
 
-console.log(id);
+    if(this.props.match.params!="All"){
+      if(this.props.match.params.action=="iLike"){
+        return this.props.Store.likes.map(function(like){
+                  if(like.to!=this.props.Store.myPage.id)
+                    if(like.from==user.id || like.to==user.id){
+                      answer="I like";
+                      return this.showUsers(user, answer)
+                    }
+                  }.bind(this))
+                }
+      else if(this.props.match.params.action=="meLike"){
+        return  this.props.Store.likes.map(function(like){
+                  if(like.to==this.props.Store.myPage.id){
+                    if(like.from==user.id || like.to==user.id){
+                      answer="Me like";
+                      return this.showUsers(user, answer)
+                    }
+                  }
+                }.bind(this))
+      }
+      else if(this.props.match.params.action=="mutualLike"){
+        return  this.props.Store.likes.map(function(like){
+                  if(id.filter(x=>x.my == like.id).length>0){
+                    if(like.from==user.id || like.to==user.id){
+                      answer="Mutual like";
+                      return this.showUsers(user, answer)
+                    }
+                  }
+                }.bind(this))
+      }
+    }
+
 
     return  this.props.Store.likes.map(function(like){
-                var answer;
-
                 if(id.filter(x=>x.my == like.id).length>0){
-                  answer="Взаимный лайк";
+                  answer="Mutual like";
                 }
                 else if(id.filter(x=> x.other==like.id).length>0){
                   return;
                 }
                 else  if(like.to!=this.props.Store.myPage.id)
-                  answer="Я лайкнул";
+                  answer="I like";
                 else if(like.to==this.props.Store.myPage.id)
-                  answer="Меня лайкнули";
+                  answer="Me like";
 
                 if(like.from==user.id || like.to==user.id)
                   return this.showUsers(user, answer)
@@ -80,8 +115,6 @@ console.log(id);
   }
   render(){
     return <div>
-             <table>
-               <tr>
                  {
                    this.props.Store.users.map(function(user){
                      if(user.id!=this.props.Store.myPage.id){
@@ -90,8 +123,6 @@ console.log(id);
                      }.bind(this)
                    )
                  }
-               </tr>
-            </table>
            </div>
   }
 }

@@ -4,18 +4,60 @@ import { Link, Route } from 'react-router-dom';
 class Users extends  Component{
   constructor(props){
     super(props);
+    this.state={
+      imgCount: []
+    }
     this.showUsers=this.showUsers.bind(this);
     this.checkWithFilter=this.checkWithFilter.bind(this);
+    this.getGalleryCount=this.getGalleryCount.bind(this);
   }
+  componentWillMount(){
+    this.getGalleryCount();
+  }
+
+  getGalleryCount(){
+    fetch(this.props.Store.Url["Gallery"], {
+          method: 'get',
+          headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+          }})
+          .then(function(response){
+            return response.json();
+          })
+          .then(function(json){
+            return(json);
+          })
+          .then(result => {
+            this.setState({imgCount:result});
+          });
+  }
+
   showUsers(user){
-    return <td key={user.id}>
-                <div>
+    var count=0;
+    if(this.state.imgCount.length!=0){
+          count=this.state.imgCount.filter(x=>x.id==user.id)[0];
+          if(count!=undefined)//Если в галлерее не было найдено изображений значит их 0
+            count=count.count;
+          else
+            count=0;
+    }
+    var now = new Date();
+    var age;
+    age=parseInt(user.birthDay.split('-')[0]);
+    age=parseInt(now.getFullYear())-age;
+
+    var isOnline="Offline";
+    if(user.online)
+      isOnline="Online";
+    return <div class="User">
                    <img height="100px" src={user.avatar.base64}
                            onClick={()=>{this.props.ownProps.history.push('/HomePage/Profile/'+user.id);}}/>
-                   <p>{user.name+' '+user.genderForSearch}</p>
-                   {user.city}
-               </div>
-           </td>
+                   <p class="userName">{user.name}</p>
+                   <p class="userAge">{age} years old</p>
+                   <p>{user.genderForSearch}<div class={isOnline}></div></p>
+                   <p>{user.city}<span>{count}</span></p>
+
+            </div>
   }
   checkWithFilter(user){
     var now = new Date();
@@ -62,8 +104,6 @@ class Users extends  Component{
     //var userId=this.props.Store.roles.filter(x=> x.roleName=="User")[0].id;//Получаем id роли юзера
     var Banned=this.props.Store.roles.filter(x=> x.roleName=="Banned")[0].id;//Получаем id роли юзера
     return <div>
-             <table>
-               <tr>
                  {
                    this.props.Store.users.map(function(user){
                      if(user.id!=this.props.Store.myPage.id && user.roleId!=Banned){//&& user.roleId== userId  исключаем отображение своего профиля и отображаем только юзеров(админы и модераторы скрыты)
@@ -79,8 +119,6 @@ class Users extends  Component{
                      }.bind(this)
                    )
                  }
-               </tr>
-            </table>
            </div>
   }
 }

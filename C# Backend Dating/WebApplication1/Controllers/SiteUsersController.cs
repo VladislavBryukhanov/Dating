@@ -7,6 +7,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.Description;
@@ -20,12 +22,27 @@ namespace WebApplication1.Controllers
     {
         private DatingContext db = new DatingContext();
 
+
+        string PasswordToMD5(string Password)
+        {
+            using (MD5 md5Hash = MD5.Create())
+            {
+                byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(Password));
+
+                StringBuilder sBuilder = new StringBuilder();
+                for (int i = 0; i < data.Length; i++)
+                {
+                    sBuilder.Append(data[i].ToString("x2"));
+                }
+                return sBuilder.ToString();
+            }
+        }
+        
         // GET: api/SiteUsers
         //[CustomAuthorization(1,"User")]
         public object GetSiteUsers()//IQueryable<SiteUser>
         {
             //if (AuthentificController.GetAccess() != "Access denied!")
-
 
             ////удаляем конфиденциальную информ, такую как пароль и id сессии
             //return db.SiteUsers.Select(x => new {
@@ -174,6 +191,8 @@ namespace WebApplication1.Controllers
                     //копируем сессию и пароль(если не был отправлен новый) пришедший объект и применяем редактирование
                     if (siteUser.password == null)
                         siteUser.password = user.password;
+                    else
+                        siteUser.password= PasswordToMD5(siteUser.password);
                     siteUser.sessionId = user.sessionId;
                     siteUser.dateOfEdit = DateTime.Now;
 
@@ -230,6 +249,7 @@ namespace WebApplication1.Controllers
             {
                 return BadRequest(ModelState);
             }
+            siteUser.password = PasswordToMD5(siteUser.password);
             siteUser.roleId = db.Roles.FirstOrDefault(x=>x.roleName=="User").id;
             siteUser.dateOfEdit = DateTime.Now;
             db.SiteUsers.Add(siteUser);

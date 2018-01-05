@@ -100,14 +100,26 @@ class Messages extends Component{
   render(){
     // console.log(this.props.Store.messages);
     return <div>
-               <ul>
                {
                  this.props.Store.messages.map(function(msg){
                    // console.log(msg);
-                       return <li key={msg.id}>{msg.content}</li>
+                   var time=msg.time.split('.')[0];
+                   time=time.replace("T"," ");
+                   var msgClass="";
+                   if(msg.from==this.props.Store.myPage.id)
+                      msgClass="FromMe";
+                   else
+                      msgClass="ToMe";
+                   return  <div class={msgClass}>
+                                 <p>
+                                 {msg.content}
+                                 </p>
+                                 <span>
+                                 {time}
+                                 </span>
+                           </div>
                  }.bind(this)
                )}
-               </ul>
                <input type="text" value={this.state.content}
                                   onChange={this.onMessageChange}/>
                <button onClick={this.onSendMessage}>Send</button>
