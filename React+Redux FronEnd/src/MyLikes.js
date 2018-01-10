@@ -4,10 +4,6 @@ import { Link, Route } from 'react-router-dom';
 class MyLikes extends  Component{
   constructor(props){
     super(props);
-    // this.state={
-      // mutualLikes:[]
-    // }
-    // this.getLikeList=this.getLikeList.bind(this);
     this.showLikes=this.showLikes.bind(this);
     this.showUsers=this.showUsers.bind(this);
   }
@@ -21,11 +17,6 @@ class MyLikes extends  Component{
       this.props.DispatchLoadLikeList(result);
      })
   }
-
-// componentWillMount(){
-// }
-
-
 
   showUsers(user, answer){
     var now = new Date();

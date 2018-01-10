@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import { Link, Route } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import Button from 'react-bootstrap/lib/Button';
 class Users extends  Component{
   constructor(props){
     super(props);
@@ -18,9 +16,7 @@ class Users extends  Component{
     this.onRemoveUser=this.onRemoveUser.bind(this);
   }
   onRoleChange(e,user){
-    // console.log(this.state.users);
     var getUser=this.state.users;
-    // console.log(getUser.filter(x=>x==user)[0].roleId);
     getUser.filter(x=>x==user)[0].roleId=this.props.Store.roles.filter(x=> x.roleName==e.target.value)[0].id;
     this.setState({users: getUser});
   }
@@ -42,8 +38,8 @@ class Users extends  Component{
                       {this.getRoleList()}
                   </select>
                 </td>
-                <td><Button bsStyle="link" onClick={()=>{this.onEditUserRole(user);}}>Save changes</Button></td>
-                <td><Button bsStyle="link" onClick={()=>{this.onRemoveUser(user);}}>Delete user</Button></td>
+                <td><button class="btn btn-link" onClick={()=>{this.onEditUserRole(user);}}>Save changes</button></td>
+                <td><button class="btn btn-link" onClick={()=>{this.onRemoveUser(user);}}>Delete user</button></td>
            </tr>
   }
   moderInterface(user){
@@ -87,16 +83,12 @@ class Users extends  Component{
    .then(result => {
      this.props.DispatchDelUser(user);
      this.setState({users: this.props.Store.users});
-     // if(this.props.match.params.id==undefined)//Если страница принадлежит нам, а не админ зашел для ее редактирования, то редактируем свою стр в сторе
-     //    window.location.reload();
      })
   }
 
 
   render(){
-    // var adminId=this.props.Store.roles.filter(x=> x.roleName=="Admin")[0].id;//Получаем id роли администратора
-//if(this.props.Store.myPage!=null)//Если все данные были загружены и мы авторизировались
-const cookies = new Cookies();
+    const cookies = new Cookies();
     return <div>
              <table class="table table-bordered">
                <thead>
@@ -109,14 +101,11 @@ const cookies = new Cookies();
                 </thead>
                 <tbody>
                  {
-                   this.state.users.map(function(user){
-                     // if(user.roleId!=adminId){//Отображает всех не админов
+                     this.state.users.map(function(user){
                      if(cookies.get('UserSession').roleId==this.props.Store.roles.filter(x=> x.roleName=="Admin")[0].id)
                        return this.adminInterface(user);
                      else if (cookies.get('UserSession').roleId==this.props.Store.roles.filter(x=> x.roleName=="Moder")[0].id)
                       return this.moderInterface(user);
-                       // }
-
                      }.bind(this)
                    )
                  }

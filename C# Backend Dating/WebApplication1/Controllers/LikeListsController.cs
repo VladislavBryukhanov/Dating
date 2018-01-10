@@ -31,7 +31,6 @@ namespace WebApplication1.Controllers
 
             List<LikeList> likeList = db.LikeList.Where(x => x.from == id ||
                                                              x.to == id).ToList();
-            //LikeList likeList = db.LikeList.Find(id);
             if (likeList == null)
             {
                 return NotFound();

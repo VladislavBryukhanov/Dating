@@ -31,7 +31,6 @@ namespace WebApplication1.Controllers
                 return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
             List<GuestList> guestList = db.Guests.Where(x => x.to == id).ToList();
-            //GuestList guestList = db.Guests.Find(id);
             if (guestList == null)
             {
                 return NotFound();
@@ -60,7 +59,10 @@ namespace WebApplication1.Controllers
                                                             x.who == newGuest.to &&
                                                             x.to == newGuest.who);
             if(guest==null)
+            {
+                newGuest.count = 1;
                 db.Guests.Add(newGuest);
+            }
             else if((newGuest.lastVisit-guest.lastVisit).Minutes>= guestExpire)
             {
                 guest.count++;

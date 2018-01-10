@@ -15,7 +15,6 @@ namespace WebApplication1.Security
             //По факту существует 2 allowedRole- юзер, которая означает, что данные доступны всем(кроме забаненного) и Админ, означающая,что доступ только у админа, нет того, что может юзер, но не может модер и того, что может модер, но не может админ
             DatingContext db = new DatingContext();
             SiteUser siteUser = new SiteUser();
-            //CookieHeaderValue cookie = req.Headers.GetCookies("UserSession").FirstOrDefault();
             if (cookie != null)
             {
                 string sessionId = cookie["UserSession"].Value;

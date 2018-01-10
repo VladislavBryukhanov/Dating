@@ -91,7 +91,6 @@ namespace WebApplication1.Controllers
             {
                 oldAvatar.confirmState = "PrevAva";
                 db.Entry(oldAvatar).State = EntityState.Modified;
-                //db.Avatars.Remove(oldAvatar);
             }
 
 

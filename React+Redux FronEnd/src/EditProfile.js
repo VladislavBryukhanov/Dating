@@ -9,8 +9,6 @@ class MyProfile extends  Component{
       prevhobby:{},
       hobby: {},
       avatar:null
-      // user:Object.assign({},this.props.Store.myPage),
-      // avatar:this.props.Store.myPage.avatar
     }
 
     this.onAvatarChange=this.onAvatarChange.bind(this);
@@ -70,22 +68,7 @@ class MyProfile extends  Component{
       .then(result => {
         this.setState({hobby:result});
         this.setState({prevhobby:Object.assign({},result)});//Позволит нам узнать было ли изменено хобби при редактировании
-        // console.log(this.state.hobby);
       });
-      // if(this.props.Store.avatar.base64.length!=0)
-
-      // var tmpAvatar=this.props.Store.avatar.filter(x=> x.siteUserId== this.props.Store.myPage.id);
-      // if(tmpAvatar.length!=0)
-      //     tmpAvatar=tmpAvatar[0].base64;
-      // else
-      //     tmpAvatar=  this.props.Store.avatar.filter(x=> x.siteUserId== 0)[0].base64;
-      //     this.setState({avatar:tmpAvatar});
-
-    //  .then(function(response){
-    //    console.log(response);
-    //     this.setState({hobby:response});
-    //     console.log(this.state.hobby);
-    //   });
     }
 
     onAnimalsChange(e){
@@ -197,21 +180,14 @@ class MyProfile extends  Component{
               this.setState({avatar:ChangeMyAvatar});
 
               this.editAvatar(this.state.avatar);//Установка аватарки сразу после ее загрузки без нажатия кнопки сохранить
-              //this.props.DispatchAddAvatar(ChangeMyPage);
-              // this.onEditUser(this.props.Store.myPage);
           };
           reader.readAsDataURL(file);
   }
   onEditData(){
-    // if(this.state.avatar!=null && this.state.avatar.base64!=this.props.Store.myPage.avatar.base64){
-    //   this.editAvatar(this.state.avatar);
-    // }
-    // if(this.props.Store.myPage!=this.state.user){
         this.editUser(this.state.user);
-    // }
-    if(this.state.hobby!=this.state.prevhobby){
-       this.editHobby(this.state.hobby);
-     }
+        if(this.state.hobby!=this.state.prevhobby){
+           this.editHobby(this.state.hobby);
+         }
  }
  onGetOldtAva(e){
    e.preventDefault();
@@ -226,16 +202,6 @@ class MyProfile extends  Component{
     return(response.json());
    })
    .then(result => {
-     //
-     // var myAva=Object.assign({},this.props.Store.myPage.avatar);
-     // myAva.confirmState="PrevAva";//Сомнительное действие 1
-     // this.props.DispatchEditAvatar(myAva);
-     console.log(result);
-     // var myPage=Object.assign({},this.props.Store.myPage);
-     // myPage.avatar=this.props.Store.avatar.filter(x=> x.siteUserId== -1)[0];//Сомнительное действие 2
-     // this.props.DispatchEditUser(myPage);
-     // this.props.DispatchMyPage(myPage);
-
      var delNewAva=this.props.Store.avatar.filter(x=>x.siteUserId==this.state.user.id &&
                                                      x.confirmState=="Waiting")[0];
      this.props.DispatchDelAvatar(delNewAva);
@@ -255,7 +221,6 @@ class MyProfile extends  Component{
       if(this.props.match.params.id==undefined)//Если страница принадлежит нам, а не админ зашел для ее редактирования, то редактируем свою стр в сторе
         this.props.DispatchMyPage(newPage);
         this.setState({user:newPage});
-     // result.data
    })
  }
   editAvatar(avatar){
@@ -271,7 +236,6 @@ class MyProfile extends  Component{
      return(response.json());
    })
    .then(result => {
-     // this.props.DispatchDelAvatar(result);
      console.log(result);
      this.props.DispatchAddAvatar(result);
 
@@ -290,30 +254,11 @@ class MyProfile extends  Component{
      //диспатч не отработает изменения, а это нарушает логику редакс
      //стоит копировать объекту для значения и отдельно диспатчить их в редакс для отчетности?
 
-
-
-     // var myPage=this.state.user;
-     // myPage.avatar=this.props.Store.avatar.filter(x=> x.siteUserId== this.props.Store.myPage.id)[0];
-     //
-     // this.props.DispatchEditUser(myPage);//Когда уберу конфиденциальную инфу, то можно будет и не обновлять
    })
   }
 
   editUser(user)
   {
-    // console.log(user);
-    // if(this.state.avatar!=null && this.props.Store.avatar.base64==undefined){
-    //   var userAvatar={
-    //     base64:this.state.avatar.base64,
-    //     siteUserId:this.props.Store.myPage.id
-    //   }
-    //   this.sendAvatar(userAvatar);
-    // }else
-    // var avatar=this.props.Store.avatar.filter(x=> x.siteUserId== this.props.Store.myPage.id);
-    // if(avatar.length!=0)
-        // avatar=avatar[0].base64;
-    // else
-        // avatar=  this.props.Store.avatar.filter(x=> x.siteUserId== 0)[0].base64;;
         fetch(this.props.Store.Url["Users"], {
          method: 'put',
          body: JSON.stringify(user),
@@ -334,7 +279,6 @@ class MyProfile extends  Component{
 
   editHobby(hobby)
   {
-    // console.log(hobby);
     fetch(this.props.Store.Url["Hobby"], {
      method: 'put',
      body: JSON.stringify(hobby),
@@ -349,77 +293,132 @@ class MyProfile extends  Component{
       ownerOfGal="/"+this.props.match.params.id;//то добавляем роут к галлерее
     var btnGetOldAvatar="";
     if(this.state.user.avatar.siteUserId==-1)
-      btnGetOldAvatar=<button onClick={this.onGetOldtAva}>Return to the old avatar</button>
+      btnGetOldAvatar=<button class="btn btn-danger" onClick={this.onGetOldtAva}>Return to the old avatar</button>
 
     return <form encType="multipart/form-data">
-                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+              <div class="LeftEditBlock">
+                <div class="EditBlock">
+                    <p class="EditTitle">Photos</p>
                     <label>Change avatar</label>
                     <input type="file" onChange={this.onAvatarChange}/>
-                </div>
-
-                <div class="form-group col-md-6  col-sm-6  col-xs-12">
-                    <button onClick={(e)=>{e.preventDefault();
+                    <button class="btn btn-primary" onClick={(e)=>{e.preventDefault();
                                           this.props.ownProps.history.push('/HomePage/MyGallery'+ownerOfGal);}}>
                                           Edit gallery
                     </button>
+                    {btnGetOldAvatar}
+                </div>
+                <div class="EditBlock">
+                    <p class="EditTitle">Personal information</p>
+                    <label>City</label>
+                    <select class="form-control" onChange={this.onCityChange} value={this.state.user.city}>
+                        <option value=""></option>
+                        <option value="Washington">Washington</option>
+                        <option value="Moscow">Moscow</option>
+                        <option value="Pekin">Pekin</option>
+                    </select>
+
+                    <div class="HalfBlock">
+                        <label>Name</label>
+                        <input class="form-control" type="text"
+                               value={this.state.user.name}
+                               onChange={this.onNameChange}/>
+                    </div>
+                    <div class="HalfBlock">
+                        <label>Email</label>
+                        <input class="form-control" type="email"
+                               pattern="^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,3}$"
+                               value={this.state.user.email}
+                               onChange={this.onEmailChange}/>
+                    </div>
+                    <div class="HalfBlock">
+                        <label>Password</label>
+                        <input class="form-control" type="password"
+                               onChange={this.onPasswordChange}/>
+                    </div>
+                    <div class="HalfBlock">
+                        <label>Birthday</label>
+                        <input class="form-control" type="date" value={this.state.user.birthDay.split('T')[0]} onChange={this.onBirthDayChange}/>
+                    </div>
+                    <label>Education</label>
+                    <select class="form-control" onChange={this.onEducationChange} value={this.state.user.education}>
+                        <option value=""></option>
+                        <option value="Basic">Base</option>
+                        <option value="Middle">Middle</option>
+                        <option value="College">College</option>
+                        <option value="Universitet">Universitet</option>
+                        <option value="Post-graduate">Post-graduate</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <label>Welcome message</label>
+                    <textarea class="Welcome form-control"
+                          onChange={this.onWelcomeChange}>
+                          {this.state.user.welcome}
+                    </textarea>
+
+                </div>
+              </div>
+
+
+              <div class="LeftEditBlock">
+                <div class="EditBlock">
+                    <p class="EditTitle">Appearance</p>
+                    <label>Gender</label>
+                    <select class="form-control" class="form-control" onChange={this.onGenderChange} value={this.state.user.gender} >
+                        <option value=""></option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                    <div class="HalfBlock">
+                        <label>Weight</label>
+                        <input class="form-control" class="form-control" type="text"
+                               value={this.state.user.weight}
+                               onChange={this.onWeightChange}/>
+                    </div>
+                    <div class="HalfBlock">
+                        <label>Height</label>
+                        <input class="form-control" class="form-control" type="text"
+                               value={this.state.user.height}
+                               onChange={this.onHeightChange}/>
+                    </div>
                 </div>
 
-                <select onChange={this.onGenderChange} value={this.state.user.gender} >
-                    <option value=""></option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                </select>
+                <div class="EditBlock">
+                    <p class="EditTitle">Hobbies</p>
+                    <table class="table table-striped">
+                      <tbody>
+                        <tr>
+                            <td><span>Animals</span> <input checked={this.state.hobby.animals} onChange={this.onAnimalsChange} type="checkbox"/></td>
+                        </tr>
+                        <tr>
+                            <td><span>Music</span> <input checked={this.state.hobby.music} onChange={this.onMusicChange} type="checkbox"/></td>
+                        </tr>
+                        <tr>
+                            <td><span>Sport</span> <input checked={this.state.hobby.sport} onChange={this.onSportChange} type="checkbox"/></td>
+                        </tr>
+                        <tr>
+                            <td><span>Traveling</span> <input checked={this.state.hobby.traveling} onChange={this.onTravelingChange} type="checkbox"/></td>
+                        </tr>
+                        <tr>
+                            <td><span>Cinema</span> <input checked={this.state.hobby.cinema} onChange={this.onCinemaChange} type="checkbox"/></td>
+                        </tr>
+                        <tr>
+                            <td><span>Dance</span> <input checked={this.state.hobby.dance} onChange={this.onDanceChange} type="checkbox"/></td>
+                        </tr>
+                        <tr>
+                            <td><span>Theatre</span> <input checked={this.state.hobby.theatre} onChange={this.onTheatreChange} type="checkbox"/></td>
+                        </tr>
+                      </tbody>
+                    </table>
 
-                <select onChange={this.onCityChange} value={this.state.user.city}>
-                    <option value=""></option>
-                    <option value="Washington">Washington</option>
-                    <option value="Moscow">Moscow</option>
-                    <option value="Pekin">Pekin</option>
-                </select>
-
-                <input type="text"
-                       value={this.state.user.name}
-                       onChange={this.onNameChange}/>
-                <input type="email"
-                       pattern="^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,3}$"
-                       value={this.state.user.email}
-                       onChange={this.onEmailChange}/>
-                <input type="password"
-                       onChange={this.onPasswordChange}/>
-                <input type="text"
-                       value={this.state.user.weight}
-                       onChange={this.onWeightChange}/>
-                <input type="text"
-                       value={this.state.user.height}
-                       onChange={this.onHeightChange}/>
-                <select onChange={this.onEducationChange} value={this.state.user.education}>
-                    <option value=""></option>
-                    <option value="Basic">Base</option>
-                    <option value="Middle">Middle</option>
-                    <option value="College">College</option>
-                    <option value="Universitet">Universitet</option>
-                    <option value="Post-graduate">Post-graduate</option>
-                    <option value="Other">Other</option>
-                </select>
-                <input type="date" value={this.state.user.birthDay.split('T')[0]} onChange={this.onBirthDayChange}/>
-                <input type="text"
-                       value={this.state.user.welcome}
-                       onChange={this.onWelcomeChange}/>
-                <div>
-                    <input checked={this.state.hobby.animals} onChange={this.onAnimalsChange} type="checkbox"/>animals
-                    <input checked={this.state.hobby.music} onChange={this.onMusicChange} type="checkbox"/>music
-                    <input checked={this.state.hobby.sport} onChange={this.onSportChange} type="checkbox"/>sport
-                    <input checked={this.state.hobby.traveling} onChange={this.onTravelingChange} type="checkbox"/>traveling
-                    <input checked={this.state.hobby.cinema} onChange={this.onCinemaChange} type="checkbox"/>cinema
-                    <input checked={this.state.hobby.dance} onChange={this.onDanceChange} type="checkbox"/>dance
-                    <input checked={this.state.hobby.theatre} onChange={this.onTheatreChange} type="checkbox"/>theatre
                </div>
-                <button onClick={(e)=>{
-                                  e.preventDefault();
-                                  this.onEditData();}}>
-                                  Save
-                </button>
-                {btnGetOldAvatar}
+               <button class="SaveChangesBtn" onClick={(e)=>{
+                                 e.preventDefault();
+                                 this.onEditData();}}>
+                                 Save
+               </button>
+              </div>
+
 
            </form>
   }

@@ -101,7 +101,6 @@ class Users extends  Component{
 
   render(){
 
-    //var userId=this.props.Store.roles.filter(x=> x.roleName=="User")[0].id;//Получаем id роли юзера
     var Banned=this.props.Store.roles.filter(x=> x.roleName=="Banned")[0].id;//Получаем id роли юзера
     return <div>
                  {

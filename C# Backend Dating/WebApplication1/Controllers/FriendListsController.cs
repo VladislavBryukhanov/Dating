@@ -15,7 +15,7 @@ using WebApplication1.Security;
 
 namespace WebApplication1.Controllers
 {
-    [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*", SupportsCredentials = true)]//, SupportsCredentials =true
+    [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*", SupportsCredentials = true)]
     public class FriendListsController : ApiController
     {
         private DatingContext db = new DatingContext();
@@ -30,7 +30,6 @@ namespace WebApplication1.Controllers
                 return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
             List<FriendList> friendList = db.Friends.Where(x => x.who == id).ToList();
-            //FriendList friendList = db.Friends.Find(id);
             if (friendList == null)
             {
                 return NotFound();
@@ -44,11 +43,6 @@ namespace WebApplication1.Controllers
         [ResponseType(typeof(FriendList))]
         public IHttpActionResult PostFriendList(FriendList friendList)
         {
-            //CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
-            //if (cookie != null)
-            //{
-            //   string sessionId = cookie["UserSession"].Value;
-            //}
 
             if (!ModelState.IsValid)
             {

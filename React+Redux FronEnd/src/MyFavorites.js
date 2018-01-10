@@ -1,19 +1,12 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Link, Route } from 'react-router-dom';
-// import DefaultAvatar from './Ava.png'
 class MyLikes extends  Component{
   constructor(props){
     super(props);
-    // this.state={
-      // favorites:[]
-    // }
     this.showFavorites=this.showFavorites.bind(this);
     this.showUsers=this.showUsers.bind(this);
   }
-// componentWillMount(){
-// }
-
 
 
   showUsers(user){

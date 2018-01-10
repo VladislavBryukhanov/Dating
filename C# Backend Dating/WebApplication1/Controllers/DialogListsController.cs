@@ -20,11 +20,6 @@ namespace WebApplication1.Controllers
     {
         private DatingContext db = new DatingContext();
 
-        // GET: api/DialogLists
-        //public IQueryable<DialogList> GetDialogLists()
-        //{
-        //    return db.DialogLists;
-        //}
 
         // GET: api/DialogLists/5
         [ResponseType(typeof(DialogList))]
@@ -43,40 +38,6 @@ namespace WebApplication1.Controllers
             return Ok(dialogList);
         }
 
-        //// PUT: api/DialogLists/5
-        //[ResponseType(typeof(void))]
-        //public IHttpActionResult PutDialogList(int id, DialogList dialogList)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    if (id != dialogList.id)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    db.Entry(dialogList).State = EntityState.Modified;
-
-        //    try
-        //    {
-        //        db.SaveChanges();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!DialogListExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return StatusCode(HttpStatusCode.NoContent);
-        //}
 
         // POST: api/DialogLists
         [ResponseType(typeof(DialogList))]
@@ -102,21 +63,45 @@ namespace WebApplication1.Controllers
             return CreatedAtRoute("DefaultApi", new { id = dialogList.id }, dialogList);
         }
 
-        //// DELETE: api/DialogLists/5
-        //[ResponseType(typeof(DialogList))]
-        //public IHttpActionResult DeleteDialogList(int id)
-        //{
-        //    DialogList dialogList = db.DialogLists.Find(id);
-        //    if (dialogList == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // DELETE: api/DialogLists/5
+        [ResponseType(typeof(DialogList))]
+        public IHttpActionResult DeleteDialogList([FromBody]int[] id)
+        {
 
-        //    db.DialogLists.Remove(dialogList);
-        //    db.SaveChanges();
+            List<DialogList> removeDialogLists=new List<DialogList>();
+            List<Dialog> removeDialogs = new List<Dialog>();
+            for (int i = 0; i < id.Length; i++)
+            {
+                int currentId = id[i];
+                removeDialogLists.Add(db.DialogLists.FirstOrDefault(x => x.id == currentId));
+                removeDialogs.Add(db.Dialogs.FirstOrDefault(x => x.dialogid == currentId ));
+            }
 
-        //    return Ok(dialogList);
-        //}
+
+            CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
+            if (!CheckAccess.IsAccess(cookie, removeDialogLists[0].firstUserId, "User") && !CheckAccess.IsAccess(cookie, removeDialogLists[0].secondUserId, "User"))
+                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
+
+            if (removeDialogLists.Count == 0 || removeDialogs.Count == 0)
+            {
+                return NotFound();
+            }
+            if (removeDialogLists.Count == 1 && removeDialogs.Count == 1)
+            {
+                db.DialogLists.Remove(removeDialogLists[0]);
+                db.Dialogs.Remove(removeDialogs[0]);
+            }
+            else
+            {
+                db.DialogLists.RemoveRange(removeDialogLists);
+                db.Dialogs.RemoveRange(removeDialogs);
+            }
+
+
+            db.SaveChanges();
+
+            return Ok("Success");
+        }
 
         protected override void Dispose(bool disposing)
         {

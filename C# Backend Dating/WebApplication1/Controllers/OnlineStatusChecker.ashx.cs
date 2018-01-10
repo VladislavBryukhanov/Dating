@@ -28,14 +28,8 @@ namespace WebApplication1.Controllers
         private async Task WebSocketRequest(AspNetWebSocketContext context)
         {
             var socket = context.WebSocket;
-            //Clients.Add(socket);
             while (true)
             {
-                //if (socket.State != WebSocketState.Open)
-                //{
-                //    await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Socket closed", CancellationToken.None);
-                //    break;
-                //}
                 var buffer = new ArraySegment<byte>(new byte[64]);
                 var result = await socket.ReceiveAsync(buffer, CancellationToken.None);//При подключенном сокете сообщения не приходит, при разрыве приходит массив нулей
 
@@ -60,18 +54,11 @@ namespace WebApplication1.Controllers
 
                 for (int i = 0; i < Clients.Keys.Count; i++)
                 {
-                    //int clientId = Clients[i];
                     WebSocket client = Clients.ElementAt(i).Value;
-                    //int clientId = Clients.FirstOrDefault(x => x.Value == client).Key;
                     int clientId = Clients.ElementAt(i).Key;
 
                     try
                     {
-                        //if (client.State == WebSocketState.Open)
-                        //{
-                        //    await client.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-                        //}
-                        //else 
                         if(client.State == WebSocketState.CloseReceived)
                         {
                             using (DatingContext db = new DatingContext())

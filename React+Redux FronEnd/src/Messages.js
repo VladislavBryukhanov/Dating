@@ -4,7 +4,6 @@ class Messages extends Component{
   constructor(props){
     super(props);
     this.state={
-      // messages: [],
       dialog:this.props.dialog,
       content: "",
       socket: new WebSocket(this.props.Store.Url["MessageSocket"])
@@ -15,33 +14,19 @@ class Messages extends Component{
   }
   componentWillMount() {
     this.state.socket.onmessage = function (msg) {
-      // this.setState({messages:msg.data});
-
-      // this.props.DispatchAddMessage(msg.data);
       var msg = JSON.parse( msg.data );
-      // console.log(msg);
       this.props.DispatchAddMessage(msg);
     }.bind(this);
 
-    // this.state.socket.onerror= function (msg) {
-    //   alert(msg);
-    // }.bind(this);
-    // console.log(this.state.dialog.id);
-
-    // if(this.state.dialog.id!=-1){
       fetch(this.props.Store.Url["Messages"]+"/"+this.state.dialog.id,{credentials: 'include'})//Не безопасно, т к любой юзер сможет читать сообщения подставив эти значения в урл
       .then(function(response){
         if(response.status==404)//Если диалог пуст
           return [];
        return(response.json());
-     })
+      })
       .then(result => {
             this.props.DispatchLoadMessage(result);
-            // this.setState({messages:result});
-            // console.log(this.state.messages);
       });
-    // }
-
   }
 
   componentWillUnmount(){//после закрытия чата закрываем веб сокет, дабы избежать их множественного создания
@@ -52,7 +37,6 @@ class Messages extends Component{
     this.setState({content:e.target.value});
   }
   createNewDialog(){
-    // "DialogList":"http://localhost:59088/api/DialogLists",
     fetch(this.props.Store.Url["DialogList"], {
     method: 'post',
     body:  JSON.stringify(this.state.dialog),
@@ -65,7 +49,6 @@ class Messages extends Component{
      return(response.json());
     })
     .then(result => {
-      // console.log(result);
         this.props.DispatchAddDialogList(result);
         this.setState({dialog:result});
         this.onSendMessage();
@@ -90,19 +73,13 @@ class Messages extends Component{
         content:this.state.content
       }
       this.state.socket.send(JSON.stringify(messageObject));
-      // this.state.socket.send(messageObject.dialogid);
-      // this.state.socket.send(messageObject.from);
-      // this.state.socket.send(messageObject.to);
-      // this.state.socket.send(messageObject.content);
       this.setState({content:""});
     }
   }
   render(){
-    // console.log(this.props.Store.messages);
     return <div>
                {
                  this.props.Store.messages.map(function(msg){
-                   // console.log(msg);
                    var time=msg.time.split('.')[0];
                    time=time.replace("T"," ");
                    var msgClass="";
@@ -120,7 +97,7 @@ class Messages extends Component{
                            </div>
                  }.bind(this)
                )}
-               <input type="text" value={this.state.content}
+               <textarea  contenteditable="true" value={this.state.content}
                                   onChange={this.onMessageChange}/>
                <button onClick={this.onSendMessage}>Send</button>
            </div>

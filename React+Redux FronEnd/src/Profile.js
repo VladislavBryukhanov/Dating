@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Link, Route } from 'react-router-dom';
 import Cookies from 'universal-cookie';
+import Next from './Layout/Next.png';
 class MyProfile extends  Component{
 constructor(props){
   super(props);
@@ -89,7 +90,6 @@ constructor(props){
         response.push(<li>{key}</li>);
       }
     }
-    console.log(response);
     return response
   }
   getRoleId(role){
@@ -115,7 +115,6 @@ constructor(props){
           })
          .then(result => {
            this.props.DispatchEditUser(user);
-           console.log(result);
            if(result.roleId==this.getRoleId("Banned"))
               this.setState({banBtn:"Reject ban"});
            else
@@ -135,7 +134,6 @@ constructor(props){
      return(response.json());
     })
     .then(result => {
-     // this.props.Store.users.map((user)=>{
        if(this.state.likeBtnName=="Like"){
          this.props.DispatchAddLike(result);
          this.setState({likeBtnName:"Remove like"});
@@ -144,10 +142,6 @@ constructor(props){
          this.props.DispatchDeleteLike(result);
          this.setState({likeBtnName:"Like"});
        }
-       // this.props.ownProps.history.push('/HomePage/MyLikes');
-      // })
-
-
     })
   }
 
@@ -158,14 +152,12 @@ onFavorite(){
   headers: {
   'Content-Type': 'application/json;charset=utf-8'
 },
-credentials: 'include'//,
-//credentials: 'include'
+credentials: 'include'
   })
   .then(function(response){
    return(response.json());
   })
   .then(result => {
-   // this.props.Store.users.map((user)=>{
      if(this.state.favBtnName=="Favorites"){
        this.props.DispatchAddFavorite(result);
        this.setState({favBtnName:"Remove from favorites"});
@@ -174,8 +166,6 @@ credentials: 'include'//,
        this.props.DispatchDeleteFavorite(result);
        this.setState({favBtnName:"Favorites"});
      }
-     // this.props.ownProps.history.push('/HomePage/Favorites');
-   // })
   })
 }
 getUserGallery(){
@@ -195,7 +185,6 @@ fetch(this.props.Store.Url["Gallery"]+"/"+this.props.match.params.id, {
       .then(result => {
         console.log(result);
         this.setState({Gallery:result});
-        // console.log(result);
       });
 }
 
@@ -211,19 +200,16 @@ onConfirmAva(){
      return(response.json());
     })
     .then(result => {
-      // result.data
       var delOldAva=this.props.Store.avatar.filter(x=>x.siteUserId==this.props.match.params.id &&
                                                       x.confirmState=="PrevAva")[0];
       this.props.DispatchDelAvatar(delOldAva);
 
       var setNewAva=this.props.Store.avatar.filter(x=>x.siteUserId==this.props.match.params.id &&
                                                       x.confirmState=="Waiting")[0];
-      // setNewAva=Object.assign({},setNewAva);
       setNewAva.confirmState="Confirmed";
       this.props.DispatchEditAvatar(setNewAva);
 
        var newPage=this.props.Store.users.filter(x=>x.id==this.props.match.params.id)[0];
-       // setNewAva=Object.assign({},newPage);
        newPage.avatar=setNewAva;
        this.props.DispatchEditUser(newPage);
 
@@ -244,8 +230,6 @@ onRejectAva(){
    return(response.json());
   })
   .then(result => {
-    // result.data
-
          var delNewAva=this.props.Store.avatar.filter(x=>x.siteUserId==this.props.match.params.id &&
                                                          x.confirmState=="Waiting")[0];
          this.props.DispatchDelAvatar(delNewAva);
@@ -253,7 +237,6 @@ onRejectAva(){
          var setOldAva=this.props.Store.avatar.filter(x=>x.siteUserId==this.props.match.params.id &&
                                                          x.confirmState=="PrevAva")[0];
           if(setOldAva!=undefined){
-            // setOldAva=Object.assign({},setOldAva);
             setOldAva.confirmState="Confirmed";
             this.props.DispatchEditAvatar(setOldAva);
           }
@@ -262,7 +245,6 @@ onRejectAva(){
             this.props.DispatchEditAvatar(setOldAva);
 
             var newPage=this.props.Store.users.filter(x=>x.id==this.props.match.params.id)[0];
-            // newPage=Object.assign({},newPage);
             newPage.avatar=setOldAva;
             this.props.DispatchEditUser(newPage);
 
@@ -282,22 +264,27 @@ return    this.props.Store.users.map(function(user){
                           </div>
           }
           else{
-                userInterface=<div>
-                                  {
-                                      this.props.Store.avatar.map(function(ava){
-                                        if(ava.confirmState=="PrevAva" && ava.siteUserId==this.props.match.params.id){
-                                          return <img height="100px" src={ava.base64}/>
-                                        }
-                                      }.bind(this))
-                                   }
-                                   {
-                                     this.props.Store.avatar.map(function(ava){
-                                       if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
-                                         return <img height="100px" src={ava.base64}/>
+                userInterface= <div class="ChangeAva">
+                                      {
+                                          this.props.Store.avatar.map(function(ava){
+                                            if(ava.confirmState=="PrevAva" && ava.siteUserId==this.props.match.params.id){
+                                              return  <div>
+                                                        <img class="PrevAva" height="90px" src={ava.base64}/>
+                                                        <img height="40px" src={Next}/>
+                                                      </div>
+                                            }
+                                          }.bind(this))
                                        }
-                                     }.bind(this))
-                                   }
-                              </div>
+                                       {
+                                        this.props.Store.avatar.map(function(ava){
+                                          if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
+                                            return  <div>
+                                                        <img class="NewAva" height="90px" src={ava.base64}/>
+                                                    </div>
+                                          }
+                                        }.bind(this))
+                                       }
+                                  </div>
           }
           var status="Offline";
           if(user.online)
@@ -439,11 +426,14 @@ showAdminProfile(){//отображение профиля для админа
                                             </table>
                                             <p>Date of Edit: {user.dateOfEdit.split('T')[0]}</p>
                                             <p>Date of change avatar: {user.avatar.dateOfChange.split('T')[0]}</p>
-                                            <div>
+                                            <div class="ChangeAva">
                                                   {
                                                       this.props.Store.avatar.map(function(ava){
                                                         if(ava.confirmState=="PrevAva" && ava.siteUserId==this.props.match.params.id){
-                                                          return <img height="100px" src={ava.base64}/>
+                                                          return  <div>
+                                                                    <img class="PrevAva" height="80px" src={ava.base64}/>
+                                                                    <img height="40px" src={Next}/>
+                                                                  </div>
                                                         }
                                                       }.bind(this))
                                                    }
@@ -451,13 +441,14 @@ showAdminProfile(){//отображение профиля для админа
                                                     this.props.Store.avatar.map(function(ava){
                                                       if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
                                                         return  <div>
-                                                                    <img height="100px" src={ava.base64}/>
-                                                                    <button onClick={this.onConfirmAva}>Confirm avatar</button>
-                                                                    <button onClick={this.onRejectAva}>Reject avatar</button>
+                                                                    <img class="NewAva" height="80px" src={ava.base64}/>
+                                                                    <button class="btn btn-success" onClick={this.onConfirmAva}>Confirm avatar</button>
+                                                                    <button class="btn btn-danger" onClick={this.onRejectAva}>Reject avatar</button>
                                                                 </div>
                                                       }
                                                     }.bind(this))
                                                   }
+
                                               </div>
 
                                           </div>
@@ -481,8 +472,6 @@ showAdminProfile(){//отображение профиля для админа
     return <div>
                  {
                     profileForRender
-                     // return showAdminProfile()
-                     // return this.showUserProfile();
                  }
            </div>
   }

@@ -42,7 +42,8 @@ componentWillMount(){
                    <p>{user.genderForSearch}<div class={isOnline}></div></p>
                    <p>{user.city}</p>
                    <p>Count of visit: <span>{guest.count}</span></p>
-                   <p>Last visit: <span>{guest.lastVisit.split('T')[0]}</span></p>
+                   <p>Last visit: <span>{guest.lastVisit.split('T')[0]}<br/>
+                                         {guest.lastVisit.split('T')[1].split('.')[0]} </span></p>
             </div>
   }
   showGuests(user){

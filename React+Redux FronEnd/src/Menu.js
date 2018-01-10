@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import {  Route, Router, Switch } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-// import Menu, {SubMenu, MenuItem} from 'rc-menu';
 
 import App from './App.js';
 import EditProfile from './EditProfile';
@@ -25,8 +24,7 @@ import Chat from './Layout/chat.png';
 import Birthday from './Layout/birthday.png';
 import ChatRoom from './Layout/chat-room.png';
 import Exit from './Layout/arrow-button-right-next-green-round.png';
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import Button from 'react-bootstrap/lib/button';
+import Trash from './Layout/trash.png';
 
 class MyMenu extends  Component{
   constructor(props){
@@ -34,21 +32,27 @@ class MyMenu extends  Component{
     this.state={
       dialogList:null,
       dialog:null,
-      // onlineCheckSocket: new WebSocket(this.props.Store.Url["AuthSocket"]),
+      selectedDialogs: [],
       ShowDialogForm: false
     }
       this.logOut=this.logOut.bind(this);
       this.showDialogForm=this.showDialogForm.bind(this);
       this.loadDialogList=this.loadDialogList.bind(this);
       this.onOpenDialog=this.onOpenDialog.bind(this);
+      this.onSelectDialogChanged=this.onSelectDialogChanged.bind(this);
+      this.onRemoveDialogs=this.onRemoveDialogs.bind(this);
+
 
       this.userInterface=this.userInterface.bind(this);
       this.adminInterface=this.adminInterface.bind(this);
       this.unauthorizedInterface=this.unauthorizedInterface.bind(this);
   }
 
-  componentWillReceiveProps(){
-    if(this.props.Store.myPage!=null && this.state.dialogList==null){
+  componentWillReceiveProps(nextProps){
+    if(this.props.Store.myPage!=null && ((nextProps.Store.myDialogList.length!=this.props.Store.myDialogList.length
+                                     && nextProps.Store.myDialogList!=undefined)
+                                     || this.state.dialogList==null )){//this.state.dialogList==null){
+      console.log("run");
       this.loadDialogList();
     }
   }
@@ -56,22 +60,21 @@ class MyMenu extends  Component{
   componentWillMount(){
       console.log("LoadMenu");
       if(this.props.Store.myPage!=null){
-        // this.props.ownProps.history.push('/');
-        // const cookies = new Cookies();
-        // if(cookies.get('UserSession')!= undefined)
-        // this.SignIn();
-
-          // this.state.onlineCheckSocket.onopen= function (msg) {
-          //   this.state.onlineCheckSocket.send(this.props.Store.myPage.id);
-          // }.bind(this);
-
           //Грузим список наших дилогов в стор
           const cookies = new Cookies();
           if (cookies.get('UserSession').roleId!=this.getRoleId("Banned"))
               this.loadDialogList();
     }
   }
-
+  onSelectDialogChanged(e, dialog){
+    console.log(dialog);
+    var newState=this.state.selectedDialogs;
+    if(e.target.checked)
+      newState[newState.length]=dialog.id;
+    else
+      newState=newState.filter(x=>x!=dialog);
+    this.setState({selectedDialogs: newState})
+  }
   loadDialogList(){
     fetch(this.props.Store.Url["DialogList"]+"/"+this.props.Store.myPage.id,{credentials: 'include'})//Не безопасно, т к любой юзер сможет читать сообщения подставив эти значения в урл
     .then(function(response){
@@ -98,16 +101,20 @@ class MyMenu extends  Component{
         user.avatar={};
         user.avatar.base64=this.props.Store.avatar.filter(x=>x.siteUserId==0)[0].base64;
       }
-      return <div class="Dialog" onClick={()=>{this.onOpenDialog(dialogs)}}>
-                <img height="50px" src={user.avatar.base64}/>
-                {user.name}
-                <div class={isOnline}></div>
+      return <div class="DialogBody">
+                <input onChange={(e)=>{this.onSelectDialogChanged(e, dialogs)}} type="checkbox"/>
+                <div class="Dialog" onClick={()=>{this.onOpenDialog(dialogs)}}>
+                    <img height="50px" src={user.avatar.base64}/>
+                    {user.name}
+                    <div class={isOnline}></div>
+                </div>
              </div>
         }.bind(this))
         list= <div class="DialogList">
                   <img class="CloseDialogList" src={Exit} onClick={()=>{this.setState({ShowDialogForm:false});
                                         this.setState({dialog:null});
                                         this.setState({dialogList:null});}}/>
+                  <img class="RemoveDialogs" src={Trash} onClick={this.onRemoveDialogs}/>
                   <p class="Conversaciones">Conversaciones</p>
                   {list}
               </div>
@@ -121,9 +128,35 @@ class MyMenu extends  Component{
     this.props.ownProps.history.push('/');
     window.location.reload();
   }
+  onRemoveDialogs(e){
+    e.preventDefault();
+    console.log(this.state.selectedDialogs);
 
+    if(this.state.selectedDialogs.length!=0){
+      fetch(this.props.Store.Url["DialogList"], {
+      method: 'delete',
+      body:  JSON.stringify(this.state.selectedDialogs),
+      headers: {
+      'Content-Type': 'application/json;charset=utf-8'
+      },
+      credentials: 'include'
+      })
+      .then(function(response){
+        return(response.json());
+      })
+      .then(result => {
+        if(result=="Success"){
+          this.state.selectedDialogs.map(function(id){
+            this.props.DispatchRemoveDialog(id);
+          }.bind(this))
+        }
+        this.setState({selectedDialogs:null});
+      })
+    }
+
+
+  }
   onOpenDialog(dialog){
-    // console.log(id);
     var user;
     if(dialog.firstUserId!=this.props.Store.myPage.id)
       user=this.props.Store.users.filter(x=>x.id==dialog.firstUserId)[0];
@@ -138,13 +171,17 @@ class MyMenu extends  Component{
                   <img class="CloseDialogList" src={Exit} onClick={()=>{this.setState({ShowDialogForm:false});
                                         this.setState({dialog:null});
                                         this.setState({dialogList:null});}}/>
+                  <img class="RemoveDialogs" src={Trash} onClick={this.onRemoveDialogs}/>
                   <p class="Conversaciones">Conversaciones</p>
                   <div  class="Messages">
-                    <div class="Dialog" onClick={()=>{this.setState({dialog:null});}}>
-                        <img height="50px" src={user.avatar.base64}/>
-                        {user.name}
-                        <div class={isOnline}></div>
-                    </div>
+                      <div class="DialogBody">
+                        <input onChange={(e)=>{this.onSelectDialogChanged(e, dialog)}} type="checkbox"/>
+                        <div class="Dialog" onClick={()=>{this.setState({dialog:null});}}>
+                            <img height="50px" src={user.avatar.base64}/>
+                            {user.name}
+                            <div class={isOnline}></div>
+                        </div>
+                      </div>
                     <Messages dialog={dialog}/>
                   </div>
 
@@ -152,6 +189,7 @@ class MyMenu extends  Component{
     this.setState({dialog:msg});
     this.setState({ShowDialogForm:true});
   }
+
   showDialogForm(){
     if(this.state.ShowDialogForm){//Если форма диалога открыта
       if(this.state.dialogList==null && this.state.dialog==null){//Загружаем список людей с которыми мы вели диалог
@@ -351,9 +389,8 @@ class MyMenu extends  Component{
     return this.props.Store.roles.filter(x=> x.roleName==role)[0].id
   }
   render(){
-    if(this.props.Store.myPage==null )//|| this.state.access==null//Если не все данные были загружены или мы не авторизировались, то ожидаем загрузки
+    if(this.props.Store.myPage==null )//Если не все данные были загружены или мы не авторизировались, то ожидаем загрузки
         return this.unauthorizedInterface();
-        // return <div>waiting...</div>
     const cookies = new Cookies();
     if(cookies.get('UserSession').roleId==this.getRoleId("Admin") || cookies.get('UserSession').roleId==this.getRoleId("Moder"))
       return this.adminInterface();
@@ -372,6 +409,9 @@ export default connect(
     dispatch => ({
       DispatchLoadDialogList:(dl)=>{
         dispatch({type:'LoadDialogList', DialogList: dl});
+      },
+      DispatchRemoveDialog:(dl)=>{
+        dispatch({type:"RemoveDialog", RemoveDialog:dl});
       }
   })
 )(MyMenu);

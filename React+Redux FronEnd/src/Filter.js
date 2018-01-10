@@ -17,8 +17,6 @@ class Filter extends  Component{
     this.onStatusFilterChange=this.onStatusFilterChange.bind(this);
     this.onFilterNameChange=this.onFilterNameChange.bind(this);
     this.getUsers=this.getUsers.bind(this);
-
-
     }
 
 

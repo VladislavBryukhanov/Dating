@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Link, Route } from 'react-router-dom';
+import Trash from './Layout/trash.png';
+
 class MyGallery extends  Component{
   constructor(props){
     super(props);
@@ -36,7 +38,6 @@ class MyGallery extends  Component{
               return(json);
             })
             .then(result => {
-              console.log(result);
               this.setState({Gallery:result});
             });
 
@@ -67,7 +68,6 @@ class MyGallery extends  Component{
         {
             (this.getBase64(e.target.files[i], i));
         }
-        // console.log(this.state.gallery);
         this.forceUpdate();
   }
   getBase64(file, index) {
@@ -99,30 +99,25 @@ class MyGallery extends  Component{
 
 
   render(){
-    console.log(this.state.ownerOfGallery);
     return <div>
             <form>
                 <input type="file" multiple onChange={this.onGalleryChange}/>
-                <button onClick={this.onPostFiles}>Save</button>
+                <button class="btn btn-success" onClick={this.onPostFiles}>Save</button>
             </form>
-             <table>
-               <tr>
                  {
                    this.state.Gallery.map(function(img){
-                     // console.log(img);
-                         return <td><img height="100px" src={img.content}/>
-                                                 <button onClick={(e)=>{
-                                                       e.preventDefault();
-                                                       this.removeFromBuffer(img);
-                                                     }}>
-                                                 X</button>
-                                </td>
+                         return <div class="GalleryEdit">
+                                       <img width="200px" src={img.content}/>
+                                       <img onClick={(e)=>{
+                                             e.preventDefault();
+                                             this.removeFromBuffer(img);
+                                           }} class="RemoveBtn" src={Trash}/>
+                                </div>
                    }.bind(this))
-
                }
-               </tr>
-            </table>
+
            </div>
+
   }
 }
 export default connect(

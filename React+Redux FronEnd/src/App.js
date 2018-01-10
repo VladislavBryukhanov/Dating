@@ -5,13 +5,6 @@ import { Link, Route } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 
 import Logo from './Layout/logo.svg';
-// var Slider = require('react-slick');
-// import Slider from 'react-slick';
-// import 'can-use-dom';
-// import 'enquire.js';
-// import 'json2mq';
-// import 'slick-carousel';
-// import 'string-convert';
 
 class Users extends Component {
 
@@ -22,9 +15,6 @@ constructor(props) {
      email: "",
      password:""
    }
-    // this.state = {
-    // onlineCheckSocket: new WebSocket("ws://localhost:59088/Controllers/OnlineStatusChecker.ashx")
-    // };
     this.onAddUser=this.onAddUser.bind(this);
     this.getUsers=this.getUsers.bind(this);
     this.onEmailChange=this.onEmailChange.bind(this);
@@ -142,9 +132,16 @@ onAddUser(user) {
     'Content-Type': 'application/json;charset=utf-8'
     }
   }).then(function(response){
+    if(response.status==400){
+      return "Email already exist!";
+    }
     return(response.json());
   })
   .then(result => {
+    if(result=="Email already exist!"){
+      alert(result);
+      return;
+    }
     var userAvatar=  this.props.Store.avatar.filter(x=> x.siteUserId== 0)[0];//set Default avatar
     result.avatar=userAvatar;
 
@@ -256,15 +253,11 @@ SignIn()
      }
      if(this.props.ownProps.history!=undefined)
         this.props.ownProps.history.push('/HomePage');
-     //this.props.ownProps.history.push('/HomePage');
     }
    })
  })
 }
 render() {
-  //if(this.props.match.history.id==undefined)//Если мы в первый раз заходим на сайт, в ином случае этот компонент вызывается из Menu для авторизации по кукам и не требует перерисовки
-  //col-md-5 offset-md-7 col-sm-6  offset-xs-6 col-xs-10 offset-xs-2
-  // <label>If you already have a Profile</label>
             if(this.props.withoutGUI!=undefined)
               return <h1>Loading...</h1>
             return  <div>
@@ -286,13 +279,15 @@ render() {
                         <div class="registrationBody">
                             <Registration onAddUserSubmit={ this.onAddUser.bind(this)}/>
                         </div>
-                        <div class="carouselGallery">
+                        <div class="carouselBody">
+                          <div class="carouselGallery">
                             {
                               this.props.Store.avatar.map(function(avatar){
                                 if(avatar.siteUserId!=0 && avatar.siteUserId!=-1 && avatar.confirmState!="Waiting")//не отображать систмные и не подтвержденные аватарки
-                                    return <td key={avatar.id}><img height="100px" src={avatar.base64}/></td>
+                                    return <img height="100px" src={avatar.base64}/>
                               })
                             }
+                          </div>
                         </div>
                     </div>
         }

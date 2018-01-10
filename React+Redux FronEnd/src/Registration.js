@@ -82,7 +82,7 @@ class Registration extends Component {
                       </div>
 
                       <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                          <label>Age for search for</label>
+                          <label>Age for search</label>
                           <select class="form-control" onChange={this.onAgeForSearchChange}>
                               <option selected value=""></option>
                               <option value="18 to 24 years">18 to 24 years</option>
@@ -202,4 +202,3 @@ export default connect(
       StoreUsers: state.users,
     })
 )(Registration);
-// <input type="submit" value="Next"/>

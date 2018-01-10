@@ -25,7 +25,6 @@ namespace WebApplication1.Controllers
         public IHttpActionResult GetHobby(int id)
         {
             Hobby hobby = db.Hobbies.FirstOrDefault(x=>x.siteUserid == id);
-            //Hobby hobby = db.Hobbies.FirstOrDefault((x) => x.id == id);
 
             if (hobby == null)
             {

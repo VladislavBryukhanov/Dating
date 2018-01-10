@@ -68,8 +68,6 @@ class Filter extends  Component{
            (this.state.filter.gender==user.gender || this.state.filter.gender=="All")&&
             user.roleId== userId)
         return user.id
-              // else
-        // return;
     }
 
   sendMassMessage()

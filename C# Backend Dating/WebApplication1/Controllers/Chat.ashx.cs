@@ -25,8 +25,6 @@ namespace WebApplication1.Controllers
     public class Handler1 : IHttpHandler
     {
 
-        //private DatingContext db = new DatingContext();
-
         //список диалогов(содержит ассоциативный массив с максимальным размером в 2 элемента - клиента, в этом массиве хранится
         //пользователь отправитель с ключом id переписки и тот кому сообщение отправлялось(если он запустил чат и 
         //является клиентом вебсокета)
@@ -71,7 +69,6 @@ namespace WebApplication1.Controllers
                 {
                     dialogClients = Dialogs[authDate.dialogid];
                 }
-               // if (dialogClients.Count() < 2)//Если клиента 2 значит все клиенты в сети и нет смысла что-либо добавлять
                 {
                     if (!Dialogs.ContainsKey(authDate.dialogid))
                     {
