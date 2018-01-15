@@ -22,22 +22,22 @@ namespace WebApplication1.Controllers
 
 
         // GET: api/LikeLists/5
-        [ResponseType(typeof(LikeList))]
-        public IHttpActionResult GetLikeList(int id)
-         {
-            CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
-            if (!CheckAccess.IsAccess(cookie, id, "User"))
-                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
+        //[ResponseType(typeof(LikeList))]
+        //public IHttpActionResult GetLikeList(int id)
+        // {
+        //    CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
+        //    if (!CheckAccess.IsAccess(cookie, id, "User"))
+        //        return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
-            List<LikeList> likeList = db.LikeList.Where(x => x.from == id ||
-                                                             x.to == id).ToList();
-            if (likeList == null)
-            {
-                return NotFound();
-            }
+        //    List<LikeList> likeList = db.LikeList.Where(x => x.from == id ||
+        //                                                     x.to == id).ToList();
+        //    if (likeList == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return Ok(likeList);
-        }
+        //    return Ok(likeList);
+        //}
 
      
 

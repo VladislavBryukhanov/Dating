@@ -236,7 +236,7 @@ class MyProfile extends  Component{
      return(response.json());
    })
    .then(result => {
-     console.log(result);
+     // console.log(result);
      this.props.DispatchAddAvatar(result);
 
      var myAva=Object.assign({},this.state.user.avatar);

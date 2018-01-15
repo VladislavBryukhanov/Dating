@@ -1,22 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import registerServiceWorker from './registerServiceWorker';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux'
 import "bootstrap/dist/css/bootstrap.min.css";
-import { BrowserRouter, Route, Link, Router, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import App from './App';
 import Menu from './Menu';
 
-import Avatar from './Reducers/Avatar.js';
-import Dialog from './Reducers/Dialog.js';
-import Favorites from './Reducers/Favorites.js';
-import Likes from './Reducers/Likes.js';
-import Messages from './Reducers/Messages.js';
-import Roles from './Reducers/Roles.js';
-import Users from './Reducers/Users.js';
+// import Avatar from './Reducers/Avatar.js';
+// import Dialog from './Reducers/Dialog.js';
+// import Favorites from './Reducers/Favorites.js';
+// import Likes from './Reducers/Likes.js';
+// import Messages from './Reducers/Messages.js';
+// import Roles from './Reducers/Roles.js';
+// import Users from './Reducers/Users.js';
 
 var serverAddress="localhost:59088";
 var store;
@@ -31,6 +30,12 @@ var store;
 
 		var initialState={
 			Url:{
+				"GetUsers":"ws://"+serverAddress+"/Controllers/GetUsers.ashx",
+
+				"GetDialogList":"ws://"+serverAddress+"/Controllers/GetDialogList.ashx",
+				"GetLikes":"ws://"+serverAddress+"/Controllers/GetLikes.ashx",
+				"GetGuests":"ws://"+serverAddress+"/Controllers/GetGuests.ashx",
+
 				"MessageSocket":"ws://"+serverAddress+"/Controllers/Chat.ashx",
 				"AuthSocket":"ws://"+serverAddress+"/Controllers/OnlineStatusChecker.ashx",
 
@@ -43,7 +48,7 @@ var store;
 				"Messages":"http://"+serverAddress+"/api/Dialogs",
 				"Hobby":"http://"+serverAddress+"/api/Hobbies",
 				"Authorize":"http://"+serverAddress+"/api/Authentific",
-				"Gallery":"http://"+serverAddress+"/api/Galleries",
+				// "Gallery":"http://"+serverAddress+"/api/Galleries",
 				"Users":"http://"+serverAddress+"/api/SiteUsers",
 				"Gallery":"http://"+serverAddress+"/api/Galleries"
 			},

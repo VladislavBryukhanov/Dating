@@ -34,7 +34,7 @@ class MyMenu extends  Component{
       dialog:null,
       selectedDialogs: [],
       ShowDialogForm: false
-    }
+      }
       this.logOut=this.logOut.bind(this);
       this.showDialogForm=this.showDialogForm.bind(this);
       this.loadDialogList=this.loadDialogList.bind(this);
@@ -45,29 +45,26 @@ class MyMenu extends  Component{
 
       this.userInterface=this.userInterface.bind(this);
       this.adminInterface=this.adminInterface.bind(this);
-      this.unauthorizedInterface=this.unauthorizedInterface.bind(this);
   }
 
-  componentWillReceiveProps(nextProps){
-    if(this.props.Store.myPage!=null && ((nextProps.Store.myDialogList.length!=this.props.Store.myDialogList.length
-                                     && nextProps.Store.myDialogList!=undefined)
-                                     || this.state.dialogList==null )){//this.state.dialogList==null){
-      console.log("run");
+  componentWillReceiveProps(nextProps){//Проверяем был ли обновлен список диалогов, если да то перерисем форму
+    if(nextProps.Store.myDialogList.length!=this.props.Store.myDialogList.length
+                                      && nextProps.Store.myDialogList!=undefined)
+      this.setState({dialogList: null});
+  }
+  componentDidReceiveProps(){
+    if(this.props.Store.myPage!=null &&  this.state.dialogList==null ){
       this.loadDialogList();
     }
   }
-
   componentWillMount(){
-      console.log("LoadMenu");
       if(this.props.Store.myPage!=null){
-          //Грузим список наших дилогов в стор
           const cookies = new Cookies();
           if (cookies.get('UserSession').roleId!=this.getRoleId("Banned"))
               this.loadDialogList();
     }
   }
   onSelectDialogChanged(e, dialog){
-    console.log(dialog);
     var newState=this.state.selectedDialogs;
     if(e.target.checked)
       newState[newState.length]=dialog.id;
@@ -76,39 +73,39 @@ class MyMenu extends  Component{
     this.setState({selectedDialogs: newState})
   }
   loadDialogList(){
-    fetch(this.props.Store.Url["DialogList"]+"/"+this.props.Store.myPage.id,{credentials: 'include'})//Не безопасно, т к любой юзер сможет читать сообщения подставив эти значения в урл
-    .then(function(response){
-     return(response.json());
-   })
-    .then(result => {
-      this.props.DispatchLoadDialogList(result);
-
+   //  fetch(this.props.Store.Url["DialogList"]+"/"+this.props.Store.myPage.id,{credentials: 'include'})//Не безопасно, т к любой юзер сможет читать сообщения подставив эти значения в урл
+   //  .then(function(response){
+   //   return(response.json());
+   // })
+   //  .then(result => {
+   //    this.props.DispatchLoadDialogList(result);
+      console.log(this.props.Store.myDialogList.length);
       var list=this.props.Store.myDialogList.map(function(dialogs){
-      var user;
-      var otherUserId;
-      if(dialogs.firstUserId==this.props.Store.myPage.id)
-        otherUserId=dialogs.secondUserId;
-      else
-        otherUserId=dialogs.firstUserId;
-      user=this.props.Store.users.filter(x=>x.id==otherUserId)[0];//[0] потому что такое значение будет только 1 в массиве
+        var user;
+        var otherUserId;
+        if(dialogs.firstUserId==this.props.Store.myPage.id)
+          otherUserId=dialogs.secondUserId;
+        else
+          otherUserId=dialogs.firstUserId;
+        user=this.props.Store.users.filter(x=>x.id==otherUserId)[0];//[0] потому что такое значение будет только 1 в массиве
 
-      var isOnline="Offline";
-      if(user.online)
-        isOnline="Online";
+        var isOnline="Offline";
+        if(user.online)
+          isOnline="Online";
 
-      if(user==undefined){
-        user={};
-        user.avatar={};
-        user.avatar.base64=this.props.Store.avatar.filter(x=>x.siteUserId==0)[0].base64;
-      }
-      return <div class="DialogBody">
-                <input onChange={(e)=>{this.onSelectDialogChanged(e, dialogs)}} type="checkbox"/>
-                <div class="Dialog" onClick={()=>{this.onOpenDialog(dialogs)}}>
-                    <img height="50px" src={user.avatar.base64}/>
-                    {user.name}
-                    <div class={isOnline}></div>
-                </div>
-             </div>
+        if(user==undefined){
+          user={};
+          user.avatar={};
+          user.avatar.base64=this.props.Store.avatar.filter(x=>x.siteUserId==0)[0].base64;
+        }
+        return <div class="DialogBody">
+                  <input onChange={(e)=>{this.onSelectDialogChanged(e, dialogs)}} type="checkbox"/>
+                  <div class="Dialog" onClick={()=>{this.onOpenDialog(dialogs)}}>
+                      <img height="50px" src={user.avatar.base64}/>
+                      {user.name}
+                      <div class={isOnline}></div>
+                  </div>
+               </div>
         }.bind(this))
         list= <div class="DialogList">
                   <img class="CloseDialogList" src={Exit} onClick={()=>{this.setState({ShowDialogForm:false});
@@ -119,12 +116,13 @@ class MyMenu extends  Component{
                   {list}
               </div>
         this.setState({dialogList: list});
-    });
+    // });
   }
 
   logOut(){
     const cookies = new Cookies();
     cookies.remove('UserSession');
+
     this.props.ownProps.history.push('/');
     window.location.reload();
   }
@@ -150,7 +148,7 @@ class MyMenu extends  Component{
             this.props.DispatchRemoveDialog(id);
           }.bind(this))
         }
-        this.setState({selectedDialogs:null});
+        this.setState({selectedDialogs:[]});
       })
     }
 
@@ -201,8 +199,12 @@ class MyMenu extends  Component{
         return this.state.dialog;
     }
   }
-  unauthorizedInterface(){
-    return <App withoutGUI={true}/>
+  unauthorisedInterface(){
+    const cookies = new Cookies();
+    if(cookies.get('UserSession')!=undefined)
+      return <App withoutGUI={true}/>
+    else
+      return <App/>
   }
   bannedInterface(){
     return <div>
@@ -390,7 +392,7 @@ class MyMenu extends  Component{
   }
   render(){
     if(this.props.Store.myPage==null )//Если не все данные были загружены или мы не авторизировались, то ожидаем загрузки
-        return this.unauthorizedInterface();
+        return this.unauthorisedInterface();
     const cookies = new Cookies();
     if(cookies.get('UserSession').roleId==this.getRoleId("Admin") || cookies.get('UserSession').roleId==this.getRoleId("Moder"))
       return this.adminInterface();
@@ -407,9 +409,9 @@ export default connect(
     })
     ,
     dispatch => ({
-      DispatchLoadDialogList:(dl)=>{
-        dispatch({type:'LoadDialogList', DialogList: dl});
-      },
+      // DispatchLoadDialogList:(dl)=>{
+      //   dispatch({type:'LoadDialogList', DialogList: dl});
+      // },
       DispatchRemoveDialog:(dl)=>{
         dispatch({type:"RemoveDialog", RemoveDialog:dl});
       }

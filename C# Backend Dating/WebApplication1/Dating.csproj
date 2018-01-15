@@ -264,6 +264,18 @@
     <Compile Include="Controllers\DialogsController.cs" />
     <Compile Include="Controllers\FriendListsController.cs" />
     <Compile Include="Controllers\GalleriesController.cs" />
+    <Compile Include="Controllers\GetDialogList.ashx.cs">
+      <DependentUpon>GetDialogList.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\GetGuests.ashx.cs">
+      <DependentUpon>GetGuests.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\GetLikes.ashx.cs">
+      <DependentUpon>GetLikes.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\GetUsers.ashx.cs">
+      <DependentUpon>GetUsers.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\GuestListsController.cs" />
     <Compile Include="Controllers\Chat.ashx.cs">
       <DependentUpon>Chat.ashx</DependentUpon>
@@ -287,6 +299,7 @@
     <Compile Include="Models\DatingContext.cs" />
     <Compile Include="Models\Dialog.cs" />
     <Compile Include="Models\DialogList.cs" />
+    <Compile Include="Models\Filter.cs" />
     <Compile Include="Models\FriendList.cs" />
     <Compile Include="Models\Gallery.cs" />
     <Compile Include="Models\GuestList.cs" />
@@ -338,6 +351,10 @@
     </Content>
     <Content Include="Controllers\Chat.ashx" />
     <Content Include="Controllers\OnlineStatusChecker.ashx" />
+    <Content Include="Controllers\GetUsers.ashx" />
+    <Content Include="Controllers\GetGuests.ashx" />
+    <Content Include="Controllers\GetLikes.ashx" />
+    <Content Include="Controllers\GetDialogList.ashx" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -375,6 +392,8 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Authentication\" />
+    <Folder Include="UserFiles\Avatars\" />
+    <Folder Include="UserFiles\Gallery\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

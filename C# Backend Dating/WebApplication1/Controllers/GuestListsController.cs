@@ -23,21 +23,21 @@ namespace WebApplication1.Controllers
  
 
         // GET: api/GuestLists/5
-        [ResponseType(typeof(GuestList))]
-        public IHttpActionResult GetGuestList(int id)
-        {
-            CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
-            if (!CheckAccess.IsAccess(cookie, id, "User"))
-                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
+        //[ResponseType(typeof(GuestList))]
+        //public IHttpActionResult GetGuestList(int id)
+        //{
+        //    CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
+        //    if (!CheckAccess.IsAccess(cookie, id, "User"))
+        //        return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
-            List<GuestList> guestList = db.Guests.Where(x => x.to == id).ToList();
-            if (guestList == null)
-            {
-                return NotFound();
-            }
+        //    List<GuestList> guestList = db.Guests.Where(x => x.to == id).ToList();
+        //    if (guestList == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return Ok(guestList);
-        }
+        //    return Ok(guestList);
+        //}
 
   
         // POST: api/GuestLists
@@ -54,10 +54,7 @@ namespace WebApplication1.Controllers
                 return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
             GuestList guest = db.Guests.FirstOrDefault(x => x.who == newGuest.who &&
-                                                            x.to == newGuest.to
-                                                            ||
-                                                            x.who == newGuest.to &&
-                                                            x.to == newGuest.who);
+                                                            x.to == newGuest.to);
             if(guest==null)
             {
                 newGuest.count = 1;

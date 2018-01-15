@@ -89,13 +89,13 @@ namespace WebApplication1.Controllers
                 return "Access denied!";
 
 
-            object resp = new { siteUser.id, siteUser.roleId, siteUser.sessionId };
-            return resp;
+            //object resp = new { siteUser.id, siteUser.roleId, siteUser.sessionId };
+            return siteUser;
         }
         
         public object GetAccess()
         {
-            SiteUser siteUser=new SiteUser();
+            SiteUser siteUser=null;
             CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
             if (cookie != null)
             {
@@ -107,8 +107,9 @@ namespace WebApplication1.Controllers
 
             }
             if (siteUser != null)
-                return new { siteUser.id, siteUser.roleId, siteUser.sessionId };
-            else 
+                return siteUser;
+                //return new { siteUser.id, siteUser.roleId, siteUser.sessionId };
+            else
                 return "Access denied!"; 
         }
        

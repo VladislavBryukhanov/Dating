@@ -21,22 +21,22 @@ namespace WebApplication1.Controllers
         private DatingContext db = new DatingContext();
 
 
-        // GET: api/DialogLists/5
-        [ResponseType(typeof(DialogList))]
-        public IHttpActionResult GetDialogList(int id)
-        {
-            CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
-            if (!CheckAccess.IsAccess(cookie, id, "User"))
-                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
+        //// GET: api/DialogLists/5
+        //[ResponseType(typeof(DialogList))]
+        //public IHttpActionResult GetDialogList(int id)
+        //{
+        //    CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
+        //    if (!CheckAccess.IsAccess(cookie, id, "User"))
+        //        return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
-            List<DialogList> dialogList = db.DialogLists.Where(x=>x.firstUserId==id || x.secondUserId==id).ToList();
-            if (dialogList == null)
-            {
-                return NotFound();
-            }
+        //    List<DialogList> dialogList = db.DialogLists.Where(x=>x.firstUserId==id || x.secondUserId==id).ToList();
+        //    if (dialogList == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return Ok(dialogList);
-        }
+        //    return Ok(dialogList);
+        //}
 
 
         // POST: api/DialogLists

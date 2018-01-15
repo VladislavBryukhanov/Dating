@@ -8,15 +8,15 @@ class MyLikes extends  Component{
     this.showUsers=this.showUsers.bind(this);
   }
 
-  getLikeList(){
-    fetch(this.props.Store.Url["LikeList"]+"/"+this.props.Store.myPage.id,{credentials: 'include'})
-    .then(function(response){
-     return(response.json());
-    })
-    .then(result => {
-      this.props.DispatchLoadLikeList(result);
-     })
-  }
+  // getLikeList(){
+  //   fetch(this.props.Store.Url["LikeList"]+"/"+this.props.Store.myPage.id,{credentials: 'include'})
+  //   .then(function(response){
+  //    return(response.json());
+  //   })
+  //   .then(result => {
+  //     this.props.DispatchLoadLikeList(result);
+  //    })
+  // }
 
   showUsers(user, answer){
     var now = new Date();

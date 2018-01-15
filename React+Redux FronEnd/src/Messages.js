@@ -89,10 +89,10 @@ class Messages extends Component{
                       msgClass="ToMe";
                    return  <div class={msgClass}>
                                  <p>
-                                 {msg.content}
+                                    {msg.content}
                                  </p>
                                  <span>
-                                 {time}
+                                    {time}
                                  </span>
                            </div>
                  }.bind(this)

@@ -5,25 +5,25 @@ class MyGuests extends  Component{
   constructor(props){
     super(props);
     this.state={
-      guests:[]
+      // guests:[]
     }
-    this.getGuestsList=this.getGuestsList.bind(this);
+    // this.getGuestsList=this.getGuestsList.bind(this);
     this.showGuests=this.showGuests.bind(this);
     this.showUsers=this.showUsers.bind(this);
   }
-componentWillMount(){
-  this.getGuestsList();
-}
+// componentWillMount(){
+//   this.getGuestsList();
+// }
 
-  getGuestsList(){
-    fetch(this.props.Store.Url["GuestsList"]+"/"+this.props.Store.myPage.id, {credentials: 'include'})
-    .then(function(response){
-     return(response.json());
-    })
-    .then(result => {
-      this.setState({guests:result});
-     })
-  }
+  // getGuestsList(){
+  //   fetch(this.props.Store.Url["GuestsList"]+"/"+this.props.Store.myPage.id, {credentials: 'include'})
+  //   .then(function(response){
+  //    return(response.json());
+  //   })
+  //   .then(result => {
+  //     this.setState({guests:result});
+  //    })
+  // }
 
   showUsers(user, guest){
     var now = new Date();
@@ -47,7 +47,7 @@ componentWillMount(){
             </div>
   }
   showGuests(user){
-  return  this.state.guests.map(function(guest){
+  return  this.props.Store.guests.map(function(guest){
               if(guest.who==user.id)
                 return this.showUsers(user, guest)
               }.bind(this)
