@@ -17,7 +17,7 @@ class Users extends  Component{
   }
   onRoleChange(e,user){
     var getUser=this.state.users;
-    getUser.filter(x=>x==user)[0].roleId=this.props.Store.roles.filter(x=> x.roleName==e.target.value)[0].id;
+    getUser.filter(x=>x==user)[0].roleid=this.props.Store.roles.filter(x=> x.roleName==e.target.value)[0].id;
     this.setState({users: getUser});
   }
   getRoleList(){
@@ -26,7 +26,7 @@ class Users extends  Component{
       })
   }
   adminInterface(user){
-    var roleAssoc=this.props.Store.roles.filter(x=> x.id==user.roleId)[0].roleName;
+    var roleAssoc=this.props.Store.roles.filter(x=> x.id==user.roleid)[0].roleName;
     return <tr>
                 <td>
                    <img width="50px" src={user.avatar.base64}
@@ -43,7 +43,7 @@ class Users extends  Component{
            </tr>
   }
   moderInterface(user){
-    var roleAssoc=this.props.Store.roles.filter(x=> x.id==user.roleId)[0].roleName;
+    var roleAssoc=this.props.Store.roles.filter(x=> x.id==user.roleid)[0].roleName;
     return <tr key={user.id}>
                 <td>
                    <img width="50px" src={user.avatar.base64}
@@ -102,9 +102,9 @@ class Users extends  Component{
                 <tbody>
                  {
                      this.state.users.map(function(user){
-                     if(cookies.get('UserSession').roleId==this.props.Store.roles.filter(x=> x.roleName=="Admin")[0].id)
+                     if(cookies.get('UserSession').roleid==this.props.Store.roles.filter(x=> x.roleName=="Admin")[0].id)
                        return this.adminInterface(user);
-                     else if (cookies.get('UserSession').roleId==this.props.Store.roles.filter(x=> x.roleName=="Moder")[0].id)
+                     else if (cookies.get('UserSession').roleid==this.props.Store.roles.filter(x=> x.roleName=="Moder")[0].id)
                       return this.moderInterface(user);
                      }.bind(this)
                    )
@@ -120,9 +120,6 @@ export default connect(
       ownProps
     }),
     dispatch => ({
-      DispatchMyPage:(user)=>{
-        dispatch({type:'MyPage', Users: user});
-      },
       DispatchEditUser:(user)=>{
         dispatch({type:'EditUser', Users: user});
       },

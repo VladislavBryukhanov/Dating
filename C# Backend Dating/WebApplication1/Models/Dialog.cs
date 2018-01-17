@@ -18,5 +18,9 @@ namespace WebApplication1.Models
         public DateTime time { get; set; }
         public string content { get; set; }
 
+        [ForeignKey("from")]
+        private SiteUser siteUserfrom { get; set; }
+        [ForeignKey("to")]
+        private SiteUser siteUserto { get; set; }
     }
 }

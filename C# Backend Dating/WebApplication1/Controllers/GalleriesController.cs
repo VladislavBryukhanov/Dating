@@ -79,8 +79,8 @@ namespace WebApplication1.Controllers
 
             int siteUserid = gallery[0].siteUserid;//gallery[0].siteUserid -все siteUserid в массиве одинаковы, т к это галлерея 1 пользователся
             string path = HttpContext.Current.Server.MapPath("~")
-                                        + "UserFiles\\Gallery\\"
-                                        + db.SiteUsers.FirstOrDefault(x => x.id == siteUserid).email + "\\";
+                                        + "UserFiles\\"
+                                        + db.SiteUsers.FirstOrDefault(x => x.id == siteUserid).email + "\\Gallery\\";
 
 
             List<Gallery> usersGalleryFromDB = db.Galleries.Where(x => x.siteUserid == siteUserid).ToList();

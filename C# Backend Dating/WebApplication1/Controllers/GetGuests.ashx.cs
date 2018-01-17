@@ -57,10 +57,9 @@ namespace WebApplication1.Controllers
             if (cleanBuffer.Length > 0)
                 id = Convert.ToInt32(Encoding.UTF8.GetString(buffer.Array));
 
-            bool isClosed = false;
             if (clientSocket.State == WebSocketState.Open)
             {
-                Thread closing = new Thread(() => isClosed = GetUsers.close(clientSocket).Result);
+                Thread closing = new Thread(async () => await GetUsers.isClosedConnection(clientSocket));
                 closing.Start();
             }
             while (clientSocket.State == WebSocketState.Open)
@@ -68,10 +67,6 @@ namespace WebApplication1.Controllers
                 //var res = clientSocket.ReceiveAsync(buffer, CancellationToken.None);//Единственный ответ, который мы можем получить- инф о закрытии сокета и => мы завершим его обработку
                 await GetGuestList(context, id);
                 Thread.Sleep(3000);
-            }
-            if (isClosed == true)
-            {
-                clientSocket.Dispose();
             }
         }
         public bool IsReusable

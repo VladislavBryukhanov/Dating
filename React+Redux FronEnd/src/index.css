@@ -582,6 +582,7 @@ height: 100%;
   width: 100%;
 }
 .Gallery{
+  margin-bottom: 4%;
   display: inline-block;
 }
 .Gallery>img{

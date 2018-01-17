@@ -8,9 +8,12 @@ namespace WebApplication1.Models
     public class Avatar
     {
         public int id { get; set; }
-        public int siteUserId { get; set; }
         public string base64 { get; set; }
         public DateTime dateOfChange { get; set; }
         public string confirmState { get; set; }
+
+
+        public int siteUserId { get; set; }
+        private SiteUser siteUser { get; set; }
     }
 }

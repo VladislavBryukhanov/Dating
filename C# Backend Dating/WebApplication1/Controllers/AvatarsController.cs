@@ -96,10 +96,10 @@ namespace WebApplication1.Controllers
         public IHttpActionResult PostAvatar(Avatar avatar)
         {
             string uniqueName = "Ava";//Если у юзера уже была автарака, то новая ава будет называться так, для избежания конфликта имен
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
             CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
             if (!CheckAccess.IsAccess(cookie, avatar.siteUserId, "User"))
                 return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
@@ -123,8 +123,8 @@ namespace WebApplication1.Controllers
             }
 
             string path = HttpContext.Current.Server.MapPath("~") 
-                                                + "UserFiles\\Avatars\\"
-                                                + db.SiteUsers.FirstOrDefault(x => x.id == avatar.siteUserId).email+"\\";
+                                                + "UserFiles\\"
+                                                + db.SiteUsers.FirstOrDefault(x => x.id == avatar.siteUserId).email+ "\\Avatars\\";
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);

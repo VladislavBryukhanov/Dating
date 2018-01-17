@@ -1,13 +1,16 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Link, Route } from 'react-router-dom';
+// import Avatar from './Ava.jpg';
+// import Clock from './Clock.jpg';
+import { getSiteUsers } from './App.js'
 class Filter extends  Component{
   constructor(props){
     super(props);
     this.state={
       user:this.props.Store.myPage,
       onlineFilter:this.props.Store.myPage.onlineFilter,
-      nameFilter:this.props.Store.myPage.nameFilter
+      nameFilter:""//this.props.Store.myPage.nameFilter
     }
     this.onEditUser=this.onEditUser.bind(this);
 
@@ -16,7 +19,7 @@ class Filter extends  Component{
     this.onCityForSearch=this.onCityForSearch.bind(this);
     this.onStatusFilterChange=this.onStatusFilterChange.bind(this);
     this.onFilterNameChange=this.onFilterNameChange.bind(this);
-    this.getUsers=this.getUsers.bind(this);
+    // this.getUsers=this.getUsers.bind(this);
     }
 
 
@@ -42,35 +45,37 @@ class Filter extends  Component{
       this.setState({nameFilter: e.target.value})
     }
 
-    getUsers(){
-      fetch(this.props.Store.Url["Users"])
-                .then(function(response){
-                  return response.json();
-                })
-                .then(function(json){
-                  return(json);
-                })
-                .then(result => {
-                  var user=result;
-                  for(var i=0;i<user.length;i++){
-                    var avatarList=this.props.Store.avatar.filter(x=> x.siteUserId== user[i].id);
-                    var userAvatar=null;
-                    if(avatarList.length!=0){//Если было найдено значение
-                        for(var j=0;j<avatarList.length;j++){
-                          if(avatarList[j].confirmState=="Confirmed")
-                              userAvatar=avatarList[j];//.base64;
-                        }
-                        if(userAvatar==null)
-                            userAvatar=this.props.Store.avatar.filter(x=> x.siteUserId == -1)[0];
-                      }
-                    else//Иначе дефолтное значение с айди 0
-                        userAvatar=  this.props.Store.avatar.filter(x=> x.siteUserId == 0)[0];//.base64;
-                    user[i].avatar=userAvatar;
-                  }
-                  this.props.DispatchLoadUsers(user);
-                  this.props.ownProps.history.push('/HomePage');
-                });
-       }
+    // getUsers(){
+    //   fetch(this.props.Store.Url["Users"])
+    //             .then(function(response){
+    //               return response.json();
+    //             })
+    //             .then(function(json){
+    //               return(json);
+    //             })
+    //             .then(result => {
+    //               var user=result;
+    //               for(var i=0;i<user.length;i++){
+    //                 var avatarList=this.props.Store.avatar.filter(x=> x.siteUserId== user[i].id);
+    //                 var userAvatar=null;
+    //                 if(avatarList.length!=0){//Если было найдено значение
+    //                     for(var j=0;j<avatarList.length;j++){
+    //                       if(avatarList[j].confirmState=="Confirmed")
+    //                           userAvatar=avatarList[j];//.base64;
+    //                     }
+    //                     if(userAvatar==null)
+    //                         userAvatar=this.props.Store.avatar.filter(x=> x.id == "Clock")[0];
+    //                         // userAvatar={base64:Clock};//this.props.Store.avatar.filter(x=> x.siteUserId == -1)[0];
+    //                   }
+    //                 else//Иначе дефолтное значение с айди 0
+    //                     userAvatar=this.props.Store.avatar.filter(x=> x.id== "None")[0];
+    //                     // userAvatar={base64:Avatar};//this.props.Store.avatar.filter(x=> x.siteUserId == 0)[0];//.base64;
+    //                 user[i].avatar=userAvatar;
+    //               }
+    //               this.props.DispatchLoadUsers(user);
+    //               this.props.ownProps.history.push('/HomePage');
+    //             });
+    //    }
   onEditUser(user)
   {
     // console.log(user);
@@ -85,6 +90,8 @@ class Filter extends  Component{
      return(response.json());
    })
    .then(result => {
+
+
      result.avatar=this.props.Store.myPage.avatar;
 
      this.props.DispatchEditUser(result);//Когда уберу конфиденциальную инфу, то можно будет и не обновлять
@@ -92,7 +99,19 @@ class Filter extends  Component{
      result.nameFilter=this.state.nameFilter;
 
      this.props.DispatchMyPage(result);
-     this.getUsers();
+     // this.getUsers();
+
+     var filter={
+       id:result.id,
+       gender:result.gender,
+       genderForSearch:result.genderForSearch,
+       ageForSearch: result.ageForSearch,
+       cityForSearch: result.cityForSearch,
+       nameForSearch: result.nameFilter
+     }
+     console.log(filter);
+     console.log(JSON.stringify(filter));
+     getSiteUsers.send(JSON.stringify(filter));
    })
   }
 

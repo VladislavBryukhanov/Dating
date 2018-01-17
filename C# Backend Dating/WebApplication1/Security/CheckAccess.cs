@@ -21,20 +21,20 @@ namespace WebApplication1.Security
                 SiteUser authDate = JsonConvert.DeserializeObject<SiteUser>(sessionId);
                 siteUser = db.SiteUsers.FirstOrDefault((x) => x.sessionId == authDate.sessionId &&
                                                                 x.id == authDate.id &&
-                                                                x.roleId == authDate.roleId);
+                                                                x.roleid == authDate.roleid);
             }
             if (siteUser != null)
             {
                 if(allowedRole!= "Admin")//Модератор=Админ, но он не имеет доступа к редактированию админской страницы и ролей юзеров(кроме бан/разбан)это исключительно админская привилегия => разграничиваем
                 {
-                    if (siteUser.roleId == db.Roles.FirstOrDefault(x => x.roleName == "Admin").id ||
-                        siteUser.roleId == db.Roles.FirstOrDefault(x => x.roleName == "Moder").id ||
-                        siteUser.roleId == db.Roles.FirstOrDefault(x => x.roleName == allowedRole).id && id == siteUser.id)
+                    if (siteUser.roleid == db.Roles.FirstOrDefault(x => x.roleName == "Admin").id ||
+                        siteUser.roleid == db.Roles.FirstOrDefault(x => x.roleName == "Moder").id ||
+                        siteUser.roleid == db.Roles.FirstOrDefault(x => x.roleName == allowedRole).id && id == siteUser.id)
                         return true;
                     else
                         return false;
                 }
-                else  if (siteUser.roleId == db.Roles.FirstOrDefault(x => x.roleName == "Admin").id)
+                else  if (siteUser.roleid == db.Roles.FirstOrDefault(x => x.roleName == "Admin").id)
                     return true;
                 else
                     return false;

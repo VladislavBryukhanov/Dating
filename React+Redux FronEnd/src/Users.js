@@ -105,7 +105,7 @@ class Users extends  Component{
     return <div>
                  {
                    this.props.Store.users.map(function(user){
-                     if(user.id!=this.props.Store.myPage.id && user.roleId!=Banned){//&& user.roleId== userId  исключаем отображение своего профиля и отображаем только юзеров(админы и модераторы скрыты)
+                     if(user.id!=this.props.Store.myPage.id && user.roleid!=Banned){//&& user.roleid== userId  исключаем отображение своего профиля и отображаем только юзеров(админы и модераторы скрыты)
                            if(this.props.Store.myPage.onlineFilter==true)//проверяем задавали ли мы фильтр поиск по онлайну
                            {
                              if(user.online)

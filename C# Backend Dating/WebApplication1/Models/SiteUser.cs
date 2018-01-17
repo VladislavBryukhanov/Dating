@@ -27,9 +27,12 @@ namespace WebApplication1.Models
         public string genderForSearch { get; set; }
         public string ageForSearch { get; set; }
         public string cityForSearch { get; set; }
-        public int roleId { get; set; }//Admin/moder/user/banned
         public bool online { get; set; }//online/offline
         public string sessionId { get; set; }
         public DateTime dateOfEdit { get; set; }
+
+
+        public int roleid { get; set; }//Admin/moder/user/banned
+        private Roles role { get; set; }
     }
 }

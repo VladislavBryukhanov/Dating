@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.Description;
@@ -89,9 +91,9 @@ namespace WebApplication1.Controllers
                 int AdminId = db.Roles.FirstOrDefault(x => x.roleName == "Admin").id;
                 int ModerId = db.Roles.FirstOrDefault(x => x.roleName == "Moder").id;
 
-                if ((user.roleId == AdminId) || //Запрещаем не админам реактировать админа
-                 ((siteUser.roleId == AdminId || siteUser.roleId == ModerId) && (user.roleId != AdminId && siteUser.roleId != ModerId)) ||//Только админ может дать юзеру дали роль модера или админа
-                 ((siteUser.roleId != AdminId && siteUser.roleId != ModerId) && (user.roleId == AdminId && siteUser.roleId == ModerId)))//Только админ может понизить модера или админа в роли(до юзера или забанить)
+                if ((user.roleid == AdminId) || //Запрещаем не админам реактировать админа
+                 ((siteUser.roleid == AdminId || siteUser.roleid == ModerId) && (user.roleid != AdminId && siteUser.roleid != ModerId)) ||//Только админ может дать юзеру дали роль модера или админа
+                 ((siteUser.roleid != AdminId && siteUser.roleid != ModerId) && (user.roleid == AdminId && siteUser.roleid == ModerId)))//Только админ может понизить модера или админа в роли(до юзера или забанить)
                 {
                     CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
                     if (!CheckAccess.IsAccess(cookie, siteUser.id, "Admin"))
@@ -125,7 +127,8 @@ namespace WebApplication1.Controllers
                 }
             }
         
-            return CreatedAtRoute("DefaultApi", new { id = siteUser.id }, siteUser);
+            ClientUser clientUser = new ClientUser(siteUser);
+            return CreatedAtRoute("DefaultApi", new { id = clientUser.id }, clientUser);
         }
 
         // POST: api/SiteUsers
@@ -141,7 +144,7 @@ namespace WebApplication1.Controllers
                 return BadRequest("Email already exist!");
             }
             siteUser.password = PasswordToMD5(siteUser.password);
-            siteUser.roleId = db.Roles.FirstOrDefault(x=>x.roleName=="User").id;
+            siteUser.roleid = db.Roles.FirstOrDefault(x=>x.roleName=="User").id;
             siteUser.dateOfEdit = DateTime.Now;
             db.SiteUsers.Add(siteUser);
             db.SaveChanges();
@@ -151,7 +154,8 @@ namespace WebApplication1.Controllers
             db.Hobbies.Add(DefaultHobbies);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = siteUser.id }, siteUser);
+            ClientUser clientUser = new ClientUser(siteUser);
+            return CreatedAtRoute("DefaultApi", new { id = clientUser.id }, clientUser);
         }
 
         // DELETE: api/SiteUsers/5
@@ -168,23 +172,31 @@ namespace WebApplication1.Controllers
             if (!CheckAccess.IsAccess(cookie, 0, "Admin"))
                 return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
-            List<Avatar> avatar=db.Avatars.Where(x=>x.siteUserId== id).ToList();
-            List<DialogList> dialogList = db.DialogLists.Where(x => x.firstUserId == id || x.secondUserId == id).ToList();//?
-            List<Dialog> dialogs = db.Dialogs.Where(x => x.from == id || x.to == id).ToList();//?
-            List <FriendList> friends = db.Friends.Where(x => x.who == id || x.with == id).ToList();
-            List <Gallery> gallery = db.Galleries.Where(x => x.siteUserid == id).ToList();
-            List <GuestList> guests = db.Guests.Where(x => x.who == id).ToList();
-            List <Hobby> hobby = db.Hobbies.Where(x => x.siteUserid == id).ToList();
-            List <LikeList> likes = db.LikeList.Where(x => x.from == id || x.to == id).ToList();
+            //List<Avatar> avatar=db.Avatars.Where(x=>x.siteUserId== id).ToList();
+            //List<DialogList> dialogList = db.DialogLists.Where(x => x.firstUserId == id || x.secondUserId == id).ToList();//?
+            //List<Dialog> dialogs = db.Dialogs.Where(x => x.from == id || x.to == id).ToList();//?
+            //List <FriendList> friends = db.Friends.Where(x => x.who == id || x.with == id).ToList();
+            //List <Gallery> gallery = db.Galleries.Where(x => x.siteUserid == id).ToList();
+            //List <GuestList> guests = db.Guests.Where(x => x.who == id).ToList();
+            //List <Hobby> hobby = db.Hobbies.Where(x => x.siteUserid == id).ToList();
+            //List <LikeList> likes = db.LikeList.Where(x => x.from == id || x.to == id).ToList();
 
-            db.Avatars.RemoveRange(avatar);
-            db.DialogLists.RemoveRange(dialogList);
-            db.Dialogs.RemoveRange(dialogs);
-            db.Friends.RemoveRange(friends);
-            db.Galleries.RemoveRange(gallery);
-            db.Guests.RemoveRange(guests);
-            db.Hobbies.RemoveRange(hobby);
-            db.LikeList.RemoveRange(likes);
+            //db.Avatars.RemoveRange(avatar);
+            //db.DialogLists.RemoveRange(dialogList);
+            //db.Dialogs.RemoveRange(dialogs);
+            //db.Friends.RemoveRange(friends);
+            //db.Galleries.RemoveRange(gallery);
+            //db.Guests.RemoveRange(guests);
+            //db.Hobbies.RemoveRange(hobby);
+            //db.LikeList.RemoveRange(likes);
+            //db.SiteUsers.Remove(siteUser);
+            string path = HttpContext.Current.Server.MapPath("~")
+                                            + "UserFiles\\"
+                                            + db.SiteUsers.FirstOrDefault(x => x.id == siteUser.id).email + "\\";
+
+            if (!Directory.Exists(path))
+                Directory.Delete(path, true); //true - если директория не пуста удаляем все ее содержимое
+
             db.SiteUsers.Remove(siteUser);
 
             db.SaveChanges();

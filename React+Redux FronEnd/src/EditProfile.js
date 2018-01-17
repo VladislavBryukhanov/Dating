@@ -213,18 +213,18 @@ class MyProfile extends  Component{
         this.props.DispatchEditAvatar(setOldAva);
       }
       else
-        setOldAva=this.props.Store.avatar.filter(x=> x.siteUserId == 0)[0];
+        setOldAva=this.props.Store.avatar.filter(x=> x.id == "None")[0];
 
       var newPage=Object.assign({},this.state.user);
       newPage.avatar=setOldAva;//Сомнительное действие
       this.props.DispatchEditUser(newPage);
+      console.log(newPage);
       if(this.props.match.params.id==undefined)//Если страница принадлежит нам, а не админ зашел для ее редактирования, то редактируем свою стр в сторе
         this.props.DispatchMyPage(newPage);
         this.setState({user:newPage});
    })
  }
   editAvatar(avatar){
-    console.log(avatar);
     fetch(this.props.Store.Url["Avatar"], {
      method: 'post',
      body: JSON.stringify(avatar),
@@ -244,12 +244,13 @@ class MyProfile extends  Component{
      this.props.DispatchEditAvatar(myAva);
 
      var newPage=Object.assign({},this.state.user);
-     newPage.avatar=this.props.Store.avatar.filter(x=> x.siteUserId== -1)[0];
+     newPage.avatar=this.props.Store.avatar.filter(x=> x.id== "Clock")[0];
      this.props.DispatchEditUser(newPage);
 
+     console.log(newPage);
      if(this.props.match.params.id==undefined)//Если страница принадлежит нам, а не админ зашел для ее редактирования, то редактируем свою стр в сторе
         this.props.DispatchMyPage(newPage);
-        this.setState({user:newPage});
+     this.setState({user:newPage});
      //при изменении (myAva.confirmState или myPage.avatar) объект в сторе тоже изменяется на это значение и
      //диспатч не отработает изменения, а это нарушает логику редакс
      //стоит копировать объекту для значения и отдельно диспатчить их в редакс для отчетности?
@@ -292,7 +293,7 @@ class MyProfile extends  Component{
     if(this.props.match.params.id!=undefined)//Если мы редактируем чью-то страницу, значит мы админ
       ownerOfGal="/"+this.props.match.params.id;//то добавляем роут к галлерее
     var btnGetOldAvatar="";
-    if(this.state.user.avatar.siteUserId==-1)
+    if(this.state.user.avatar.id=="Clock")
       btnGetOldAvatar=<button class="btn btn-danger" onClick={this.onGetOldtAva}>Return to the old avatar</button>
 
     return <form encType="multipart/form-data">

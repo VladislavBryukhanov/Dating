@@ -19,7 +19,7 @@ namespace WebApplication1.Security
     {
         private string[] usersList;
         private int id;
-        private CookieHeaderValue cookie;
+        //private CookieHeaderValue cookie;
         public CustomAuthorizationAttribute( int id, params string[] users)
         {
             this.usersList = users;

@@ -103,7 +103,7 @@ namespace WebApplication1.Controllers
                 SiteUser authDate = JsonConvert.DeserializeObject<SiteUser>(sessionId);
                 siteUser = db.SiteUsers.FirstOrDefault((x) =>   x.sessionId == authDate.sessionId &&
                                                                 x.id == authDate.id &&
-                                                                x.roleId == authDate.roleId);
+                                                                x.roleid == authDate.roleid);
 
             }
             if (siteUser != null)

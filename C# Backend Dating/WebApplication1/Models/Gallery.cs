@@ -14,5 +14,6 @@ namespace WebApplication1.Models
         public int id { get; set; }
         public string content { get; set; }//byte[]
         public int siteUserid { get; set; }
+        private SiteUser siteUser { get; set; }
     }
 }

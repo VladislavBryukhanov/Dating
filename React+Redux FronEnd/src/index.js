@@ -6,6 +6,9 @@ import {createStore} from 'redux'
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
+import Avatar from './Ava.jpg';
+import Clock from './Clock.jpg';
+
 import App from './App';
 import Menu from './Menu';
 
@@ -27,6 +30,8 @@ var store;
 		return(json);
 	})
   .then(result => {
+		result.push({base64:Clock, id:"Clock"});
+		result.push({base64:Avatar, id:"None"})
 
 		var initialState={
 			Url:{

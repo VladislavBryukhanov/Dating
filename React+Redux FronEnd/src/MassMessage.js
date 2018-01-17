@@ -66,7 +66,7 @@ class Filter extends  Component{
            (user.city==this.state.filter.cityForSearch || this.state.filter.cityForSearch=="All") &&
            ((age>=from && age<=to) || this.state.filter.ageForSearch=="All") &&
            (this.state.filter.gender==user.gender || this.state.filter.gender=="All")&&
-            user.roleId== userId)
+            user.roleid== userId)
         return user.id
     }
 

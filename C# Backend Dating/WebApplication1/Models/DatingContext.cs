@@ -8,9 +8,17 @@ namespace WebApplication1.Models
 {
     public class DatingContext : DbContext
     {
-        public DatingContext() : base("DatingContext")
-        {
-        }
+        //private IDatabaseInitializer<DatingContext> Initialize()
+        //{
+        //    DatingContext db = new DatingContext();
+        //    db.Roles.Add(new Roles{rolename= "Admin"});
+        //    db.SaveChanges();
+        //    return db;
+        //}
+        //public DatingContext() : base("DatingContext")
+        //{
+        //    Database.SetInitializer<DatingContext>(Initialize())
+        //}
         public DbSet<Dialog > Dialogs { get; set; }
         public DbSet<DialogList> DialogLists { get; set; }
         public DbSet<SiteUser> SiteUsers { get; set; }

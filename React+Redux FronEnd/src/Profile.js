@@ -49,9 +49,9 @@ constructor(props){
             'Content-Type': 'application/json;charset=utf-8'
             },
             credentials: 'include'
-        })
+      })
     }
-    if(this.props.Store.users.filter(x=>x.id==this.props.match.params.id)[0].roleId==this.getRoleId("Banned"))
+    if(this.props.Store.users.filter(x=>x.id==this.props.match.params.id)[0].roleid==this.getroleid("Banned"))
         this.setState({banBtn:"Reject ban"});
     //находит диалог с этим пользователем или создает новый
     //Получаем из списка всех наших диалогов только тот, который проводился между нашим и этим пользователем
@@ -92,34 +92,34 @@ constructor(props){
     }
     return response
   }
-  getRoleId(role){
+  getroleid(role){
     return this.props.Store.roles.filter(x=> x.roleName==role)[0].id
   }
 
   onBanUser(user)
     {
-          if(user.roleId==this.getRoleId("Banned"))
-              user.roleId=this.getRoleId("User");
-          else
-              user.roleId=this.getRoleId("Banned");
+        if(user.roleid==this.getroleid("Banned"))
+            user.roleid=this.getroleid("User");
+        else
+            user.roleid=this.getroleid("Banned");
 
-          fetch(this.props.Store.Url["Users"], {
-           method: 'put',
-           body: JSON.stringify(user),
-           headers: {
-           'Content-Type': 'application/json;charset=utf-8'
-           },
-           credentials: 'include'
-          }).then(function(response){
-           return(response.json());
-          })
-         .then(result => {
-           this.props.DispatchEditUser(user);
-           if(result.roleId==this.getRoleId("Banned"))
-              this.setState({banBtn:"Reject ban"});
-           else
-              this.setState({banBtn:"Ban user"});
-           })
+        fetch(this.props.Store.Url["Users"], {
+         method: 'put',
+         body: JSON.stringify(user),
+         headers: {
+         'Content-Type': 'application/json;charset=utf-8'
+         },
+         credentials: 'include'
+        }).then(function(response){
+         return(response.json());
+        })
+       .then(result => {
+         this.props.DispatchEditUser(user);
+         if(result.roleid==this.getroleid("Banned"))
+            this.setState({banBtn:"Reject ban"});
+         else
+            this.setState({banBtn:"Ban user"});
+         })
     }
   onLike(){
     fetch(this.props.Store.Url["LikeList"], {
@@ -255,94 +255,101 @@ onRejectAva(){
 }
 showUserProfile(){//отображения профиля для юзера
 return    this.props.Store.users.map(function(user){
-          var userInterface= "";
-          if(user.id!=this.props.Store.myPage.id){
-            userInterface=<div class="UI">
-                            <button class="btn btn-primary" onClick={()=>{this.props.msg(this.state.currentDialog)}}>Send Message</button>
-                            <button class="btn btn-success" onClick={this.onLike}>{this.state.likeBtnName}</button>
-                            <button class="btn btn-warning" onClick={this.onFavorite}>{this.state.favBtnName}</button>
-                          </div>
-          }
-          else{
-                userInterface= <div class="ChangeAva">
-                                      {
-                                          this.props.Store.avatar.map(function(ava){
-                                            if(ava.confirmState=="PrevAva" && ava.siteUserId==this.props.match.params.id){
-                                              return  <div>
-                                                        <img class="PrevAva" height="90px" src={ava.base64}/>
-                                                        <img height="40px" src={Next}/>
-                                                      </div>
-                                            }
-                                          }.bind(this))
-                                       }
-                                       {
+  if(user.id==this.props.match.params.id){
+        var userInterface= "";
+        if(user.id!=this.props.Store.myPage.id){
+          userInterface=<div class="UI">
+                          <button class="btn btn-primary" onClick={()=>{this.props.msg(this.state.currentDialog)}}>Send Message</button>
+                          <button class="btn btn-success" onClick={this.onLike}>{this.state.likeBtnName}</button>
+                          <button class="btn btn-warning" onClick={this.onFavorite}>{this.state.favBtnName}</button>
+                        </div>
+        }
+        else{
+              userInterface= <div class="ChangeAva">
+                                    {
                                         this.props.Store.avatar.map(function(ava){
-                                          if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
+                                          if(ava.confirmState=="PrevAva" && ava.siteUserId==this.props.match.params.id){
                                             return  <div>
-                                                        <img class="NewAva" height="90px" src={ava.base64}/>
+                                                      <img class="PrevAva" height="90px" src={ava.base64}/>
+                                                      <img height="40px" src={Next}/>
                                                     </div>
                                           }
                                         }.bind(this))
-                                       }
-                                  </div>
-          }
-          var status="Offline";
-          if(user.online)
-              status="Online";
+                                     }
+                                     {
+                                      this.props.Store.avatar.map(function(ava){
+                                        if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
+                                          return  <div>
+                                                      <img class="NewAva" height="90px" src={ava.base64}/>
+                                                  </div>
+                                        }
+                                      }.bind(this))
+                                     }
+                                </div>
+        }
+        var status="Offline";
+        if(user.online)
+            status="Online";
 
-          var now = new Date();
-          var age;
-          age=parseInt(user.birthDay.split('-')[0]);
-          age=parseInt(now.getFullYear())-age;
-          if(user.id==this.props.match.params.id){
-            return <div class="Profile">
-                      <div class="BodyLeft">
-                        <img class="Ava" height="100px" src={user.avatar.base64}/>
-                        {userInterface}
-                        <div class="Gallery">
-                            {
-                              this.state.Gallery.map(function(img){
-                                    return <img height="100px" src={img.content}/>
-                              }.bind(this))
-                            }
-                        </div>
-                      </div>
+        var now = new Date();
+        var birth = new Date(user.birthDay.split('-')[0],user.birthDay.split('-')[1]-1,user.birthDay.split('-')[2].split('T')[0] );
+        // var birth = new Date(user.birthDay.split('-')[0]).toDateString("yyyy-MM-dd");
+        var year=now.getFullYear()-birth.getFullYear();
+        var month=now.getMonth()-birth.getMonth();
+        var day=now.getDate()-birth.getDate();
+        if(day<=0)
+          month--;
+        if(month<0)
+          year--;
+        var age=parseInt(year);
 
-                      <div class="BodyRight">
-                        <p class="MainData">{user.name}, {age} years old</p>
-                        <p>{user.welcome}</p>
-                        <p>  <div class={status}></div>{status}</p>
-
-                        <p class="MainData">My hobbies</p>
-                        <ul>
+        return <div class="Profile">
+                  <div class="BodyLeft">
+                    <img class="Ava" height="100px" src={user.avatar.base64}/>
+                    {userInterface}
+                    <div class="Gallery">
                         {
-                          this.getHobby().map(function(hobby){
-                            return hobby;
-                          })
+                          this.state.Gallery.map(function(img){
+                                return <img height="100px" src={img.content}/>
+                          }.bind(this))
                         }
-                        </ul>
+                    </div>
+                  </div>
 
-                        <p class="MainData">More information about {user.name}</p>
-                        <table class="table table-striped">
-                          <tbody>
-                            <tr>
-                                <td>Gender: {user.gender}</td>
-                                <td>Education: {user.education}</td>
-                            </tr>
-                            <tr>
-                                <td>Weight: {user.weight}</td>
-                                <td>Height: {user.height}</td>
-                            </tr>
-                            <tr>
-                                <td>City: {user.city}</td>
-                                <td>Age: {age} years old</td>
-                            </tr>
-                          </tbody>
-                        </table>
+                  <div class="BodyRight">
+                    <p class="MainData">{user.name}, {age} years old</p>
+                    <p>{user.welcome}</p>
+                    <p>  <div class={status}></div>{status}</p>
 
-                      </div>
-                   </div>
+                    <p class="MainData">My hobbies</p>
+                    <ul>
+                    {
+                      this.getHobby().map(function(hobby){
+                        return hobby;
+                      })
+                    }
+                    </ul>
 
+                    <p class="MainData">More information about {user.name}</p>
+                    <table class="table table-striped">
+                      <tbody>
+                        <tr>
+                            <td>Gender: {user.gender}</td>
+                            <td>Education: {user.education}</td>
+                        </tr>
+                        <tr>
+                            <td>Weight: {user.weight}</td>
+                            <td>Height: {user.height}</td>
+                        </tr>
+                        <tr>
+                            <td>City: {user.city}</td>
+                            <td>Age: {age} years old</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                  </div>
+               </div>
           }
         }.bind(this)
       )
@@ -350,113 +357,126 @@ return    this.props.Store.users.map(function(user){
 showAdminProfile(){//отображение профиля для админа
 
     return    this.props.Store.users.map(function(user){
-              var adminInterface="";
-              if(user.id!=this.props.Store.myPage.id &&
-                ( this.props.Store.myPage.roleId!=this.getRoleId("Moder") || user.roleId!=this.getRoleId("Admin") ))
-                adminInterface=<div>
-                                  <button class="btn btn-primary" onClick={()=>{this.props.msg(this.state.currentDialog)}}>Start chat</button>
-                                  <button class="btn btn-success" onClick={this.onLike}>{this.state.likeBtnName}</button>
-                                  <button class="btn btn-warning" onClick={this.onFavorite}>{this.state.favBtnName}</button>
-                                  <button class="btn btn-light" onClick={()=>{this.props.ownProps.history.push('/HomePage/EditProfile/'+this.props.match.params.id);}}>Edit user</button>
-                                  <button class="btn btn-danger" onClick={()=>{this.onBanUser(user);}}>{this.state.banBtn}</button>
-                              </div>
-              //Запрещаем модератору банить и/или редактировать профиль администратора
-              else if(user.id!=this.props.Store.myPage.id &&
-                (this.props.Store.myPage.roleId==this.getRoleId("Moder") && user.roleId==this.getRoleId("Admin")))
-                adminInterface=<div>
-                                  <button onClick={()=>{this.props.msg(this.state.currentDialog)}}>Start chat</button>
-                                  <button onClick={this.onLike}>{this.state.likeBtnName}</button>
-                                  <button onClick={this.onFavorite}>{this.state.favBtnName}</button>
-                              </div>
+      if(user.id==this.props.match.params.id){
+          console.log("Test");
+          var adminInterface="";
+          if(user.id!=this.props.Store.myPage.id &&
+          ( this.props.Store.myPage.roleid!=this.getroleid("Moder") || user.roleid!=this.getroleid("Admin") ))
+            adminInterface=<div>
+                              <button class="btn btn-primary" onClick={()=>{this.props.msg(this.state.currentDialog)}}>Start chat</button>
+                              <button class="btn btn-success" onClick={this.onLike}>{this.state.likeBtnName}</button>
+                              <button class="btn btn-warning" onClick={this.onFavorite}>{this.state.favBtnName}</button>
+                              <button class="btn btn-light" onClick={()=>{this.props.ownProps.history.push('/HomePage/EditProfile/'+this.props.match.params.id);}}>Edit user</button>
+                              <button class="btn btn-danger" onClick={()=>{this.onBanUser(user);}}>{this.state.banBtn}</button>
+                          </div>
+          //Запрещаем модератору банить и/или редактировать профиль администратора
+          else if(user.id!=this.props.Store.myPage.id &&
+          (this.props.Store.myPage.roleid==this.getroleid("Moder") && user.roleid==this.getroleid("Admin")))
+            adminInterface=<div>
+                              <button onClick={()=>{this.props.msg(this.state.currentDialog)}}>Start chat</button>
+                              <button onClick={this.onLike}>{this.state.likeBtnName}</button>
+                              <button onClick={this.onFavorite}>{this.state.favBtnName}</button>
+                          </div>
+
+          var dateOfAvaChange="None";
+          if(user.avatar.dateOfChange!=undefined)
+            dateOfAvaChange=user.avatar.dateOfChange.split('T')[0]
+          var status="Offline";
+          if(user.online)
+              status="Online";
+
+          var now = new Date();
+          var birth = new Date(user.birthDay.split('-')[0],user.birthDay.split('-')[1]-1,user.birthDay.split('-')[2].split('T')[0] );
+          // var birth = new Date(user.birthDay.split('-')[0]).toDateString("yyyy-MM-dd");
+          var year=now.getFullYear()-birth.getFullYear();
+          var month=now.getMonth()-birth.getMonth();
+          var day=now.getDate()-birth.getDate();
+          if(day<=0)
+            month--;
+          if(month<0)
+            year--;
+          var age=parseInt(year);
+          // age=parseInt(user.birthDay.split('-')[0]);
+          // age=parseInt(now.getFullYear())-age;
+
+          return <div class="Profile">
+                    <div class="BodyLeft">
+                      <img class="Ava" height="100px" src={user.avatar.base64}/>
+                      {adminInterface}
+                      <div class="Gallery">
+                          {
+                            this.state.Gallery.map(function(img){
+                                  return <img height="100px" src={img.content}/>
+                            }.bind(this))
+                          }
+                      </div>
+                    </div>
 
 
-                              var status="Offline";
-                              if(user.online)
-                                  status="Online";
+                    <div class="BodyRight">
+                      <p class="MainData">{user.name}, {age} years old</p>
+                      <p>{user.welcome}</p>
+                      <p>  <div class={status}></div>{status}</p>
 
-                              var now = new Date();
-                              var age;
-                              age=parseInt(user.birthDay.split('-')[0]);
-                              age=parseInt(now.getFullYear())-age;
-                              if(user.id==this.props.match.params.id){
-                                return <div class="Profile">
-                                          <div class="BodyLeft">
-                                            <img class="Ava" height="100px" src={user.avatar.base64}/>
-                                            {adminInterface}
-                                            <div class="Gallery">
-                                                {
-                                                  this.state.Gallery.map(function(img){
-                                                        return <img height="100px" src={img.content}/>
-                                                  }.bind(this))
-                                                }
+                      <p class="MainData">My hobbies</p>
+                      <ul>
+                      {
+                        this.getHobby().map(function(hobby){
+                          return hobby;
+                        })
+                      }
+                      </ul>
+
+                      <p class="MainData">More information about {user.name}</p>
+                      <table class="table table-striped">
+                        <tbody>
+                          <tr>
+                              <td>Gender: {user.gender}</td>
+                              <td>Education: {user.education}</td>
+                          </tr>
+                          <tr>
+                              <td>Weight: {user.weight}</td>
+                              <td>Height: {user.height}</td>
+                          </tr>
+                          <tr>
+                              <td>City: {user.city}</td>
+                              <td>Age: {age} years old</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <p>Date of Edit: {user.dateOfEdit.split('T')[0]}</p>
+                      <p>Date of change avatar: {}</p>
+                      <div class="ChangeAva">
+                            {
+                                this.props.Store.avatar.map(function(ava){
+                                  if(ava.confirmState=="PrevAva" && ava.siteUserId==this.props.match.params.id){
+                                    return  <div>
+                                              <img class="PrevAva" height="80px" src={ava.base64}/>
+                                              <img height="40px" src={Next}/>
                                             </div>
+                                  }
+                                }.bind(this))
+                             }
+                            {
+                              this.props.Store.avatar.map(function(ava){
+                                if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
+                                  return  <div>
+                                              <img class="NewAva" height="80px" src={ava.base64}/>
+                                              <button class="btn btn-success" onClick={this.onConfirmAva}>Confirm avatar</button>
+                                              <button class="btn btn-danger" onClick={this.onRejectAva}>Reject avatar</button>
                                           </div>
+                                }
+                              }.bind(this))
+                            }
 
+                        </div>
 
-                                          <div class="BodyRight">
-                                            <p class="MainData">{user.name}, {age} years old</p>
-                                            <p>{user.welcome}</p>
-                                            <p>  <div class={status}></div>{status}</p>
+                    </div>
+                 </div>
 
-                                            <p class="MainData">My hobbies</p>
-                                            <ul>
-                                            {
-                                              this.getHobby().map(function(hobby){
-                                                return hobby;
-                                              })
-                                            }
-                                            </ul>
-
-                                            <p class="MainData">More information about {user.name}</p>
-                                            <table class="table table-striped">
-                                              <tbody>
-                                                <tr>
-                                                    <td>Gender: {user.gender}</td>
-                                                    <td>Education: {user.education}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Weight: {user.weight}</td>
-                                                    <td>Height: {user.height}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>City: {user.city}</td>
-                                                    <td>Age: {age} years old</td>
-                                                </tr>
-                                              </tbody>
-                                            </table>
-                                            <p>Date of Edit: {user.dateOfEdit.split('T')[0]}</p>
-                                            <p>Date of change avatar: {user.avatar.dateOfChange.split('T')[0]}</p>
-                                            <div class="ChangeAva">
-                                                  {
-                                                      this.props.Store.avatar.map(function(ava){
-                                                        if(ava.confirmState=="PrevAva" && ava.siteUserId==this.props.match.params.id){
-                                                          return  <div>
-                                                                    <img class="PrevAva" height="80px" src={ava.base64}/>
-                                                                    <img height="40px" src={Next}/>
-                                                                  </div>
-                                                        }
-                                                      }.bind(this))
-                                                   }
-                                                  {
-                                                    this.props.Store.avatar.map(function(ava){
-                                                      if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
-                                                        return  <div>
-                                                                    <img class="NewAva" height="80px" src={ava.base64}/>
-                                                                    <button class="btn btn-success" onClick={this.onConfirmAva}>Confirm avatar</button>
-                                                                    <button class="btn btn-danger" onClick={this.onRejectAva}>Reject avatar</button>
-                                                                </div>
-                                                      }
-                                                    }.bind(this))
-                                                  }
-
-                                              </div>
-
-                                          </div>
-                                       </div>
-
-                              }
-                            }.bind(this)
-                          )
+                 }
+            }.bind(this)
+          )
 }
 
 
@@ -464,9 +484,9 @@ showAdminProfile(){//отображение профиля для админа
   render(){
     const cookies = new Cookies();
     var profileForRender;
-    if(cookies.get('UserSession').roleId==this.getRoleId("Admin") || cookies.get('UserSession').roleId==this.getRoleId("Moder"))
+    if(cookies.get('UserSession').roleid==this.getroleid("Admin") || cookies.get('UserSession').roleid==this.getroleid("Moder"))
       profileForRender=this.showAdminProfile();
-    else if (cookies.get('UserSession').roleId==this.getRoleId("User"))
+    else if (cookies.get('UserSession').roleid==this.getroleid("User"))
       profileForRender=this.showUserProfile();
 
     return <div>

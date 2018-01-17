@@ -60,7 +60,7 @@ class MyMenu extends  Component{
   componentWillMount(){
       if(this.props.Store.myPage!=null){
           const cookies = new Cookies();
-          if (cookies.get('UserSession').roleId!=this.getRoleId("Banned"))
+          if (cookies.get('UserSession').roleid!=this.getroleid("Banned"))
               this.loadDialogList();
     }
   }
@@ -166,7 +166,8 @@ class MyMenu extends  Component{
       isOnline="Online";
 
     var msg=   <div class="DialogList">
-                  <img class="CloseDialogList" src={Exit} onClick={()=>{this.setState({ShowDialogForm:false});
+                  <img class="CloseDialogList" src={Exit} onClick={()=>{
+                                        this.setState({ShowDialogForm:false});
                                         this.setState({dialog:null});
                                         this.setState({dialogList:null});}}/>
                   <img class="RemoveDialogs" src={Trash} onClick={this.onRemoveDialogs}/>
@@ -204,7 +205,7 @@ class MyMenu extends  Component{
     if(cookies.get('UserSession')!=undefined)
       return <App withoutGUI={true}/>
     else
-      return <App/>
+      this.props.ownProps.history.push('/');
   }
   bannedInterface(){
     return <div>
@@ -244,8 +245,8 @@ class MyMenu extends  Component{
                      <div class="subMenuBody">
                          <p onClick={()=>{this.props.ownProps.history.push('/HomePage/Profile/'+this.props.Store.myPage.id)}}>My page</p>
                          <p onClick={()=>{this.setState({ShowDialogForm:!this.state.ShowDialogForm});
-                                               this.setState({dialog:null});
-                                               this.setState({dialogList:null});}}>Messages</p>
+                                          this.setState({dialog:null});
+                                          this.setState({dialogList:null});}}>Messages</p>
                          <p onClick={()=>{this.props.ownProps.history.push('/HomePage/Favorites/')}}>Favorites</p>
                          <p onClick={()=>{this.props.ownProps.history.push('/HomePage/MyLikes/All')}}>Likes</p>
                          <p onClick={()=>{this.props.ownProps.history.push('/HomePage/MyGuests/')}}>Guests</p>
@@ -273,9 +274,9 @@ class MyMenu extends  Component{
                      <div class="SecondBlock">
                          <p>Recommended</p>
                          <p onClick={()=>{this.setState({ShowDialogForm:!this.state.ShowDialogForm});
-                                               this.setState({dialog:null});
-                                               this.setState({dialogList:null});}}>
-                                               Conversations
+                                          this.setState({dialog:null});
+                                          this.setState({dialogList:null});}}>
+                                          Conversations
                             <span>{messages}</span>
                          </p>
                          <p  onClick={()=>{this.props.ownProps.history.push('/HomePage/MyLikes/'+"iLike")}}>
@@ -387,18 +388,18 @@ class MyMenu extends  Component{
   }
 
 
-  getRoleId(role){
+  getroleid(role){
     return this.props.Store.roles.filter(x=> x.roleName==role)[0].id
   }
   render(){
     if(this.props.Store.myPage==null )//Если не все данные были загружены или мы не авторизировались, то ожидаем загрузки
         return this.unauthorisedInterface();
     const cookies = new Cookies();
-    if(cookies.get('UserSession').roleId==this.getRoleId("Admin") || cookies.get('UserSession').roleId==this.getRoleId("Moder"))
+    if(cookies.get('UserSession').roleid==this.getroleid("Admin") || cookies.get('UserSession').roleid==this.getroleid("Moder"))
       return this.adminInterface();
-    else if (cookies.get('UserSession').roleId==this.getRoleId("User"))
+    else if (cookies.get('UserSession').roleid==this.getroleid("User"))
       return this.userInterface();
-    else if (cookies.get('UserSession').roleId==this.getRoleId("Banned"))
+    else if (cookies.get('UserSession').roleid==this.getroleid("Banned"))
       return this.bannedInterface();
   }
 }
