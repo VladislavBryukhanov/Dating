@@ -20,26 +20,34 @@ namespace WebApplication1.Controllers
     {
         private DatingContext db = new DatingContext();
         int guestExpire = 1;
- 
+
 
         // GET: api/GuestLists/5
-        //[ResponseType(typeof(GuestList))]
-        //public IHttpActionResult GetGuestList(int id)
-        //{
-        //    CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
-        //    if (!CheckAccess.IsAccess(cookie, id, "User"))
-        //        return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
+        [ResponseType(typeof(GuestList))]
+        public IHttpActionResult GetGuestList(int id, int page)
+        {
+            CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
+            if (!CheckAccess.IsAccess(cookie, id, "User"))
+                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
-        //    List<GuestList> guestList = db.Guests.Where(x => x.to == id).ToList();
-        //    if (guestList == null)
-        //    {
-        //        return NotFound();
-        //    }
 
-        //    return Ok(guestList);
-        //}
+            int startNum = (page-1) * 12;
+            List<GuestList> guestList = db.Guests.Where(x => x.to == id).OrderBy(x => x.id).Skip(startNum).Take(12).ToList();
+            if (guestList == null)
+            {
+                return NotFound();
+            }
 
-  
+            List<int> usersId = new List<int>();
+            for (int i = 0; i < guestList.Count; i++)
+            {
+                usersId.Add(guestList[i].who);
+            }
+
+            return Ok(LikeListsController.SelectionWithId(usersId.ToArray()));
+        }
+
+
         // POST: api/GuestLists
         [ResponseType(typeof(GuestList))]
         public IHttpActionResult PostGuestList(GuestList newGuest)

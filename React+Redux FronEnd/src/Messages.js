@@ -50,6 +50,10 @@ class Messages extends Component{
     })
     .then(result => {
         this.props.DispatchAddDialogList(result);
+
+        // var dialogUsers=bindAvatar(result.userList, result.avatars);
+        this.props.DispatchLoadDalogUsers(this.props.user);
+
         this.setState({dialog:result});
         this.onSendMessage();
      });
@@ -82,12 +86,12 @@ class Messages extends Component{
                  this.props.Store.messages.map(function(msg){
                    var time=msg.time.split('.')[0];
                    time=time.replace("T"," ");
-                   var msgClass="";
+                   var msgclassName="";
                    if(msg.from==this.props.Store.myPage.id)
-                      msgClass="FromMe";
+                      msgclassName="FromMe";
                    else
-                      msgClass="ToMe";
-                   return  <div class={msgClass}>
+                      msgclassName="ToMe";
+                   return  <div className={msgclassName}>
                                  <p>
                                     {msg.content}
                                  </p>
@@ -117,6 +121,9 @@ export default connect(
       },
       DispatchAddDialogList:(dl)=>{
         dispatch({type:'AddDialog', DialogList: dl});
+      },
+      DispatchLoadDalogUsers:(users)=>{
+        dispatch({type:"LoadDalogUsers", DUsers: users})
       }
     })
 )(Messages);

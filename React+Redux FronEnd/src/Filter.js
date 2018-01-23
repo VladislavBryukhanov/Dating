@@ -3,13 +3,14 @@ import { connect } from 'react-redux';
 import { Link, Route } from 'react-router-dom';
 // import Avatar from './Ava.jpg';
 // import Clock from './Clock.jpg';
-import { getSiteUsers } from './App.js'
+import {  bindAvatar } from './App.js';
+import {  getSiteUsers } from './Menu.js';
 class Filter extends  Component{
   constructor(props){
     super(props);
     this.state={
       user:this.props.Store.myPage,
-      onlineFilter:this.props.Store.myPage.onlineFilter,
+      onlineFilter:false,
       nameFilter:""//this.props.Store.myPage.nameFilter
     }
     this.onEditUser=this.onEditUser.bind(this);
@@ -76,6 +77,8 @@ class Filter extends  Component{
     //               this.props.ownProps.history.push('/HomePage');
     //             });
     //    }
+
+
   onEditUser(user)
   {
     // console.log(user);
@@ -90,44 +93,76 @@ class Filter extends  Component{
      return(response.json());
    })
    .then(result => {
+/*
+     // console.log(result);
+     this.props.DispathcLoadAvatars(result.avatars);
+
+     var loadUsers=bindAvatar(result.userList, result.avatars);
+     // this.props.DispatchMyPage(result.userList.filter(x=>x.id==user.id)[0]);
+     this.props.DispatchLoadUsers(loadUsers);
+*/
+
+    var newPage=result;
+    newPage.onlineFilter=this.state.onlineFilter;
+    newPage.nameFilter=this.state.nameFilter;
+    newPage.avatar=this.props.Store.myPage.avatar;
+    this.props.DispatchEditUser(newPage);
+
+    // if(this.props.match.params.id==undefined  ||
+    //    this.props.match.params.id==this.props.Store.myPage.id)//Если страница принадлежит нам, а не админ зашел для ее редактирования, то редактируем свою стр в сторе
+    this.props.DispatchMyPage(newPage);
+    this.props.ownProps.history.push('/HomePage')
+
+     // getSiteUsers.onopen= function (msg) {
+     // getSiteUsers.send(JSON.stringify(result.id));
+     // };
+
+     // if(getSiteUsers.readyState === getSiteUsers.OPEN)
 
 
-     result.avatar=this.props.Store.myPage.avatar;
+     // getSiteUsers.onopen= function (msg) {
+     // getSiteUsers.send(JSON.stringify(result.id));
+     // };
+     // if(getSiteUsers.readyState === getSiteUsers.OPEN)
+     //    getSiteUsers.send(JSON.stringify(result.id));
 
-     this.props.DispatchEditUser(result);//Когда уберу конфиденциальную инфу, то можно будет и не обновлять
-     result.onlineFilter=this.state.onlineFilter;
-     result.nameFilter=this.state.nameFilter;
+     // result.avatar=this.props.Store.myPage.avatar;
+     //
+     // this.props.DispatchEditUser(result);//Когда уберу конфиденциальную инфу, то можно будет и не обновлять
+     // result.onlineFilter=this.state.onlineFilter;
+     // result.nameFilter=this.state.nameFilter;
+     //
+     // this.props.DispatchMyPage(result);
 
-     this.props.DispatchMyPage(result);
+
      // this.getUsers();
 
-     var filter={
-       id:result.id,
-       gender:result.gender,
-       genderForSearch:result.genderForSearch,
-       ageForSearch: result.ageForSearch,
-       cityForSearch: result.cityForSearch,
-       nameForSearch: result.nameFilter
-     }
-     console.log(filter);
-     console.log(JSON.stringify(filter));
-     getSiteUsers.send(JSON.stringify(filter));
+     // var filter={
+     //   id:result.id,
+     //   gender:result.gender,
+     //   genderForSearch:result.genderForSearch,
+     //   ageForSearch: result.ageForSearch,
+     //   cityForSearch: result.cityForSearch,
+     //   nameForSearch: result.nameFilter,
+     //   page: 1
+     // }
+     // getSiteUsers.send(JSON.stringify(filter));
    })
   }
 
   render(){
-    return <form encType="multipart/form-data" class="Filter  form-group col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
+    return <form encType="multipart/form-data" className="Filter  form-group col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
 
-                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                <div className="form-group col-md-6  col-sm-6  col-xs-12">
                     <label>Find by name</label>
-                    <input class="form-control" type="text"
+                    <input className="form-control" type="text"
                            value={this.state.nameFilter}
                            onChange={this.onFilterNameChange}/>
                 </div>
 
-                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                <div className="form-group col-md-6  col-sm-6  col-xs-12">
                     <label>I search for</label>
-                    <select class="form-control" onChange={this.onGenderForSearchChange} value={this.state.user.genderForSearch}>
+                    <select className="form-control" onChange={this.onGenderForSearchChange} value={this.state.user.genderForSearch}>
                         <option value="All">All</option>
                         <option value="Couple">Couple</option>
                         <option value="Friends">Friends</option>
@@ -135,9 +170,9 @@ class Filter extends  Component{
                     </select>
                 </div>
 
-                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                <div className="form-group col-md-6  col-sm-6  col-xs-12">
                     <label>The age range</label>
-                    <select class="form-control" onChange={this.onAgeForSearchChange} value={this.state.user.ageForSearch}>
+                    <select className="form-control" onChange={this.onAgeForSearchChange} value={this.state.user.ageForSearch}>
                         <option value="All">All</option>
                         <option value="18 to 24 years">18 to 24 years</option>
                         <option value="25 to 31 years">25 to 31 years</option>
@@ -148,9 +183,9 @@ class Filter extends  Component{
                     </select>
                 </div>
 
-                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                <div className="form-group col-md-6  col-sm-6  col-xs-12">
                     <label>City of living</label>
-                    <select class="form-control" onChange={this.onCityForSearch} value={this.state.user.cityForSearch}>
+                    <select className="form-control" onChange={this.onCityForSearch} value={this.state.user.cityForSearch}>
                         <option value="All">All</option>
                         <option value="Washington">Washington</option>
                         <option value="Moscow">Moscow</option>
@@ -163,10 +198,9 @@ class Filter extends  Component{
                     <input   checked={this.state.onlineFilter} onChange={this.onStatusFilterChange} type="checkbox"/>
                 </div>
 
-                <button class="btn btn-primary col-md-12  col-sm-12  col-xs-12" onClick={(e)=>{
+                <button className="btn btn-primary col-md-12  col-sm-12  col-xs-12" onClick={(e)=>{
                                   e.preventDefault();
-                                  this.onEditUser(this.state.user);
-                                  this.props.ownProps.history.push('/HomePage')}}>
+                                  this.onEditUser(this.state.user);}}>
                                   Find
                 </button>
 
@@ -187,6 +221,9 @@ export default connect(
       },
       DispatchLoadUsers:(user)=>{
       dispatch({type:'LoadUser', Users: user});
+      },
+      DispathcLoadAvatars:(avatar)=>{
+        dispatch({type:"LoadAvatar", Avatar: avatar})
       }
     })
 )(Filter);

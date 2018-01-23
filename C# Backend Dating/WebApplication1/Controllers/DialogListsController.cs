@@ -22,21 +22,33 @@ namespace WebApplication1.Controllers
 
 
         //// GET: api/DialogLists/5
-        //[ResponseType(typeof(DialogList))]
-        //public IHttpActionResult GetDialogList(int id)
-        //{
-        //    CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
-        //    if (!CheckAccess.IsAccess(cookie, id, "User"))
-        //        return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
+        [ResponseType(typeof(DialogList))]
+        public IHttpActionResult GetDialogList(int id)
+        {
+            CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
+            if (!CheckAccess.IsAccess(cookie, id, "User"))
+                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
-        //    List<DialogList> dialogList = db.DialogLists.Where(x=>x.firstUserId==id || x.secondUserId==id).ToList();
-        //    if (dialogList == null)
-        //    {
-        //        return NotFound();
-        //    }
+            List<DialogList> dialogList = db.DialogLists.Where(x => x.firstUserId == id || x.secondUserId == id).ToList();
+            if (dialogList == null)
+            {
+                return NotFound();
+            }
 
-        //    return Ok(dialogList);
-        //}
+            List<int> usersId = new List<int>();
+            for (int i = 0; i < dialogList.Count; i++)
+            {
+                int userId;
+                if (dialogList[i].firstUserId != id && !usersId.Contains(dialogList[i].firstUserId) && !usersId.Contains(dialogList[i].secondUserId))
+                    userId = dialogList[i].firstUserId;
+                else
+                    userId = dialogList[i].secondUserId;
+
+                usersId.Add(userId);
+            }
+
+            return Ok(LikeListsController.SelectionWithId(usersId.ToArray()));
+        }
 
 
         // POST: api/DialogLists
@@ -69,12 +81,12 @@ namespace WebApplication1.Controllers
         {
 
             List<DialogList> removeDialogLists=new List<DialogList>();
-            List<Dialog> removeDialogs = new List<Dialog>();
+            //List<Dialog> removeDialogs = new List<Dialog>();
             for (int i = 0; i < id.Length; i++)
             {
                 int currentId = id[i];
                 removeDialogLists.Add(db.DialogLists.FirstOrDefault(x => x.id == currentId));
-                removeDialogs.Add(db.Dialogs.FirstOrDefault(x => x.dialogid == currentId ));
+                //removeDialogs.Add(db.Dialogs.FirstOrDefault(x => x.dialogid == currentId ));
             }
 
 
@@ -82,19 +94,19 @@ namespace WebApplication1.Controllers
             if (!CheckAccess.IsAccess(cookie, removeDialogLists[0].firstUserId, "User") && !CheckAccess.IsAccess(cookie, removeDialogLists[0].secondUserId, "User"))
                 return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
-            if (removeDialogLists.Count == 0 || removeDialogs.Count == 0)
+            if (removeDialogLists.Count == 0)// || removeDialogs.Count == 0)
             {
                 return NotFound();
             }
-            if (removeDialogLists.Count == 1 && removeDialogs.Count == 1)
+            if (removeDialogLists.Count == 1)// && removeDialogs.Count == 1)
             {
                 db.DialogLists.Remove(removeDialogLists[0]);
-                db.Dialogs.Remove(removeDialogs[0]);
+                //db.Dialogs.Remove(removeDialogs[0]);
             }
             else
             {
                 db.DialogLists.RemoveRange(removeDialogLists);
-                db.Dialogs.RemoveRange(removeDialogs);
+                //db.Dialogs.RemoveRange(removeDialogs);
             }
 
 

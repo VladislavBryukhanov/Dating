@@ -12,15 +12,14 @@ namespace WebApplication1.Models
     {
         [Key]
         public int id { get; set; }
-        public int dialogid { get; set; }
         public int from { get; set; }
         public int to { get; set; }
         public DateTime time { get; set; }
         public string content { get; set; }
 
-        [ForeignKey("from")]
-        private SiteUser siteUserfrom { get; set; }
-        [ForeignKey("to")]
-        private SiteUser siteUserto { get; set; }
+
+        public int dialogId { get; set; }
+
+        private DialogList dialog { get; set; }
     }
 }

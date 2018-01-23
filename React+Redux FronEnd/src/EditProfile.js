@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Link, Route } from 'react-router-dom';
+import {  bindAvatar } from './App.js'
 class MyProfile extends  Component{
   constructor(props){
     super(props);
@@ -49,7 +50,7 @@ class MyProfile extends  Component{
       console.log(this.props.match.params.id);
       if(this.props.match.params.id!=undefined){
         idUser=this.props.match.params.id;
-        userTmp=Object.assign({},this.props.Store.users.filter(x=>x.id==idUser)[0]);
+        userTmp=this.props.Store.users.filter(x=>x.id==idUser)[0];
         avatarTmp=userTmp.avatar;
       }
       else {
@@ -216,10 +217,12 @@ class MyProfile extends  Component{
         setOldAva=this.props.Store.avatar.filter(x=> x.id == "None")[0];
 
       var newPage=Object.assign({},this.state.user);
-      newPage.avatar=setOldAva;//Сомнительное действие
+      newPage=bindAvatar([newPage], [setOldAva])[0];
+      // newPage.avatar=setOldAva;//Сомнительное действие
       this.props.DispatchEditUser(newPage);
       console.log(newPage);
-      if(this.props.match.params.id==undefined)//Если страница принадлежит нам, а не админ зашел для ее редактирования, то редактируем свою стр в сторе
+      if(this.props.match.params.id==undefined  ||
+         this.props.match.params.id==this.props.Store.myPage.id)//Если страница принадлежит нам, а не админ зашел для ее редактирования, то редактируем свою стр в сторе
         this.props.DispatchMyPage(newPage);
         this.setState({user:newPage});
    })
@@ -236,7 +239,6 @@ class MyProfile extends  Component{
      return(response.json());
    })
    .then(result => {
-     // console.log(result);
      this.props.DispatchAddAvatar(result);
 
      var myAva=Object.assign({},this.state.user.avatar);
@@ -244,12 +246,13 @@ class MyProfile extends  Component{
      this.props.DispatchEditAvatar(myAva);
 
      var newPage=Object.assign({},this.state.user);
-     newPage.avatar=this.props.Store.avatar.filter(x=> x.id== "Clock")[0];
+     newPage=bindAvatar([newPage], [result])[0];
+     // newPage.avatar=this.props.Store.avatar.filter(x=> x.id== "Clock")[0];
      this.props.DispatchEditUser(newPage);
 
-     console.log(newPage);
-     if(this.props.match.params.id==undefined)//Если страница принадлежит нам, а не админ зашел для ее редактирования, то редактируем свою стр в сторе
-        this.props.DispatchMyPage(newPage);
+     if(this.props.match.params.id==undefined ||
+        this.props.match.params.id==this.props.Store.myPage.id)//Если страница принадлежит нам, а не админ зашел для ее редактирования, то редактируем свою стр в сторе
+          this.props.DispatchMyPage(newPage);
      this.setState({user:newPage});
      //при изменении (myAva.confirmState или myPage.avatar) объект в сторе тоже изменяется на это значение и
      //диспатч не отработает изменения, а это нарушает логику редакс
@@ -273,8 +276,9 @@ class MyProfile extends  Component{
        .then(result => {
          result.avatar=this.state.user.avatar;
          this.props.DispatchEditUser(result);
-         if(this.props.match.params.id==undefined)//Если страница принадлежит нам, а не админ зашел для ее редактирования, то редактируем свою стр в сторе
-            this.props.DispatchMyPage(result);
+         if(this.props.match.params.id==undefined ||
+            this.props.match.params.id==this.props.Store.myPage.id)//Если страница принадлежит нам, а не админ зашел для ее редактирования, то редактируем свою стр в сторе
+              this.props.DispatchMyPage(result);
          })
   }
 
@@ -294,54 +298,54 @@ class MyProfile extends  Component{
       ownerOfGal="/"+this.props.match.params.id;//то добавляем роут к галлерее
     var btnGetOldAvatar="";
     if(this.state.user.avatar.id=="Clock")
-      btnGetOldAvatar=<button class="btn btn-danger" onClick={this.onGetOldtAva}>Return to the old avatar</button>
+      btnGetOldAvatar=<button className="btn btn-danger" onClick={this.onGetOldtAva}>Return to the old avatar</button>
 
     return <form encType="multipart/form-data">
-              <div class="LeftEditBlock">
-                <div class="EditBlock">
-                    <p class="EditTitle">Photos</p>
+              <div className="LeftEditBlock">
+                <div className="EditBlock">
+                    <p className="EditTitle">Photos</p>
                     <label>Change avatar</label>
                     <input type="file" onChange={this.onAvatarChange}/>
-                    <button class="btn btn-primary" onClick={(e)=>{e.preventDefault();
+                    <button className="btn btn-primary" onClick={(e)=>{e.preventDefault();
                                           this.props.ownProps.history.push('/HomePage/MyGallery'+ownerOfGal);}}>
                                           Edit gallery
                     </button>
                     {btnGetOldAvatar}
                 </div>
-                <div class="EditBlock">
-                    <p class="EditTitle">Personal information</p>
+                <div className="EditBlock">
+                    <p className="EditTitle">Personal information</p>
                     <label>City</label>
-                    <select class="form-control" onChange={this.onCityChange} value={this.state.user.city}>
+                    <select className="form-control" onChange={this.onCityChange} value={this.state.user.city}>
                         <option value=""></option>
                         <option value="Washington">Washington</option>
                         <option value="Moscow">Moscow</option>
                         <option value="Pekin">Pekin</option>
                     </select>
 
-                    <div class="HalfBlock">
+                    <div className="HalfBlock">
                         <label>Name</label>
-                        <input class="form-control" type="text"
+                        <input className="form-control" type="text"
                                value={this.state.user.name}
                                onChange={this.onNameChange}/>
                     </div>
-                    <div class="HalfBlock">
+                    <div className="HalfBlock">
                         <label>Email</label>
-                        <input class="form-control" type="email"
+                        <input className="form-control" type="email"
                                pattern="^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,3}$"
                                value={this.state.user.email}
                                onChange={this.onEmailChange}/>
                     </div>
-                    <div class="HalfBlock">
+                    <div className="HalfBlock">
                         <label>Password</label>
-                        <input class="form-control" type="password"
+                        <input className="form-control" type="password"
                                onChange={this.onPasswordChange}/>
                     </div>
-                    <div class="HalfBlock">
+                    <div className="HalfBlock">
                         <label>Birthday</label>
-                        <input class="form-control" type="date" value={this.state.user.birthDay.split('T')[0]} onChange={this.onBirthDayChange}/>
+                        <input className="form-control" type="date" value={this.state.user.birthDay.split('T')[0]} onChange={this.onBirthDayChange}/>
                     </div>
                     <label>Education</label>
-                    <select class="form-control" onChange={this.onEducationChange} value={this.state.user.education}>
+                    <select className="form-control" onChange={this.onEducationChange} value={this.state.user.education}>
                         <option value=""></option>
                         <option value="Basic">Base</option>
                         <option value="Middle">Middle</option>
@@ -352,7 +356,7 @@ class MyProfile extends  Component{
                     </select>
 
                     <label>Welcome message</label>
-                    <textarea class="Welcome form-control"
+                    <textarea className="Welcome form-control"
                           onChange={this.onWelcomeChange}>
                           {this.state.user.welcome}
                     </textarea>
@@ -361,32 +365,32 @@ class MyProfile extends  Component{
               </div>
 
 
-              <div class="LeftEditBlock">
-                <div class="EditBlock">
-                    <p class="EditTitle">Appearance</p>
+              <div className="LeftEditBlock">
+                <div className="EditBlock">
+                    <p className="EditTitle">Appearance</p>
                     <label>Gender</label>
-                    <select class="form-control" class="form-control" onChange={this.onGenderChange} value={this.state.user.gender} >
+                    <select className="form-control" className="form-control" onChange={this.onGenderChange} value={this.state.user.gender} >
                         <option value=""></option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                     </select>
-                    <div class="HalfBlock">
+                    <div className="HalfBlock">
                         <label>Weight</label>
-                        <input class="form-control" class="form-control" type="text"
+                        <input className="form-control" className="form-control" type="text"
                                value={this.state.user.weight}
                                onChange={this.onWeightChange}/>
                     </div>
-                    <div class="HalfBlock">
+                    <div className="HalfBlock">
                         <label>Height</label>
-                        <input class="form-control" class="form-control" type="text"
+                        <input className="form-control" className="form-control" type="text"
                                value={this.state.user.height}
                                onChange={this.onHeightChange}/>
                     </div>
                 </div>
 
-                <div class="EditBlock">
-                    <p class="EditTitle">Hobbies</p>
-                    <table class="table table-striped">
+                <div className="EditBlock">
+                    <p className="EditTitle">Hobbies</p>
+                    <table className="table table-striped">
                       <tbody>
                         <tr>
                             <td><span>Animals</span> <input checked={this.state.hobby.animals} onChange={this.onAnimalsChange} type="checkbox"/></td>
@@ -413,7 +417,7 @@ class MyProfile extends  Component{
                     </table>
 
                </div>
-               <button class="SaveChangesBtn" onClick={(e)=>{
+               <button className="SaveChangesBtn" onClick={(e)=>{
                                  e.preventDefault();
                                  this.onEditData();}}>
                                  Save

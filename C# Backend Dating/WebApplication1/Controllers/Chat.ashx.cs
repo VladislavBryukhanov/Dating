@@ -65,21 +65,21 @@ namespace WebApplication1.Controllers
                 cleanBuffer = Encoding.UTF8.GetBytes(json);
 
                 List<WebSocket> dialogClients = new List<WebSocket>();
-                if (Dialogs.ContainsKey(authDate.dialogid))//Если в списке диалогов(подключенных клиентов) уже есть клиент, добавляем его(или их)
+                if (Dialogs.ContainsKey(authDate.dialogId))//Если в списке диалогов(подключенных клиентов) уже есть клиент, добавляем его(или их)
                 {
-                    dialogClients = Dialogs[authDate.dialogid];
+                    dialogClients = Dialogs[authDate.dialogId];
                 }
                 {
-                    if (!Dialogs.ContainsKey(authDate.dialogid))
+                    if (!Dialogs.ContainsKey(authDate.dialogId))
                     {
                         dialogClients.Add(socket);
-                        Dialogs.Add(authDate.dialogid, dialogClients);
+                        Dialogs.Add(authDate.dialogId, dialogClients);
 
                     }
-                    else if (Dialogs[authDate.dialogid].FirstOrDefault(x => x == socket) == null)//Исключаем дублирование сокета 1-го клиента
+                    else if (Dialogs[authDate.dialogId].FirstOrDefault(x => x == socket) == null)//Исключаем дублирование сокета 1-го клиента
                     {
                         dialogClients.Add(socket);
-                        Dialogs[authDate.dialogid] = dialogClients;
+                        Dialogs[authDate.dialogId] = dialogClients;
                     }
                 }
 
@@ -96,7 +96,7 @@ namespace WebApplication1.Controllers
                         }
                         catch (ObjectDisposedException)
                         {
-                                Dialogs[authDate.dialogid].Remove(client);
+                                Dialogs[authDate.dialogId].Remove(client);
                                 i--;
                         }
                 }

@@ -59,21 +59,21 @@ class Registration extends Component {
     this.setState({birthDay: e.target.value})
   }
   getFirstForm(){
-    return <div class="regFirstForm">
+    return <div className="regFirstForm">
                 <h2>Create your profile for free</h2>
-                <form class="form-group col-md-10 col-md-offset-1 col-sm-12 col-xs-12" encType="multipart/form-data">
-                      <div class="form-group col-md-2 col-md-offset-1 col-sm-2 col-sm-offset-1 col-xs-12">
+                <form className="form-group col-md-10 col-md-offset-1 col-sm-12 col-xs-12" encType="multipart/form-data">
+                      <div className="form-group col-md-2 col-md-offset-1 col-sm-2 col-sm-offset-1 col-xs-12">
                           <label>Gender</label>
-                          <select class="form-control" onChange={this.onGenderChange} >
+                          <select className="form-control" onChange={this.onGenderChange} >
                               <option selected value=""></option>
                               <option value="Male">Male</option>
                               <option value="Female">Female</option>
                           </select>
                       </div>
 
-                      <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                      <div className="form-group col-md-2 col-sm-2 col-xs-12">
                           <label>I am looking for</label>
-                          <select class="form-control" onChange={this.onGenderForSearchChange}>
+                          <select className="form-control" onChange={this.onGenderForSearchChange}>
                               <option selected value=""></option>
                               <option value="Couple">Couple</option>
                               <option value="Friends">Friends</option>
@@ -81,9 +81,9 @@ class Registration extends Component {
                           </select>
                       </div>
 
-                      <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                      <div className="form-group col-md-2 col-sm-2 col-xs-12">
                           <label>Age for search</label>
-                          <select class="form-control" onChange={this.onAgeForSearchChange}>
+                          <select className="form-control" onChange={this.onAgeForSearchChange}>
                               <option selected value=""></option>
                               <option value="18 to 24 years">18 to 24 years</option>
                               <option value="25 to 31 years">25 to 31 years</option>
@@ -94,46 +94,56 @@ class Registration extends Component {
                           </select>
                       </div>
 
-                      <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                      <div className="form-group col-md-2 col-sm-2 col-xs-12">
                           <label>City</label>
-                          <select class="form-control" onChange={this.onCityChange}>
+                          <select className="form-control" onChange={this.onCityChange}>
                               <option selected value=""></option>
                               <option value="Washington">Washington</option>
                               <option value="Moscow">Moscow</option>
                               <option value="Pekin">Pekin</option>
                           </select>
                       </div>
-                      <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                      <div className="form-group col-md-2 col-sm-2 col-xs-12">
                           <br/>
-                          <button class="RegNext" onClick={(e)=>{e.preventDefault(); this.toNextStep();}}>Next</button>
+                          <button className="RegNext" onClick={(e)=>{e.preventDefault(); this.toNextStep();}}>Next</button>
                       </div>
                  </form>
-                 <p class="form-group col-md-12 col-sm-12 col-xs-12">Join us to meet people! Today we are more than 900,000 registered</p>
+                 <p className="form-group col-md-12 col-sm-12 col-xs-12">Join us to meet people! Today we are more than 900,000 registered</p>
              </div>
   }
   getSecondForm(){
-    return <form class="regSecondForm form-group col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12" onSubmit={this.onSubmit} encType="multipart/form-data">
-                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+    //Делаем так,чтобы возраст <18 лет не мог быть выбран
+    var maxDate=new Date();
+    var day=maxDate.getDate();
+    var month=(maxDate.getMonth()+1);
+    if(day < 10)
+      day="0"+day;
+    if(month < 10)
+      month="0"+month;
+    maxDate=maxDate.getFullYear()-18+"-"+month+"-"+day;
+
+    return <form className="regSecondForm form-group col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12" onSubmit={this.onSubmit} encType="multipart/form-data">
+                <div className="form-group col-md-6  col-sm-6  col-xs-12">
                     <label>Full Name</label>
-                    <input class="form-control" type="text"
+                    <input className="form-control" type="text"
                            onChange={this.onNameChange}/>
                 </div>
-                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                <div className="form-group col-md-6  col-sm-6  col-xs-12">
                     <label>Email</label>
-                    <input class="form-control" type="email"
+                    <input className="form-control" type="email"
                            pattern="^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,3}$"
                            onChange={this.onEmailChange}/>
                 </div>
 
-                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                <div className="form-group col-md-6  col-sm-6  col-xs-12">
                     <label>Password</label>
-                    <input class="form-control" type="password"
+                    <input className="form-control" type="password"
                            onChange={this.onPasswordChange}/>
                 </div>
 
-                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                <div className="form-group col-md-6  col-sm-6  col-xs-12">
                     <label>Education</label>
-                    <select class="form-control" onChange={this.onEducationChange}>
+                    <select className="form-control" onChange={this.onEducationChange}>
                         <option selected="selected" value=""></option>
                         <option value="Basic">Base</option>
                         <option value="Middle">Middle</option>
@@ -144,14 +154,13 @@ class Registration extends Component {
                     </select>
                 </div>
 
-                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                <div className="form-group col-md-6  col-sm-6  col-xs-12">
                     <label>Birthday</label>
-                    <input class="form-control" type="date"  onChange={this.onBirthDayChange}/>
+                    <input className="form-control" type="date" max={maxDate}  onChange={this.onBirthDayChange}/>
                 </div>
-
-                <div class="form-group col-md-6  col-sm-6  col-xs-12">
+                <div className="form-group col-md-6  col-sm-6  col-xs-12">
                     <br/>
-                    <input class="RegNext" type="submit" value="Next"/>
+                    <input className="RegNext" type="submit" value="Next"/>
                 </div>
            </form>
   }

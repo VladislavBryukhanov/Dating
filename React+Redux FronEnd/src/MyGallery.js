@@ -15,33 +15,31 @@ class MyGallery extends  Component{
     this.onPostFiles=this.onPostFiles.bind(this);
   }
   componentWillMount() {
-        var  owner;
-        if(this.props.match.params.id!=undefined)
-          owner=this.props.match.params.id;
-        else
-          owner=this.props.Store.myPage.id;
+    var  owner;
+    if(this.props.match.params.id!=undefined)
+      owner=this.props.match.params.id;
+    else
+      owner=this.props.Store.myPage.id;
 
-        this.setState({ownerOfGallery:owner});
-        //setState не успеват выполнится и в фетч идет занчение по умолчанию (null), посему используем вар
+    this.setState({ownerOfGallery:owner});
+    //setState не успеват выполнится и в фетч идет занчение по умолчанию (null), посему используем вар
 
-          fetch(this.props.Store.Url["Gallery"]+"/"+owner, {
-            method: 'get',
-            headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-            }})
-            .then(function(response){
-              if(response.status==404)//Если у пользователя пустая галлерея
-                return [];
-              return response.json();
-            })
-            .then(function(json){
-              return(json);
-            })
-            .then(result => {
-              this.setState({Gallery:result});
-            });
-
-
+    fetch(this.props.Store.Url["Gallery"]+"/"+owner, {
+      method: 'get',
+      headers: {
+      'Content-Type': 'application/json;charset=utf-8'
+      }})
+      .then(function(response){
+        if(response.status==404)//Если у пользователя пустая галлерея
+          return [];
+        return response.json();
+      })
+      .then(function(json){
+        return(json);
+      })
+      .then(result => {
+        this.setState({Gallery:result});
+      });
   }
   onPostFiles(e)
   {
@@ -102,16 +100,16 @@ class MyGallery extends  Component{
     return <div>
             <form>
                 <input type="file" multiple onChange={this.onGalleryChange}/>
-                <button class="btn btn-success" onClick={this.onPostFiles}>Save</button>
+                <button className="btn btn-success" onClick={this.onPostFiles}>Save</button>
             </form>
                  {
                    this.state.Gallery.map(function(img){
-                         return <div class="GalleryEdit">
+                         return <div className="GalleryEdit">
                                        <img width="200px" src={img.content}/>
                                        <img onClick={(e)=>{
                                              e.preventDefault();
                                              this.removeFromBuffer(img);
-                                           }} class="RemoveBtn" src={Trash}/>
+                                           }} className="RemoveBtn" src={Trash}/>
                                 </div>
                    }.bind(this))
                }

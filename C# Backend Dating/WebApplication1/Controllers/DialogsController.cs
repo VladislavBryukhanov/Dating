@@ -33,7 +33,7 @@ namespace WebApplication1.Controllers
         {
  
 
-            List<Dialog> GetAllMsg = db.Dialogs.Where(x => x.dialogid == id).ToList();
+            List<Dialog> GetAllMsg = db.Dialogs.Where(x => x.dialogId == id).ToList();
             if (GetAllMsg.Count == 0)
             {
                 return NotFound();
@@ -70,7 +70,7 @@ namespace WebApplication1.Controllers
                 }
 
 
-                msg.dialogid = dl.id;
+                msg.dialogId = dl.id;
                 msg.time = DateTime.Now;
                 msg.to = to;
                 msg.from = mm.from;

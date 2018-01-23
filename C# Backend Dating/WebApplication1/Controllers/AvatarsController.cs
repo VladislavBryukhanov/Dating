@@ -23,12 +23,55 @@ namespace WebApplication1.Controllers
     {
         private DatingContext db = new DatingContext();
 
+        public static List<Avatar> GetAvatars(int[] id)
+        {
+            List<Avatar> siteAvatars = new List<Avatar>();
+            using (DatingContext db = new DatingContext())
+            {
+                for (int i = 0; i < id.Length; i++)
+                {
+                    int currentId = id[i];
+
+                    siteAvatars.AddRange(db.Avatars.Where(x => x.siteUserId == currentId).ToList());
+                }
+            }
+            List<Avatar> clientAvatars = new List<Avatar>();
+            foreach (Avatar avatar in siteAvatars)
+            {
+                if (avatar != null)
+                {
+                string AvatarBase64 = (avatar.base64).Substring((avatar.base64).IndexOf(',') + 1);//конвертим js base64 строку в c# строку (убираем заголовок)
+                FileInfo fileInfo = new FileInfo(AvatarBase64);
+                byte[] bytes = new byte[fileInfo.Length];
+                using (FileStream fs = fileInfo.OpenRead())
+                {
+                    fs.Read(bytes, 0, bytes.Length);
+                }
+                string NewBase64 = "data:image / jpg; base64," + Convert.ToBase64String(bytes);//Добавляем к base64 header, который в C# почему-то не генерируется, но необъодимый js для отображения изображению
+                avatar.base64 = NewBase64;
+                }
+                clientAvatars.Add(avatar);
+            }
+            return clientAvatars;
+        }
+
         // GET: api/Avatars
         public IHttpActionResult GetAvatars()
         {
-
             List<Avatar> avatars= new List<Avatar>();
-            foreach(Avatar avatar in db.Avatars)
+            Random rnd = new Random();
+
+            int countOfAvatars = db.Avatars.Count();
+            int galleryRandCounter;
+
+            if (countOfAvatars < 11)
+                 galleryRandCounter = 0;
+            else
+                 galleryRandCounter = countOfAvatars - 11;
+
+            int startIndex=rnd.Next(galleryRandCounter);
+
+            foreach(Avatar avatar in db.Avatars.OrderBy(x=>x.id).Skip(startIndex).Take(11).ToList())
             {
                 var AvatarBase64 = (avatar.base64).Substring((avatar.base64).IndexOf(',') + 1);//конвертим js base64 строку в c# строку (убираем заголовок)
                 FileInfo fileInfo = new FileInfo(AvatarBase64);
@@ -44,19 +87,54 @@ namespace WebApplication1.Controllers
 
             return Ok(avatars);
         }
-
-        // GET: api/Avatars/5
-        //[ResponseType(typeof(Avatar))]
-        //public IHttpActionResult GetAvatar(int id)
+        //  public List<Avatar> GetAvatars(int[] id)
         //{
-        //    Avatar avatar = db.Avatars.Find(id);
-        //    if (avatar == null)
+        //    List<Avatar> siteAvatars=new List<Avatar>();
+        //    using (DatingContext db = new DatingContext())
         //    {
-        //        return NotFound();
+        //        for (int i = 0; i < id.Length; i++)
+        //        {
+        //            int currentId = id[i];
+        //            siteAvatars.Add(db.Avatars.FirstOrDefault(x=>x.siteUserId == currentId));
+        //        }
         //    }
 
-        //    return Ok(avatar);
+        //    List<Avatar> clientAvatars=new List<Avatar>();
+        //    foreach (Avatar avatar in siteAvatars)
+        //    {
+        //        string AvatarBase64 = (avatar.base64).Substring((avatar.base64).IndexOf(',') + 1);//конвертим js base64 строку в c# строку (убираем заголовок)
+        //        FileInfo fileInfo = new FileInfo(AvatarBase64);
+        //        byte[] bytes = new byte[fileInfo.Length];
+        //        using (FileStream fs = fileInfo.OpenRead())
+        //        {
+        //            fs.Read(bytes, 0, bytes.Length);
+        //        }
+        //        string NewBase64 = "data:image / jpg; base64," + Convert.ToBase64String(bytes);//Добавляем к base64 header, который в C# почему-то не генерируется, но необъодимый js для отображения изображению
+        //        avatar.base64 = NewBase64;
+        //        clientAvatars.Add(avatar);
+        //    }
+
+        //    return clientAvatars;
         //}
+        // GET: api/Avatars/5
+        //[ResponseType(typeof(Avatar))]
+        //public IHttpActionResult GetAvatar([FromBody]int[] id)
+        //{
+        //    //Avatar avatar = db.Avatars.Find(id);
+        //    List<Avatar> avatars = new List<Avatar>();
+        //    for(int i = 0; i < id.Length; i++)
+        //    {
+        //        avatars.Add(db.Avatars.FirstOrDefault(x => x.id == id[i]));
+        //    }
+        //    //if (avatar == null)
+        //    //{
+        //    //    return NotFound();
+        //    //}
+
+        //    return Ok(avatars);
+        //}
+
+
 
         // PUT: api/Avatars/5
         [ResponseType(typeof(void))]

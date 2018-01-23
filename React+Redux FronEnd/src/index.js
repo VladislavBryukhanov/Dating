@@ -30,8 +30,8 @@ var store;
 		return(json);
 	})
   .then(result => {
-		result.push({base64:Clock, id:"Clock"});
-		result.push({base64:Avatar, id:"None"})
+		// result.push({base64:Clock, id:"Clock"});
+		// result.push({base64:Avatar, id:"None"})
 
 		var initialState={
 			Url:{
@@ -60,6 +60,7 @@ var store;
 			avatar:result,
 			roles:[],
 			users:[],
+			dialogUsers:[],
 			messages:[],
 			likes:[],
 			favorites:[],
@@ -74,7 +75,7 @@ var store;
 					 <BrowserRouter>
 						 <Switch>
 								<Route exact path='/' component={App}/>
-							  <Route path='/HomePage' component={Menu}/>
+							  // <Route path='/HomePage' component={Menu}/>
 							</Switch>
 					 </BrowserRouter>
 				 </Provider>,
@@ -97,6 +98,14 @@ var store;
 // }
 
 function Reducer(state, action){
+	if(action.type==='LoadAvatar'){
+		// action.Avatar.push({base64:Clock, id:"Clock"});
+		// action.Avatar.push({base64:Avatar, id:"None"});
+		return{
+			...state,
+			 avatar:action.Avatar
+		};
+	}
 	if(action.type==='AddAvatar'){
 		return{
 			...state,
@@ -144,13 +153,42 @@ function Reducer(state, action){
 			 users:[...state.users]
 		};
 	}
-	if(action.type=='DelUser'){
+	if(action.type==='DelUser'){
 		const DelUser = action.Users;
 		return{
 			...state,
 			 users:state.users.filter(x => x.id != DelUser.id)
 		};
 	}
+
+
+	if(action.type==='LoadDalogUsers'){
+		return{
+			...state,
+			 dialogUsers: action.DUsers
+		};
+	}
+	if(action.type==='UpdateDalogUsers'){
+		return{
+			...state,
+			 dialogUsers: action.DUsers
+		};
+	}
+	if(action.type==='AddDalogUsers'){
+		return{
+			...state,
+			 dialogUsers:[...state.users, action.DUsers]
+		};
+	}
+	if(action.type==='DelDalogUsers'){
+		const DelUser = action.DUsers;
+		return{
+			...state,
+			 dialogUsers:state.users.filter(x => x.id != DelUser.id)
+		};
+	}
+
+
 	if(action.type==='MyPage'){
 		return{
 			...state,
@@ -211,7 +249,7 @@ if(action.type==='LoadDialogList'){
 		 myDialogList:action.DialogList
 	};
 }
-if(action.type=='RemoveDialog'){
+if(action.type==='RemoveDialog'){
 	return{
 		...state,
 		myDialogList:state.myDialogList.filter(x=>x.id!=action.RemoveDialog)

@@ -20,22 +20,45 @@ namespace WebApplication1.Controllers
     {
         private DatingContext db = new DatingContext();
 
+        private object SelectionWithId(int[] id, List<FriendList> fullFavoriteList)
+        {
+            List<ClientUser> userList = new List<ClientUser>();
+            using (DatingContext db = new DatingContext())
+            {
+                for (int i = 0; i < id.Length; i++)
+                {
+                    int currentId = id[i];
+                    userList.Add(new ClientUser(db.SiteUsers.FirstOrDefault(x => x.id == currentId)));
+                }
+            }
+            List<Avatar> avatars = AvatarsController.GetAvatars(id);
+
+            return new { userList, avatars, id, fullFavoriteList };
+        }
 
         // GET: api/FriendLists/5
         [ResponseType(typeof(FriendList))]
-        public IHttpActionResult GetFriendList(int id)
+        public IHttpActionResult GetFriendList(int id, int page)
         {
             CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
             if (!CheckAccess.IsAccess(cookie, id, "User"))
                 return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
-            List<FriendList> friendList = db.Friends.Where(x => x.who == id).ToList();
+            List<FriendList> fullFavoriteList = db.Friends.Where(x => x.who == id).ToList();
+
+            int startNum = (page-1) * 12;
+            List<FriendList> friendList = fullFavoriteList.OrderBy(x => x.id).Skip(startNum).Take(12).ToList();//db.Friends.Where(x => x.who == id).OrderBy(x => x.id).Skip(0).Take(12).ToList();
             if (friendList == null)
             {
                 return NotFound();
             }
-
-            return Ok(friendList);
+            List<int> usersId = new List<int>();
+            for(int i=0;i< friendList.Count; i++)
+            {
+                usersId.Add(friendList[i].with);
+            }
+            
+            return Ok(SelectionWithId(usersId.ToArray(), fullFavoriteList));
         }
 
         

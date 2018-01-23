@@ -2,27 +2,58 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Link, Route } from 'react-router-dom';
 import Cookies from 'universal-cookie';
+import {  bindAvatar } from './App.js'
+import {pagingButtons} from './Users.js';
 
 class Users extends  Component{
   constructor(props){
     super(props);
     this.state={
-      users:Object.assign([],this.props.Store.users)
+      page:1,
+      users:this.props.Store.users
     }
     this.adminInterface=this.adminInterface.bind(this);
     this.moderInterface=this.moderInterface.bind(this);
     this.getRoleList=this.getRoleList.bind(this);
     this.onEditUserRole=this.onEditUserRole.bind(this);
     this.onRemoveUser=this.onRemoveUser.bind(this);
+    this.getUsers=this.getUsers.bind(this);
+  }
+  componentWillMount(){
+    this.getUsers(this.state.page);
+  }
+  getUsers(currentPage){
+    fetch(this.props.Store.Url["Users"]+"/?id="+this.props.Store.myPage.id+"&page="+currentPage)
+    .then(function(response){
+      return response.json();
+    })
+    .then(function(json){
+      return(json);
+    })
+    .then(result => {
+      this.props.DispathcLoadAvatars(result.avatars);
+      var loadUsers=bindAvatar(result.userList, this.props.Store.avatar);
+      this.props.DispatchLoadUsers(loadUsers);
+
+      // getSiteUsers.onopen= function (msg) {
+      // getSiteUsers.send(JSON.stringify(result.id));
+      // };
+      // if(getSiteUsers.readyState === getSiteUsers.OPEN)
+      //    getSiteUsers.send(JSON.stringify(result.id));
+      // this.setState({isLoaded:true});
+    })
+    this.setState({page:currentPage});
   }
   onRoleChange(e,user){
-    var getUser=this.state.users;
+    // this.setState({users: this.props.Store.users});
+    // var getUser=this.state.users;
+    var getUser=this.props.Store.users;
     getUser.filter(x=>x==user)[0].roleid=this.props.Store.roles.filter(x=> x.roleName==e.target.value)[0].id;
     this.setState({users: getUser});
   }
   getRoleList(){
     return this.props.Store.roles.map(function(role){
-      return   <option selected value={role.roleName}>{role.roleName}</option>
+      return   <option defaultValue={role.roleName}>{role.roleName}</option>
       })
   }
   adminInterface(user){
@@ -34,12 +65,12 @@ class Users extends  Component{
                    {user.name}
                 </td>
                 <td>
-                  <select class="form-control" onChange={(e)=>{this.onRoleChange(e, user);}} value={roleAssoc}>
+                  <select className="form-control" onChange={(e)=>{this.onRoleChange(e, user);}} defaultValue={roleAssoc}>
                       {this.getRoleList()}
                   </select>
                 </td>
-                <td><button class="btn btn-link" onClick={()=>{this.onEditUserRole(user);}}>Save changes</button></td>
-                <td><button class="btn btn-link" onClick={()=>{this.onRemoveUser(user);}}>Delete user</button></td>
+                <td><button className="btn btn-link" onClick={()=>{this.onEditUserRole(user);}}>Save changes</button></td>
+                <td><button className="btn btn-link" onClick={()=>{this.onRemoveUser(user);}}>Delete user</button></td>
            </tr>
   }
   moderInterface(user){
@@ -82,7 +113,7 @@ class Users extends  Component{
     })
    .then(result => {
      this.props.DispatchDelUser(user);
-     this.setState({users: this.props.Store.users});
+     // this.setState({users: this.props.Store.users});
      })
   }
 
@@ -90,7 +121,7 @@ class Users extends  Component{
   render(){
     const cookies = new Cookies();
     return <div>
-             <table class="table table-bordered">
+             <table className="table table-bordered">
                <thead>
                   <tr>
                     <th>User</th>
@@ -101,16 +132,19 @@ class Users extends  Component{
                 </thead>
                 <tbody>
                  {
-                     this.state.users.map(function(user){
-                     if(cookies.get('UserSession').roleid==this.props.Store.roles.filter(x=> x.roleName=="Admin")[0].id)
+                     this.props.Store.users.map(function(user){
+                     if(cookies.get('UserSession').roleid==this.props.Store.roles.filter(x=> x.roleName=="Admin")[0].id &&
+                        user.id!=this.props.Store.myPage.id)
                        return this.adminInterface(user);
-                     else if (cookies.get('UserSession').roleid==this.props.Store.roles.filter(x=> x.roleName=="Moder")[0].id)
+                     else if (cookies.get('UserSession').roleid==this.props.Store.roles.filter(x=> x.roleName=="Moder")[0].id &&
+                              user.id!=this.props.Store.myPage.id)
                       return this.moderInterface(user);
                      }.bind(this)
                    )
                  }
               </tbody>
             </table>
+              {pagingButtons(this.state.page, this.props.Store.users, this.getUsers)}
            </div>
   }
 }
@@ -125,6 +159,12 @@ export default connect(
       },
       DispatchDelUser:(user)=>{
         dispatch({type:'DelUser', Users: user});
+      },
+      DispatchLoadUsers:(user)=>{
+        dispatch({type:'LoadUser', Users: user});
+      },
+      DispathcLoadAvatars:(avatar)=>{
+        dispatch({type:"LoadAvatar", Avatar: avatar})
       }
 
     })

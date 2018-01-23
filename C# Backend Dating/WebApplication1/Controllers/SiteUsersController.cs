@@ -25,6 +25,60 @@ namespace WebApplication1.Controllers
         private DatingContext db = new DatingContext();
 
 
+
+        private object SortByFilter(Filter filter, int page)// List<ClientUser>
+        {
+            if (filter.nameForSearch == null)
+                filter.nameForSearch = "";
+            //if (filter.isOnline)
+
+            int startNum = (page-1) * 12;
+            int from = 0;
+            int to = 0;
+            if (filter.ageForSearch != "All")
+            {
+
+                from = Convert.ToInt32(filter.ageForSearch.Split(' ')[0]);
+                if (from == 53)
+                    to = 200;
+                else
+                    to = Convert.ToInt32(filter.ageForSearch.Split(' ')[2]);
+
+   
+            }
+            if (filter.nameForSearch == null)
+                filter.nameForSearch = "";
+            using (DatingContext db = new DatingContext())
+            {
+                List<SiteUser> SUsers = db.SiteUsers.Where(x =>
+                  ((DateTime.Now.Year - x.birthDay.Year >= from && DateTime.Now.Year - x.birthDay.Year <= to) || filter.ageForSearch == "All")
+                  && x.name.Contains(filter.nameForSearch)
+                  && (x.city == filter.cityForSearch || filter.cityForSearch == "All")
+                  && (x.genderForSearch == filter.genderForSearch || filter.genderForSearch == "All")
+                  && x.id != filter.id
+                  && (x.online== filter.isOnline || x.online==true)//online == false тогда фильтр по онлайну отключени и true || false делает выборку всего "игнорируя" этот пункт, если же включен, то выходит true||true тоесть фильтр по онлайну работает
+                  && x.name.Contains(filter.nameForSearch)
+                ).OrderBy(x => x.name).Skip(startNum).Take(12).ToList();
+
+                SUsers.Add(db.SiteUsers.FirstOrDefault(x => x.id == filter.id));
+
+                List<ClientUser> userList = new List<ClientUser>();
+                foreach (SiteUser user in SUsers)
+                {
+                    userList.Add(new ClientUser(user));
+                }
+
+                List<int> id = new List<int>();//На фронтеэнде его отправим в вебсокет обновления статуса
+                for (int i = 0; i < userList.Count; i++)
+                {
+                    id.Add(userList[i].id);
+                }
+                List<Avatar> avatars = AvatarsController.GetAvatars(id.ToArray());
+                //object sendData = new { userList, avatars };
+                return new { userList, avatars, id };
+            }
+        }
+
         string PasswordToMD5(string Password)
         {
             using (MD5 md5Hash = MD5.Create())
@@ -40,29 +94,61 @@ namespace WebApplication1.Controllers
             }
         }
         
-        // GET: api/SiteUsers
-        public object GetSiteUsers()
-        {
+        //// GET: api/SiteUsers
+        //public object GetSiteUsers()
+        //{
          
-            List<ClientUser> users=new List<ClientUser>();
-            foreach(SiteUser user in db.SiteUsers)
-            {
-                users.Add(new ClientUser(user));
-            }
-            return users;
-        }
+        //    List<ClientUser> users=new List<ClientUser>();
+        //    foreach(SiteUser user in db.SiteUsers)
+        //    {
+        //        users.Add(new ClientUser(user));
+        //    }
+        //    return users;
+        //}
 
         // GET: api/SiteUsers
         [ResponseType(typeof(SiteUser))]
-        public IHttpActionResult GetSiteUser(int id)
+        public IHttpActionResult GetSiteUsers(int id, int page)
         {
             SiteUser siteUser = db.SiteUsers.Find(id);
             if (siteUser == null)
             {
                 return NotFound();
             }
-            ClientUser user = new ClientUser(siteUser);
-            return Ok(user);
+            //SortByFilter(new Filter(siteUser));
+            return Ok(SortByFilter(new Filter(siteUser), page));
+        }
+
+        // GET: api/SiteUsers
+        //[HttpPost]
+        [ResponseType(typeof(SiteUser))]
+        public IHttpActionResult GetOneSiteUser(int id)
+        {
+            ClientUser siteUser = new ClientUser(db.SiteUsers.Find(id));
+            if (siteUser == null)
+            {
+                return NotFound();
+            }
+            //Avatar avatar = db.Avatars.FirstOrDefault(x => x.siteUserId == id &&
+            //                                             x.confirmState == "Confirmed");
+            List<Avatar> avatar = AvatarsController.GetAvatars(new int[1] {id});
+
+            return Ok(new { siteUser, avatar });
+        }
+
+        [ResponseType(typeof(SiteUser))]
+        public IHttpActionResult GetSiteUsers(int id, int page, string name, bool isOnline)
+        {
+            SiteUser siteUser = db.SiteUsers.Find(id);
+            if (siteUser == null)
+            {
+                return NotFound();
+            }
+            Filter filter = new Filter(siteUser);
+            filter.nameForSearch = name;
+            filter.isOnline = isOnline;
+            //SortByFilter(new Filter(siteUser));
+            return Ok(SortByFilter(filter, page));
         }
 
         // PUT: api/SiteUsers
@@ -108,7 +194,6 @@ namespace WebApplication1.Controllers
 
             }
 
-
             db.Entry(siteUser).State = EntityState.Modified;
            
             try
@@ -126,10 +211,13 @@ namespace WebApplication1.Controllers
                     throw;
                 }
             }
-        
+
             ClientUser clientUser = new ClientUser(siteUser);
+
+            //return Ok(SortByFilter(new Filter(siteUser),1));
             return CreatedAtRoute("DefaultApi", new { id = clientUser.id }, clientUser);
         }
+
 
         // POST: api/SiteUsers
         [ResponseType(typeof(SiteUser))]

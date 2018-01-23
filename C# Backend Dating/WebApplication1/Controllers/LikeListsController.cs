@@ -20,26 +20,53 @@ namespace WebApplication1.Controllers
     {
         private DatingContext db = new DatingContext();
 
+        public static object SelectionWithId(int[] id)
+        {
+            List<ClientUser> userList = new List<ClientUser>();
+            using (DatingContext db = new DatingContext())
+            {
+                for (int i = 0; i < id.Length; i++)
+                {
+                    int currentId = id[i];
+                    userList.Add(new ClientUser(db.SiteUsers.FirstOrDefault(x => x.id == currentId)));
+                }
+            }
+            List<Avatar> avatars = AvatarsController.GetAvatars(id);
+
+            return new { userList, avatars, id };
+        }
 
         // GET: api/LikeLists/5
-        //[ResponseType(typeof(LikeList))]
-        //public IHttpActionResult GetLikeList(int id)
-        // {
-        //    CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
-        //    if (!CheckAccess.IsAccess(cookie, id, "User"))
-        //        return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
+        [ResponseType(typeof(LikeList))]
+        public IHttpActionResult GetLikeList(int id, int page)
+        {
+            CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
+            if (!CheckAccess.IsAccess(cookie, id, "User"))
+                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
-        //    List<LikeList> likeList = db.LikeList.Where(x => x.from == id ||
-        //                                                     x.to == id).ToList();
-        //    if (likeList == null)
-        //    {
-        //        return NotFound();
-        //    }
+            int startNum = (page-1) * 12;
+            List<LikeList> likeList = db.LikeList.Where(x => x.from == id ||
+                                                             x.to == id).OrderBy(x => x.id).Skip(startNum).Take(12).ToList();
+            if (likeList == null)
+            {
+                return NotFound();
+            }
+            List<int> usersId = new List<int>();
+            for (int i = 0; i < likeList.Count; i++)
+            {
+                int userId;
+                if (likeList[i].from != id && !usersId.Contains(likeList[i].from) && !usersId.Contains(likeList[i].to))
+                    userId = likeList[i].from;
+                else
+                    userId = likeList[i].to;
 
-        //    return Ok(likeList);
-        //}
+                usersId.Add(userId);
+            }
 
-     
+            return Ok(SelectionWithId(usersId.ToArray()));
+        }
+
+
 
         // POST: api/LikeLists
         [ResponseType(typeof(LikeList))]
