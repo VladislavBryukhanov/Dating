@@ -4,12 +4,14 @@ import { Link, Route } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import {  bindAvatar } from './App.js'
 import {pagingButtons} from './Users.js';
+import Loading from './Layout/bx_loader.gif';
 
 class Users extends  Component{
   constructor(props){
     super(props);
     this.state={
       page:1,
+      isLoaded:false,
       users:this.props.Store.users
     }
     this.adminInterface=this.adminInterface.bind(this);
@@ -23,6 +25,7 @@ class Users extends  Component{
     this.getUsers(this.state.page);
   }
   getUsers(currentPage){
+    this.setState({isLoaded:false});
     fetch(this.props.Store.Url["Users"]+"/?id="+this.props.Store.myPage.id+"&page="+currentPage)
     .then(function(response){
       return response.json();
@@ -34,6 +37,7 @@ class Users extends  Component{
       this.props.DispathcLoadAvatars(result.avatars);
       var loadUsers=bindAvatar(result.userList, this.props.Store.avatar);
       this.props.DispatchLoadUsers(loadUsers);
+      this.setState({isLoaded:true});
 
       // getSiteUsers.onopen= function (msg) {
       // getSiteUsers.send(JSON.stringify(result.id));
@@ -117,8 +121,8 @@ class Users extends  Component{
      })
   }
 
-
-  render(){
+   render(){
+     if(this.state.isLoaded){
     const cookies = new Cookies();
     return <div>
              <table className="table table-bordered">
@@ -146,6 +150,8 @@ class Users extends  Component{
             </table>
               {pagingButtons(this.state.page, this.props.Store.users, this.getUsers)}
            </div>
+     }
+    else return <div className="Loading"><img src={Loading}/></div>
   }
 }
 export default connect(

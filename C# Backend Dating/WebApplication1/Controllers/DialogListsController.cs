@@ -29,6 +29,24 @@ namespace WebApplication1.Controllers
             if (!CheckAccess.IsAccess(cookie, id, "User"))
                 return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
+            /*
+                        List<Dialog> dialogList = db.Dialogs.Where(x => x.from == id || x.to == id).Distinct().ToList();
+            if (dialogList == null)
+            {
+                return NotFound();
+            }
+            List<int> usersId = new List<int>();
+            for (int i = 0; i < dialogList.Count; i++)
+            {
+                int userId;
+                if (dialogList[i].to != id && !usersId.Contains(dialogList[i].to) && !usersId.Contains(dialogList[i].from))
+                    userId = dialogList[i].to;
+                else
+                    userId = dialogList[i].from;
+
+                usersId.Add(userId);
+            }
+            */
             List<DialogList> dialogList = db.DialogLists.Where(x => x.firstUserId == id || x.secondUserId == id).ToList();
             if (dialogList == null)
             {
@@ -130,3 +148,4 @@ namespace WebApplication1.Controllers
         }
     }
 }
+ 

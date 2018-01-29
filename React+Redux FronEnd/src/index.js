@@ -12,6 +12,14 @@ import Clock from './Clock.jpg';
 import App from './App';
 import Menu from './Menu';
 
+import {
+ createAction,
+ createActions,
+ handleActions,
+ handleAction,
+ combineActions
+} from 'redux-actions';
+
 // import Avatar from './Reducers/Avatar.js';
 // import Dialog from './Reducers/Dialog.js';
 // import Favorites from './Reducers/Favorites.js';
@@ -22,66 +30,57 @@ import Menu from './Menu';
 
 var serverAddress="localhost:59088";
 var store;
-	fetch("http://"+serverAddress+"/api/Avatars")
-	.then(function(response){
-		return response.json();
-	})
-	.then(function(json){
-		return(json);
-	})
-  .then(result => {
+	// fetch("http://"+serverAddress+"/api/Avatars")
+	// .then(function(response){
+	// 	return response.json();
+	// })
+	// .then(function(json){
+	// 	return(json);
+	// })
+  // .then(result => {
 		// result.push({base64:Clock, id:"Clock"});
 		// result.push({base64:Avatar, id:"None"})
 
-		var initialState={
-			Url:{
-				"GetUsers":"ws://"+serverAddress+"/Controllers/GetUsers.ashx",
+const initialState={
+	Url:{
+		"GetUsers":"ws://"+serverAddress+"/Controllers/GetUsers.ashx",
 
-				"GetDialogList":"ws://"+serverAddress+"/Controllers/GetDialogList.ashx",
-				"GetLikes":"ws://"+serverAddress+"/Controllers/GetLikes.ashx",
-				"GetGuests":"ws://"+serverAddress+"/Controllers/GetGuests.ashx",
+		"GetDialogList":"ws://"+serverAddress+"/Controllers/GetDialogList.ashx",
+		"GetLikes":"ws://"+serverAddress+"/Controllers/GetLikes.ashx",
+		"GetGuests":"ws://"+serverAddress+"/Controllers/GetGuests.ashx",
 
-				"MessageSocket":"ws://"+serverAddress+"/Controllers/Chat.ashx",
-				"AuthSocket":"ws://"+serverAddress+"/Controllers/OnlineStatusChecker.ashx",
+		"MessageSocket":"ws://"+serverAddress+"/Controllers/Chat.ashx",
+		"AuthSocket":"ws://"+serverAddress+"/Controllers/OnlineStatusChecker.ashx",
 
-				"Roles":"http://"+serverAddress+"/api/Roles",
-				"Avatar":"http://"+serverAddress+"/api/Avatars",
-				"FriendList":"http://"+serverAddress+"/api/FriendLists",
-				"LikeList":"http://"+serverAddress+"/api/LikeLists",
-				"GuestsList":"http://"+serverAddress+"/api/GuestLists",
-				"DialogList":"http://"+serverAddress+"/api/DialogLists",
-				"Messages":"http://"+serverAddress+"/api/Dialogs",
-				"Hobby":"http://"+serverAddress+"/api/Hobbies",
-				"Authorize":"http://"+serverAddress+"/api/Authentific",
-				// "Gallery":"http://"+serverAddress+"/api/Galleries",
-				"Users":"http://"+serverAddress+"/api/SiteUsers",
-				"Gallery":"http://"+serverAddress+"/api/Galleries"
-			},
-			avatar:result,
-			roles:[],
-			users:[],
-			dialogUsers:[],
-			messages:[],
-			likes:[],
-			favorites:[],
-			myDialogList: [],
-			guests:[],
-			myPage:null
-		}
-			 store  = createStore(Reducer,initialState, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());//создаем стор только после выкачивания данных из бэекенда и закидываем эти данные в стор, это будет его начальный контент
+		"RegData":"http://"+serverAddress+"/api/GetAllRegistrationData",
+		"Roles":"http://"+serverAddress+"/api/Roles",
+		"Avatar":"http://"+serverAddress+"/api/Avatars",
+		"FriendList":"http://"+serverAddress+"/api/FriendLists",
+		"LikeList":"http://"+serverAddress+"/api/LikeLists",
+		"GuestsList":"http://"+serverAddress+"/api/GuestLists",
+		"DialogList":"http://"+serverAddress+"/api/DialogLists",
+		"Messages":"http://"+serverAddress+"/api/Dialogs",
+		"Hobby":"http://"+serverAddress+"/api/Hobbies",
+		"Authorize":"http://"+serverAddress+"/api/Authentific",
+		// "Gallery":"http://"+serverAddress+"/api/Galleries",
+		"Users":"http://"+serverAddress+"/api/SiteUsers",
+		"Gallery":"http://"+serverAddress+"/api/Galleries"
+	},
+	formData:[],
+	avatar:[],
+	roles:[],
+	users:[],
+	dialogUsers:[],
+	messages:[],
+	likes:[],
+	favorites:[],
+	myDialogList: [],
+	guests:[],
+	myPage:null
+}
 
-			 ReactDOM.render(
-				 <Provider store={store}>
-					 <BrowserRouter>
-						 <Switch>
-								<Route exact path='/' component={App}/>
-							  // <Route path='/HomePage' component={Menu}/>
-							</Switch>
-					 </BrowserRouter>
-				 </Provider>,
-				 document.getElementById('root')
-			 );
-  });
+  // });
+
 // function myCombineReducer(state, action){
 // 	console.log(action);
 // 	switch(action)
@@ -96,7 +95,7 @@ var store;
 // 	}
 // 	return state;
 // }
-
+/*
 function Reducer(state, action){
 	if(action.type==='LoadAvatar'){
 		// action.Avatar.push({base64:Clock, id:"Clock"});
@@ -163,12 +162,6 @@ function Reducer(state, action){
 
 
 	if(action.type==='LoadDalogUsers'){
-		return{
-			...state,
-			 dialogUsers: action.DUsers
-		};
-	}
-	if(action.type==='UpdateDalogUsers'){
 		return{
 			...state,
 			 dialogUsers: action.DUsers
@@ -283,6 +276,168 @@ if(action.type==='LoadMessage'){
 	}
 	return state;
 }
+*/
+
+// const { LoadAvatar, increment, decrement } = createActions({
+//   'LoadAvatar': amount => ({ amount: amount.Avatar }),
+// 	'INCREMENT': amount => ({ amount: 1 }),
+//   'DECREMENT': amount => ({ amount: -1 })
+// });
+//
+// const Reducer2 = handleActions({
+//   [combineActions(increment, decrement)](state, Avatar){ // { payload: { amount } }) {
+// 		console.log(Avatar);
+//     return {...state, avatar: Avatar};
+//   }
+// }, initialState);
+
+
+// Reducer2({ counter: 5 }, increment(5))).to.deep.equal({ counter: 10 })
+
+
+// dispatch(increment(5));
+
+// const { increment, decrement } = createActions({
+//   'INCREMENT': amount => ({ amount: 1 }),
+//   'DECREMENT': amount => ({ amount: -1 })
+// });
+//
+// const reducer = handleActions({
+//   [combineActions(increment, decrement)](state, { payload: { amount } }) {
+//     return { ...state, counter: state.counter + amount };
+//   }
+// }, defaultState);
+
+
+// const { increment, decrement } = createActions({
+//   'LoadAvatar': amount => ({ amount: 1 }),
+//   'DECREMENT': amount => ({ amount: -1 })
+// });
+//
+// const Reducer2 = handleActions({
+//   [combineActions(increment, decrement)](state) {
+// 		console.log("action.Avatar");
+//     return { ...state};
+//   }
+// }, initialState);
+
+
+
+
+
+// const reducer = handleActions({
+//   INCREMENT: (state, action) => ({
+//     counter: state.counter + action.payload
+//   }),
+//   DECREMENT: (state, action) => ({
+//     counter: state.counter - action.payload
+//   })
+// }, { counter: 0 });
+
+	const Edit=(data, actionData)=>{
+		for(var i = 0;i<data.length; i++){
+			if(data[i].id=actionData.id){
+				data[i]=actionData;
+			}
+			return [...data];
+		}
+	}
+
+	const Reducer = handleActions({
+		LoadFormData: (state, action) => ({
+			...state, formData:action.Data
+		}),
+	  LoadAvatar: (state, action) => ({
+	    ...state, avatar:action.Avatar
+	  }),
+		AddAvatar: (state, action) => ({
+			...state, avatar:[...state.avatar, action.Avatar]
+		}),
+		DelAvatar: (state, action) => ({
+			...state, avatar:state.avatar.filter(item => item != action.Avatar)
+		}),
+		EditAvatar: (state, action) => ({
+			...state, avatar:Edit(state.avatar, action.Avatar)
+		}),
+		LoadUser: (state, action) => ({
+			...state, users: action.Users
+		}),
+		AddUser: (state, action) => ({
+			...state, users:[...state.users, action.Users]
+		}),
+		EditUser: (state, action) => ({
+			...state, users:Edit(state.users, action.Users)
+		}),
+		DelUser: (state, action) => ({
+			...state, users:state.users.filter(x => x.id != action.Users.id)
+		}),
+		LoadDalogUsers: (state, action) => ({
+			...state, dialogUsers: action.DUsers
+		}),
+		AddDalogUsers: (state, action) => ({
+			...state, dialogUsers:[...state.users, action.DUsers]
+		}),
+		DelDalogUsers: (state, action) => ({
+			...state, dialogUsers:state.users.filter(x => x.id != action.DUsers.id)
+		}),
+		MyPage: (state, action) => ({
+			...state, myPage:action.Users
+		}),
+		AddFavorite: (state, action) => ({
+			...state, favorites:[...state.favorites, action.Favorites]
+		}),
+		LoadFavorite: (state, action) => ({
+			...state, favorites:action.Favorites
+		}),
+		DeleteFavorite: (state, action) => ({
+			...state, favorites:state.favorites.filter(x => x.id != action.Favorites.id)
+		}),
+		AddLike: (state, action) => ({
+			...state, likes:[...state.likes, action.Likes]
+		}),
+		LoadLike: (state, action) => ({
+			...state, likes:action.Likes
+		}),
+		DeleteLike: (state, action) => ({
+			...state, likes:state.likes.filter(x => x.id != action.Likes.id)
+		}),
+		AddDialog: (state, action) => ({
+			...state, myDialogList:[...state.myDialogList, action.DialogList]
+		}),
+		LoadDialogList: (state, action) => ({
+			...state, myDialogList:action.DialogList
+		}),
+		RemoveDialog: (state, action) => ({
+			...state, myDialogList:state.myDialogList.filter(x=>x.id!=action.RemoveDialog)
+		}),
+		LoadMessage: (state, action) => ({
+			...state, messages: action.Message
+		}),
+		SendMessage: (state, action) => ({
+			...state, messages:[...state.messages, action.Message]
+		}),
+		LoadRoles: (state, action) => ({
+			...state, roles: action.Role
+		}),
+		LoadGuests: (state, action) => ({
+			...state, guests: action.Guest
+		}),
+	}, initialState);
+// store.dispatch(decrement());
+
+store  = createStore(Reducer,initialState, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());//создаем стор только после выкачивания данных из бэекенда и закидываем эти данные в стор, это будет его начальный контент
+
+ReactDOM.render(
+ <Provider store={store}>
+	 <BrowserRouter>
+		 <Switch>
+				<Route exact path='/' component={App}/>
+			  // <Route path='/HomePage' component={Menu}/>
+			</Switch>
+	 </BrowserRouter>
+ </Provider>,
+ document.getElementById('root')
+);
 
 // combineReducers({
 // 	Avatar,

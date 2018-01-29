@@ -55,15 +55,14 @@ namespace WebApplication1.Controllers
             for (int i = 0; i < likeList.Count; i++)
             {
                 int userId;
-                if (likeList[i].from != id && !usersId.Contains(likeList[i].from) && !usersId.Contains(likeList[i].to))
+                if (likeList[i].from != id)// && !usersId.Contains(likeList[i].from) && !usersId.Contains(likeList[i].to))
                     userId = likeList[i].from;
                 else
                     userId = likeList[i].to;
 
                 usersId.Add(userId);
             }
-
-            return Ok(SelectionWithId(usersId.ToArray()));
+            return Ok(SelectionWithId(usersId.Distinct().ToArray()));
         }
 
 

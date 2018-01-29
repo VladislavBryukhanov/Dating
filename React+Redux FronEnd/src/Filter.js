@@ -20,13 +20,18 @@ class Filter extends  Component{
     this.onCityForSearch=this.onCityForSearch.bind(this);
     this.onStatusFilterChange=this.onStatusFilterChange.bind(this);
     this.onFilterNameChange=this.onFilterNameChange.bind(this);
+
+    this.getCitiesList=this.getCitiesList.bind(this);
+    this.getAgeRangeList=this.getAgeRangeList.bind(this);
+    this.getTypeForSearchList=this.getTypeForSearchList.bind(this);
+
     // this.getUsers=this.getUsers.bind(this);
     }
 
 
     onGenderForSearchChange(e){
       var tmpForUpdate=this.state.user;
-      tmpForUpdate.genderForSearch=e.target.value
+      tmpForUpdate.typeForSearch=e.target.value
       this.setState({user: tmpForUpdate})
     }
     onAgeForSearchChange(e){
@@ -149,7 +154,21 @@ class Filter extends  Component{
      // getSiteUsers.send(JSON.stringify(filter));
    })
   }
-
+  getCitiesList(){
+    return this.props.Store.formData.cities.map(function(city){
+      return   <option key={city.id} value={city.cityName} defaultValue={city.cityName}>{city.cityName}</option>
+      })
+  }
+  getAgeRangeList(){
+    return this.props.Store.formData.ageForSearch.map(function(range){
+      return   <option key={range.id} value={range.rangeOfAge} defaultValue={range.rangeOfAge}>{range.rangeOfAge}</option>
+      })
+  }
+  getTypeForSearchList(){
+    return this.props.Store.formData.typeForSearch.map(function(type){
+      return   <option key={type.id} value={type.typeName} defaultValue={type.typeName}>{type.typeName}</option>
+      })
+  }
   render(){
     return <form encType="multipart/form-data" className="Filter  form-group col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
 
@@ -162,34 +181,25 @@ class Filter extends  Component{
 
                 <div className="form-group col-md-6  col-sm-6  col-xs-12">
                     <label>I search for</label>
-                    <select className="form-control" onChange={this.onGenderForSearchChange} value={this.state.user.genderForSearch}>
+                    <select className="form-control" onChange={this.onGenderForSearchChange} defaultValue={this.state.user.typeForSearch}>
                         <option value="All">All</option>
-                        <option value="Couple">Couple</option>
-                        <option value="Friends">Friends</option>
-                        <option value="Chat">Chat</option>
+                        {this.getTypeForSearchList()}
                     </select>
                 </div>
 
                 <div className="form-group col-md-6  col-sm-6  col-xs-12">
                     <label>The age range</label>
-                    <select className="form-control" onChange={this.onAgeForSearchChange} value={this.state.user.ageForSearch}>
+                    <select className="form-control" onChange={this.onAgeForSearchChange} defaultValue={this.state.user.ageForSearch}>
                         <option value="All">All</option>
-                        <option value="18 to 24 years">18 to 24 years</option>
-                        <option value="25 to 31 years">25 to 31 years</option>
-                        <option value="32 to 38 years">32 to 38 years</option>
-                        <option value="39 to 45 years">39 to 45 years</option>
-                        <option value="46 to 52 years">46 to 52 years</option>
-                        <option value="53 years and more">53 years and more</option>
+                        {this.getAgeRangeList()}
                     </select>
                 </div>
 
                 <div className="form-group col-md-6  col-sm-6  col-xs-12">
-                    <label>City of living</label>
-                    <select className="form-control" onChange={this.onCityForSearch} value={this.state.user.cityForSearch}>
+                    <label>City for search</label>
+                    <select className="form-control" onChange={this.onCityForSearch} defaultValue={this.state.user.cityForSearch}>
                         <option value="All">All</option>
-                        <option value="Washington">Washington</option>
-                        <option value="Moscow">Moscow</option>
-                        <option value="Pekin">Pekin</option>
+                        {this.getCitiesList()}
                     </select>
                 </div>
 

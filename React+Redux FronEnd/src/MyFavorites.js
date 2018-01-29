@@ -34,6 +34,7 @@ class MyLikes extends  Component{
         this.getUsers(this.state.page);
     }
     getUsers(currentPage){
+      this.setState({isLoaded:false});
       fetch(this.props.Store.Url["FriendList"]+"/?id="+this.props.Store.myPage.id+"&page="+currentPage, {
        credentials: 'include'
      }).then(function(response){

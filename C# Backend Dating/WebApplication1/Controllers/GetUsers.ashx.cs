@@ -278,8 +278,9 @@ namespace WebApplication1.Controllers
 
             if (clientSocket.State == WebSocketState.Open)
             {
-                    Thread closing = new Thread(async () => await GetNewFilterOrClose(clientSocket, wsId));//, clientId));
-                    closing.Start();
+                    //Thread closing = new Thread(async () => await GetNewFilterOrClose(clientSocket, wsId));//, clientId));
+                    Thread closing = new Thread(() => GetNewFilterOrClose(clientSocket, wsId));//, clientId));
+                closing.Start();
             }
 
             //bool getFirstAva = true;
@@ -287,7 +288,7 @@ namespace WebApplication1.Controllers
             {
                 await GetCurrentUsers(getUserListFor[wsId].ToArray(), clientSocket);
                 //getFirstAva = false;
-                Thread.Sleep(9000);
+                Thread.Sleep(3000);
             }
             //Filters.RemoveAt(Filters.FindIndex(x => x.id == clientId));
 

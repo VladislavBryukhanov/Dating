@@ -28,9 +28,35 @@ class Registration extends Component {
     this.onEducationChange=this.onEducationChange.bind(this);
     this.onBirthDayChange=this.onBirthDayChange.bind(this);
 
+    this.getCitiesList=this.getCitiesList.bind(this);
+    this.getAgeRangeList=this.getAgeRangeList.bind(this);
+    this.getTypeForSearchList=this.getTypeForSearchList.bind(this);
+    this.getEducationList=this.getEducationList.bind(this);
+
     this.toNextStep= this.toNextStep.bind(this);
     this.onSubmit=this.onSubmit.bind(this);
   }
+  getCitiesList(){
+    return this.props.Store.formData.cities.map(function(city){
+      return   <option key={city.id} value={city.cityName} defaultValue={city.cityName}>{city.cityName}</option>
+      })
+  }
+  getAgeRangeList(){
+    return this.props.Store.formData.ageForSearch.map(function(range){
+      return   <option key={range.id} value={range.rangeOfAge} defaultValue={range.rangeOfAge}>{range.rangeOfAge}</option>
+      })
+  }
+  getTypeForSearchList(){
+    return this.props.Store.formData.typeForSearch.map(function(type){
+      return   <option key={type.id} value={type.typeName} defaultValue={type.typeName}>{type.typeName}</option>
+      })
+  }
+  getEducationList(){
+    return this.props.Store.formData.education.map(function(education){
+      return   <option key={education.id} value={education.educationName} defaultValue={education.educationName}>{education.educationName}</option>
+      })
+  }
+
   onGenderChange(e){
     this.setState({gender: e.target.value})
   }
@@ -65,42 +91,33 @@ class Registration extends Component {
                       <div className="form-group col-md-2 col-md-offset-1 col-sm-2 col-sm-offset-1 col-xs-12">
                           <label>Gender</label>
                           <select className="form-control" onChange={this.onGenderChange} >
-                              <option selected value=""></option>
-                              <option value="Male">Male</option>
-                              <option value="Female">Female</option>
+                              <option defaultValue=""></option>
+                              <option value="true">Male</option>
+                              <option value="false">Female</option>
                           </select>
                       </div>
 
                       <div className="form-group col-md-2 col-sm-2 col-xs-12">
                           <label>I am looking for</label>
                           <select className="form-control" onChange={this.onGenderForSearchChange}>
-                              <option selected value=""></option>
-                              <option value="Couple">Couple</option>
-                              <option value="Friends">Friends</option>
-                              <option value="Chat">Chat</option>
+                              <option defaultValue=""></option>
+                              {this.getTypeForSearchList()}
                           </select>
                       </div>
 
                       <div className="form-group col-md-2 col-sm-2 col-xs-12">
                           <label>Age for search</label>
                           <select className="form-control" onChange={this.onAgeForSearchChange}>
-                              <option selected value=""></option>
-                              <option value="18 to 24 years">18 to 24 years</option>
-                              <option value="25 to 31 years">25 to 31 years</option>
-                              <option value="32 to 38 years">32 to 38 years</option>
-                              <option value="39 to 45 years">39 to 45 years</option>
-                              <option value="46 to 52 years">46 to 52 years</option>
-                              <option value="53 years and more">53 years and more</option>
+                              <option defaultValue=""></option>
+                              {this.getAgeRangeList()}
                           </select>
                       </div>
 
                       <div className="form-group col-md-2 col-sm-2 col-xs-12">
                           <label>City</label>
                           <select className="form-control" onChange={this.onCityChange}>
-                              <option selected value=""></option>
-                              <option value="Washington">Washington</option>
-                              <option value="Moscow">Moscow</option>
-                              <option value="Pekin">Pekin</option>
+                              <option defaultValue=""></option>
+                              {this.getCitiesList()}
                           </select>
                       </div>
                       <div className="form-group col-md-2 col-sm-2 col-xs-12">
@@ -145,12 +162,7 @@ class Registration extends Component {
                     <label>Education</label>
                     <select className="form-control" onChange={this.onEducationChange}>
                         <option selected="selected" value=""></option>
-                        <option value="Basic">Base</option>
-                        <option value="Middle">Middle</option>
-                        <option value="College">College</option>
-                        <option value="Universitet">Universitet</option>
-                        <option value="Post-graduate">Post-graduate</option>
-                        <option value="Other">Other</option>
+                        {this.getEducationList()}
                     </select>
                 </div>
 
@@ -207,7 +219,7 @@ class Registration extends Component {
   }
 }
 export default connect(
-    (state ) => ({
-      StoreUsers: state.users,
+    (state) => ({
+      Store: state
     })
 )(Registration);

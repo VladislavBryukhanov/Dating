@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -28,36 +29,44 @@ namespace WebApplication1.Controllers
 
         private object SortByFilter(Filter filter, int page)// List<ClientUser>
         {
+
+
             if (filter.nameForSearch == null)
                 filter.nameForSearch = "";
-            //if (filter.isOnline)
+
 
             int startNum = (page-1) * 12;
             int from = 0;
             int to = 0;
-            if (filter.ageForSearch != "All")
+
+            int ageFilterid = filter.ageForSearch;
+            string ageForSearch = db.AgeForSearch.FirstOrDefault(x => x.id == ageFilterid).rangeOfAge;
+            if (ageForSearch != "All")
             {
 
-                from = Convert.ToInt32(filter.ageForSearch.Split(' ')[0]);
+                from = Convert.ToInt32(ageForSearch.Split(' ')[0]);
                 if (from == 53)
                     to = 200;
                 else
-                    to = Convert.ToInt32(filter.ageForSearch.Split(' ')[2]);
-
-   
+                    to = Convert.ToInt32(ageForSearch.Split(' ')[2]);
             }
+
+            //Filter allFiter=new Filter();
+            //allFiter.ageForSearch = db.AgeForSearch.FirstOrDefault(x => x.rangeOfAge == "All").id;
+            //allFiter.cityForSearch = db.Cities.FirstOrDefault(x => x.cityName == "All").id;
+            //allFiter.genderForSearch = db.TypeForSearch.FirstOrDefault(x => x.typeName == "All").id;
+
             if (filter.nameForSearch == null)
                 filter.nameForSearch = "";
             using (DatingContext db = new DatingContext())
             {
                 List<SiteUser> SUsers = db.SiteUsers.Where(x =>
-                  ((DateTime.Now.Year - x.birthDay.Year >= from && DateTime.Now.Year - x.birthDay.Year <= to) || filter.ageForSearch == "All")
-                  && x.name.Contains(filter.nameForSearch)
-                  && (x.city == filter.cityForSearch || filter.cityForSearch == "All")
-                  && (x.genderForSearch == filter.genderForSearch || filter.genderForSearch == "All")
+                  ((DateTime.Now.Year - x.birthDay.Year >= from && DateTime.Now.Year - x.birthDay.Year <= to) || filter.ageForSearch == -1)
+                  && (x.cityid == filter.cityForSearch || filter.cityForSearch == -1)
+                  && (x.typeForSearchid == filter.typeForSearch || filter.typeForSearch == -1)
                   && x.id != filter.id
                   && (x.online== filter.isOnline || x.online==true)//online == false тогда фильтр по онлайну отключени и true || false делает выборку всего "игнорируя" этот пункт, если же включен, то выходит true||true тоесть фильтр по онлайну работает
-                  && x.name.Contains(filter.nameForSearch)
+                  && (x.name.ToLower().Contains(filter.nameForSearch.ToLower()))
                 ).OrderBy(x => x.name).Skip(startNum).Take(12).ToList();
 
                 SUsers.Add(db.SiteUsers.FirstOrDefault(x => x.id == filter.id));
@@ -116,6 +125,24 @@ namespace WebApplication1.Controllers
                 return NotFound();
             }
             //SortByFilter(new Filter(siteUser));
+
+            //if (siteUser.cityForSearchid == "All")
+            //{
+            //    id = user.typeForSearchid;
+            //    siteUser.typeForSearch = db.TypeForSearch.FirstOrDefault(x => x.id == id).typeName;
+            //}
+
+            //if (siteUser.ageForSearch == "All")
+            //{
+            //    id = user.ageForSearchid;
+            //    siteUser.ageForSearch = db.AgeForSearch.FirstOrDefault(x => x.id == id).rangeOfAge;
+            //}
+
+            //if (siteUser.cityForSearch == "All")
+            //{
+            //    id = user.cityForSearchid;
+            //    siteUser.cityForSearch = db.Cities.FirstOrDefault(x => x.id == id).cityName;
+            //}
             return Ok(SortByFilter(new Filter(siteUser), page));
         }
 
@@ -153,7 +180,7 @@ namespace WebApplication1.Controllers
 
         // PUT: api/SiteUsers
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutSiteUser(SiteUser siteUser)
+        public IHttpActionResult PutSiteUser(EditUser siteUser)
         {
             if (!ModelState.IsValid)
             {
@@ -172,7 +199,27 @@ namespace WebApplication1.Controllers
                 siteUser.sessionId = user.sessionId;
                 siteUser.dateOfEdit = DateTime.Now;
 
-     
+                int id;
+
+                //if (siteUser.cityForSearch == "All")
+                //{
+                //    id = user.typeForSearchid;
+                //    siteUser.typeForSearch = db.TypeForSearch.FirstOrDefault(x => x.id == id).typeName;
+                //}
+
+                //if (siteUser.ageForSearch == "All")
+                //{
+                //    id = user.ageForSearchid;
+                //    siteUser.ageForSearch = db.AgeForSearch.FirstOrDefault(x => x.id == id).rangeOfAge;
+                //}
+
+                //if (siteUser.cityForSearch == "All")
+                //{
+                //    id = user.cityForSearchid;
+                //    siteUser.cityForSearch = db.Cities.FirstOrDefault(x => x.id == id).cityName;
+                //}
+
+
 
                 int AdminId = db.Roles.FirstOrDefault(x => x.roleName == "Admin").id;
                 int ModerId = db.Roles.FirstOrDefault(x => x.roleName == "Moder").id;
@@ -194,8 +241,10 @@ namespace WebApplication1.Controllers
 
             }
 
-            db.Entry(siteUser).State = EntityState.Modified;
-           
+
+            SiteUser editedUser = new SiteUser(siteUser);
+            db.Entry(editedUser).State = EntityState.Modified;//в данном случае EntityState.Modified рвет веб сокет(onlineChecker) при редактировании
+
             try
             {
                 db.SaveChanges();
@@ -212,7 +261,7 @@ namespace WebApplication1.Controllers
                 }
             }
 
-            ClientUser clientUser = new ClientUser(siteUser);
+            ClientUser clientUser = new ClientUser(editedUser);
 
             //return Ok(SortByFilter(new Filter(siteUser),1));
             return CreatedAtRoute("DefaultApi", new { id = clientUser.id }, clientUser);
@@ -221,12 +270,18 @@ namespace WebApplication1.Controllers
 
         // POST: api/SiteUsers
         [ResponseType(typeof(SiteUser))]
-        public IHttpActionResult PostSiteUser([FromBody]SiteUser siteUser)
+        public IHttpActionResult PostSiteUser([FromBody]EditUser siteUser)//SiteUser siteUser)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            //if( siteUser.cityid == 0 ||
+            //    siteUser.educationid == 0 ||
+            //    siteUser.typeForSearchid == 0 ||
+            //    siteUser.ageForSearchid == 0 ||
+            //    siteUser.cityid == 0 ||
+            //    siteUser.cityForSearchid == 0 
+            //    )
+            //{
+            //    return BadRequest(ModelState);
+            //}
             if(db.SiteUsers.FirstOrDefault(x=>x.email==siteUser.email)!=null)
             {
                 return BadRequest("Email already exist!");
@@ -234,15 +289,16 @@ namespace WebApplication1.Controllers
             siteUser.password = PasswordToMD5(siteUser.password);
             siteUser.roleid = db.Roles.FirstOrDefault(x=>x.roleName=="User").id;
             siteUser.dateOfEdit = DateTime.Now;
-            db.SiteUsers.Add(siteUser);
+            SiteUser newUser = new SiteUser(siteUser);
+            db.SiteUsers.Add(newUser);
             db.SaveChanges();
 
             Hobby DefaultHobbies = new Hobby();
             DefaultHobbies.siteUserid = siteUser.id;
-            db.Hobbies.Add(DefaultHobbies);
+            //db.Hobbies.Add(DefaultHobbies);
             db.SaveChanges();
 
-            ClientUser clientUser = new ClientUser(siteUser);
+            ClientUser clientUser = new ClientUser(newUser);
             return CreatedAtRoute("DefaultApi", new { id = clientUser.id }, clientUser);
         }
 

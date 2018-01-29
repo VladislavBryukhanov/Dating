@@ -27,7 +27,9 @@ class Users extends  Component{
   }
   getUsers(currentPage){
       // fetch(this.props.Store.Url["Users"]+"/?id="+this.props.Store.myPage.id+"&page="+currentPage)
-      var path
+
+      this.setState({isLoaded:false});
+      var path;
       if(this.props.Store.myPage.nameFilter!=undefined){
         path=this.props.Store.Url["Users"]+"/?id="+this.props.Store.myPage.id+"&page="+currentPage+
             "&name="+this.props.Store.myPage.nameFilter+"&isOnline="+this.props.Store.myPage.onlineFilter;
@@ -94,7 +96,7 @@ class Users extends  Component{
                            onClick={()=>{this.props.ownProps.history.push('/HomePage/Profile/'+user.id);}}/>
                    <p className="userName">{user.name}</p>
                    <p className="userAge">{age} years old</p>
-                   <p>{user.genderForSearch}<div className={isOnline}></div></p>
+                   <p>{user.typeForSearch}<div className={isOnline}></div></p>
                    <p>{user.city}<span>{count}</span></p>
 
             </div>
@@ -165,15 +167,16 @@ class Users extends  Component{
                        }.bind(this)
                      )
                    }
-                   {pagingButtons(this.state.page, this.props.Store.users, this.getUsers)}
+                   {
+                     pagingButtons(this.state.page, this.props.Store.users, this.getUsers)
+                   }
              </div>
     }
     else return <div className="Loading"><img src={Loading}/></div>
   }
 }
 
-function pagingButtons(page,users, method){
-  console.log(page);
+function pagingButtons(page, users, method){
   var nextBtn= <button className="Paging" onClick={()=>{method(page+1);}}>
                <img src={Right}/>
             </button>;

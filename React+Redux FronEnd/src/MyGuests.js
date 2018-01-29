@@ -36,6 +36,7 @@ componentWillMount(){
 this.getUsers(this.state.page);
 }
   getUsers(currentPage){
+    this.setState({isLoaded:false});
     fetch(this.props.Store.Url["GuestsList"]+"/?id="+this.props.Store.myPage.id+"&page="+currentPage, {
      credentials: 'include'
     }).then(function(response){

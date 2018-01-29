@@ -9,11 +9,11 @@ namespace WebApplication1.Models
     {
         public int id { get; set; }
         public bool isOnline { get; set; }
-        public string gender { get; set; }
+        public bool gender { get; set; }
         public string nameForSearch { get; set; }
-        public string genderForSearch { get; set; }
-        public string ageForSearch { get; set; }
-        public string cityForSearch { get; set; }
+        public int typeForSearch { get; set; }
+        public int ageForSearch { get; set; }
+        public int cityForSearch { get; set; }
 
         public int[] getUsersWithId { get; set; }
         public int page { get; set; }
@@ -23,9 +23,9 @@ namespace WebApplication1.Models
         {
             this.id = user.id;
             this.gender = user.gender;
-            this.genderForSearch = user.genderForSearch;
-            this.ageForSearch = user.ageForSearch;
-            this.cityForSearch = user.cityForSearch;
+            this.typeForSearch = user.typeForSearchid;
+            this.ageForSearch = user.ageForSearchid;
+            this.cityForSearch = user.cityForSearchid;
         }
 
     }

@@ -13,7 +13,7 @@ import MyGuests from './MyGuests.js'
 import MyLikes from './MyLikes.js'
 import MyFavorites from './MyFavorites.js'
 import Filter from './Filter.js'
-
+import EditHobbies from './EditHobbies.js'
 import AdminList from './AdminList.js'
 import MassMessage from './MassMessage.js'
 
@@ -100,9 +100,10 @@ class MyMenu extends  Component{
     })
     .then(result => {
       var dialogUsers=bindAvatar(result.userList, result.avatars);
-      this.props.DispatchLoadDalogUsers(dialogUsers);
+      this.props.DispatchLoadDialogUsers(dialogUsers);
+      this.loadDialogList();
 
-      // DispatchLoadDalogUsers
+      // DispatchLoadDialogUsers
 
       // this.props.DispathcLoadAvatars(result.avatars);
       // var loadUsers=bindAvatar(result.userList, result.avatars);
@@ -124,8 +125,8 @@ class MyMenu extends  Component{
              update.push(user);
            })
            //users=bindAvatar(users, this.props.Store.dialogUsers.avatars);
-           this.props.DispatchLoadDalogUsers(update);
-           this.loadDialogList(update);
+           this.props.DispatchLoadDialogUsers(update);
+           this.loadDialogList();
          }
        }.bind(this);
     })
@@ -157,12 +158,10 @@ class MyMenu extends  Component{
     if(getDialogList.readyState === getDialogList.OPEN)
        getDialogList.send(this.props.Store.myPage.id );
     getDialogList.onmessage = function (msg) {
-      if(msg.data!=this.props.Store.myDialogList){
         this.props.DispatchLoadDialogList(JSON.parse( msg.data ));
 
         getDialogUsers.close();
         this.loadAllDialogUser();
-      }
     }.bind(this);
   }
   onSelectDialogChanged(e, dialog){
@@ -173,7 +172,8 @@ class MyMenu extends  Component{
       newState=newState.filter(x=>x!=dialog);
     this.setState({selectedDialogs: newState})
   }
-  loadDialogList(dialogUsers){
+
+  loadDialogList(){
    //  fetch(this.props.Store.Url["DialogList"]+"/"+this.props.Store.myPage.id,{credentials: 'include'})//Не безопасно, т к любой юзер сможет читать сообщения подставив эти значения в урл
    //  .then(function(response){
    //   return(response.json());
@@ -187,7 +187,10 @@ class MyMenu extends  Component{
           otherUserId=dialogs.secondUserId;
         else
           otherUserId=dialogs.firstUserId;
-        user=dialogUsers.filter(x=>x.id==otherUserId)[0];//[0] потому что такое значение будет только 1 в массиве
+        user=this.props.Store.dialogUsers.filter(x=>x.id==otherUserId)[0];//[0] потому что такое значение будет только 1 в массиве
+
+        if(user==undefined)//Еслиюзер еще не успел задиспатчиться в стор
+          return <div className="Loading"><img src={Loading}/></div>
 
         var isOnline="Offline";
         if(user.online)
@@ -219,6 +222,7 @@ class MyMenu extends  Component{
                   {list}
               </div>
         this.setState({dialogList: list});  //Недосягаемый код ?
+
     // });
   }
 
@@ -286,12 +290,9 @@ class MyMenu extends  Component{
         this.setState({selectedDialogs:[]});
       })
     }
-
-
   }
+
   onOpenDialog(dialog, user){
-    console.log(dialog);
-    console.log(user);
     if(user==null){
       if(dialog.firstUserId!=this.props.Store.myPage.id)
         user=this.props.Store.dialogUsers.filter(x=>x.id==dialog.firstUserId)[0];
@@ -335,7 +336,7 @@ class MyMenu extends  Component{
   showDialogForm(){
     if(this.state.ShowDialogForm){//Если форма диалога открыта
       if(this.state.dialogList==null && this.state.dialog==null){//Загружаем список людей с которыми мы вели диалог
-        this.loadDialogList(this.props.Store.dialogUsers);
+        this.loadDialogList();
       }
       else if(this.state.dialogList!=null && this.state.dialog==null)//Отображаем список людей с которыми мы вели диалог
         return this.state.dialogList;
@@ -504,6 +505,7 @@ class MyMenu extends  Component{
                                                this.setState({dialog:null});
                                                this.setState({dialogList:null});}}>Dialogs</p>
                          <p onClick={()=>{this.props.ownProps.history.push('/HomePage/MassMessage')}}>Mass Messages</p>
+                         <p onClick={()=>{this.props.ownProps.history.push('/HomePage/EditHobbyList')}}>Edit hobbies</p>
                          <p onClick={this.logOut}>Log Out</p>
                      </div>
                  </div>
@@ -522,6 +524,7 @@ class MyMenu extends  Component{
                  <Route path='/HomePage/Profile/:id' render={(props)=><Profile{...props}msg={this.onOpenDialog}/>}/>
                  <Route path='/HomePage/MyGallery/:id' render={(props)=><MyGallery{...props}msg={this.onOpenDialog}/>}/>
                  <Route path='/HomePage/MassMessage' component={MassMessage}/>
+                 <Route path='/HomePage/EditHobbyList' component={EditHobbies}/>
                </Switch>
                {
                     this.showDialogForm()
@@ -595,7 +598,7 @@ export default connect(
       DispathcLoadAvatars:(avatar)=>{
         dispatch({type:"LoadAvatar", Avatar: avatar})
       },
-      DispatchLoadDalogUsers:(users)=>{
+      DispatchLoadDialogUsers:(users)=>{
         dispatch({type:"LoadDalogUsers", DUsers: users})
       }
   })

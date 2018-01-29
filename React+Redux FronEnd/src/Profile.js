@@ -5,13 +5,15 @@ import Cookies from 'universal-cookie';
 import Next from './Layout/Next.png';
 import {  bindAvatar } from './App.js';
 import Loading from './Layout/bx_loader.gif';
+import {OpenPhoto} from './OpenPhoto.js';
 class MyProfile extends  Component{
 constructor(props){
   super(props);
   this.state={
+    openImg:"",
     currentUser:null,
     Gallery:[],
-    hobby: {},
+    hobby: [],
     currentDialog:null,
     likeBtnName: "Like",//Имена кнопок избранное и лайков
     favBtnName: "Favorites",
@@ -28,6 +30,8 @@ constructor(props){
   this.loadHobby=this.loadHobby.bind(this);
   this.getHobby=this.getHobby.bind(this);
   this.getUser=this.getUser.bind(this);
+  this.onViewPhoto=this.onViewPhoto.bind(this);
+  this.onClocsePhotoView=this.onClocsePhotoView.bind(this);
   }
 
   componentWillMount() {
@@ -122,6 +126,8 @@ constructor(props){
   {
     fetch(this.props.Store.Url["Hobby"]+"/"+this.props.match.params.id)
     .then(function(response){
+      if(response.status==404)//Если у пользователя пустая галлерея
+        return [];
       return response.json();
     })
     .then(function(json){
@@ -133,11 +139,14 @@ constructor(props){
   }
   getHobby(){
     var response=[];
-    for(var key in this.state.hobby){
-      if(this.state.hobby[key]===true){
-        response.push(<li>{key}</li>);
-      }
-    }
+    this.state.hobby.map((hobby)=>{
+      response.push(<li>{hobby.name}</li>);
+    })
+    // for(var name in this.state.hobby){
+    //   // if(this.state.hobby[key]===true){
+    //     response.push(<li>{name}</li>);
+    //   // }
+    // }
     return response
   }
   getroleid(role){
@@ -234,7 +243,13 @@ fetch(this.props.Store.Url["Gallery"]+"/"+this.props.match.params.id, {
         this.setState({Gallery:result});
       });
 }
-
+onViewPhoto(content){
+  var OpenPhotoForm=<OpenPhoto image={content} forClose={this.onClocsePhotoView}/>
+  this.setState({openImg:OpenPhotoForm});
+}
+onClocsePhotoView(){
+  this.setState({openImg:""});
+}
 onConfirmAva(){
     fetch(this.props.Store.Url["Avatar"], {
      method: 'put',
@@ -346,18 +361,18 @@ return    userMap.map(function(user){
         var age =  getYearOld(user.birthDay);
 
         return <div className="Profile">
+                  {this.state.openImg}
                   <div className="BodyLeft">
                     <img className="Ava" height="100px" src={user.avatar.base64}/>
                     {userInterface}
                     <div className="Gallery">
                         {
                           this.state.Gallery.map(function(img){
-                                return <img height="100px" src={img.content}/>
+                                return <img onClick={()=>{this.onViewPhoto(img.content)}} height="100px" src={img.content}/>
                           }.bind(this))
                         }
                     </div>
                   </div>
-
                   <div className="BodyRight">
                     <p className="MainData">{user.name}, {age} years old</p>
                     <p>{user.welcome}</p>
@@ -385,7 +400,7 @@ return    userMap.map(function(user){
                         </tr>
                         <tr>
                             <td>City: {user.city}</td>
-                            <td>Age: {age} years old</td>
+                            <td>Birthday: {user.birthDay.split('T')[0]}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -477,7 +492,7 @@ return    userMap.map(function(user){
                           </tr>
                           <tr>
                               <td>City: {user.city}</td>
-                              <td>Age: {age} years old</td>
+                              <td>Birthday: {user.birthDay.split('T')[0]}</td>
                           </tr>
 
                           <tr>

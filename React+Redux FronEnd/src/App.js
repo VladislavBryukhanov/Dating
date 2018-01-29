@@ -19,6 +19,8 @@ class Auth extends Component {
 constructor(props) {
     super(props);
     this.state={
+      isAvatarsLoaded:false,
+      isDataLoaded:false,
      // onlineCheckSocket: new WebSocket(this.props.Store.Url["AuthSocket"]),
      // getDialogList: new WebSocket(this.props.Store.Url["GetDialogList"]),
      // getGuestList: new WebSocket(this.props.Store.Url["GetGuests"]),
@@ -54,6 +56,19 @@ constructor(props) {
 componentWillMount() {
   //грузим список ролей из бд в стор
   // this.getUsers();
+  // fetch("http://"+serverAddress+"/api/Avatars")
+  fetch(this.props.Store.Url["Avatar"])
+	.then(function(response){
+		return response.json();
+	})
+	.then(function(json){
+		return(json);
+	})
+  .then(result => {
+    this.props.DispathcLoadAvatars(result);
+    this.setState({isAvatarsLoaded:true});
+  })
+
   fetch(this.props.Store.Url["Roles"])
   .then(function(response){
     return response.json();
@@ -64,6 +79,18 @@ componentWillMount() {
   .then(result => {
     this.props.DispatchLoadRoles(result);
     this.SignIn();
+  });
+
+  fetch(this.props.Store.Url["RegData"])
+  .then(function(response){
+    return response.json();
+  })
+  .then(function(json){
+    return(json);
+  })
+  .then(result => {
+    this.props.DispathcLoadFormData(result);
+    this.setState({isDataLoaded:true});
   });
 }
 // getGuestsList(id){
@@ -304,13 +331,14 @@ onPasswordChange(e){
 }
 
 onAddUser(user) {
+  console.log(user);
   var data={
     name: user.name,
     birthDay: user.birthDay,
     gender: user.gender,
     city: user.city,
     education: user.education,
-    genderForSearch: user.genderForSearch,
+    typeForSearch: user.genderForSearch,
     cityForSearch: user.city,
     ageForSearch: user.ageForSearch,
     email:user.email,
@@ -489,6 +517,7 @@ SignIn()
  })
 }
 render() {
+  if(this.state.isAvatarsLoaded && this.state.isDataLoaded){//this.props.Store.avatar.length>0){
             if(this.props.withoutGUI!=undefined)
               return <div className="Loading"><img src={Loading}/></div>
             return  <div>
@@ -521,7 +550,9 @@ render() {
                           </div>
                         </div>
                     </div>
-        }
+      }
+      else return <div className="Loading"><img src={Loading}/></div>
+  }
 }
 
 function  bindAvatar(users, propAva){
@@ -595,6 +626,9 @@ export default connect(
       },
       DispathcLoadAvatars:(avatar)=>{
         dispatch({type:"LoadAvatar", Avatar: avatar})
+      },
+      DispathcLoadFormData:(data)=>{
+        dispatch({type:"LoadFormData", Data: data})
       }
     })
 )(Auth);

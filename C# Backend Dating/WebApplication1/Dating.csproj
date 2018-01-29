@@ -264,6 +264,7 @@
     <Compile Include="Controllers\DialogsController.cs" />
     <Compile Include="Controllers\FriendListsController.cs" />
     <Compile Include="Controllers\GalleriesController.cs" />
+    <Compile Include="Controllers\GetAllRegistrationDataController.cs" />
     <Compile Include="Controllers\GetDialogList.ashx.cs">
       <DependentUpon>GetDialogList.ashx</DependentUpon>
     </Compile>
@@ -294,21 +295,28 @@
     </Compile>
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AgeForSearch.cs" />
     <Compile Include="Models\Avatar.cs" />
+    <Compile Include="Models\Cities.cs" />
     <Compile Include="Models\ClientUser.cs" />
     <Compile Include="Models\DatingContext.cs" />
     <Compile Include="Models\Dialog.cs" />
     <Compile Include="Models\DialogList.cs" />
+    <Compile Include="Models\EditUser.cs" />
+    <Compile Include="Models\Education.cs" />
     <Compile Include="Models\Filter.cs" />
     <Compile Include="Models\FriendList.cs" />
     <Compile Include="Models\Gallery.cs" />
     <Compile Include="Models\GuestList.cs" />
     <Compile Include="Models\Hobby.cs" />
+    <Compile Include="Models\HobbyList.cs" />
+    <Compile Include="Models\HobbyOfUser.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LikeList.cs" />
     <Compile Include="Models\MassMessages.cs" />
     <Compile Include="Models\Roles.cs" />
     <Compile Include="Models\SiteUser.cs" />
+    <Compile Include="Models\TypeForSearch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
