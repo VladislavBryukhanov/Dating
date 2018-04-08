@@ -1,0 +1,58 @@
+﻿@model WebApplication1.Models.Dialog
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Dialog</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.SiteUserid)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SiteUserid)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.from)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.from)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.to)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.to)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.time)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.time)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.content)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.content)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
