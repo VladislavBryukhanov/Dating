@@ -153,7 +153,7 @@ namespace WebApplication1.Controllers
             {
                 return NotFound();
             }
-            //Avatar avatar = db.Avatars.FirstOrDefault(x => x.siteUserId == id &&
+            //Avatar avatar = db.Avatars.FirstOrDefau lt(x => x.siteUserId == id &&
             //                                             x.confirmState == "Confirmed");
             List<Avatar> avatar = AvatarsController.GetAvatars(new int[1] {id});
 

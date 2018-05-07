@@ -74,7 +74,7 @@ namespace WebApplication1.Controllers
             while (clientSocket.State == WebSocketState.Open)
             {
                 await GetLikeList(context, id);
-                Thread.Sleep(3000);
+                Thread.Sleep(30000);
             }
 
         }

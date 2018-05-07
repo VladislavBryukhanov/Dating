@@ -288,7 +288,7 @@ namespace WebApplication1.Controllers
             {
                 await GetCurrentUsers(getUserListFor[wsId].ToArray(), clientSocket);
                 //getFirstAva = false;
-                Thread.Sleep(3000);
+                Thread.Sleep(30000);
             }
             //Filters.RemoveAt(Filters.FindIndex(x => x.id == clientId));
 

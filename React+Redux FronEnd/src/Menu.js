@@ -86,14 +86,15 @@ class MyMenu extends  Component{
   //   }
   // }
 
-  componentWillMount(){
-    if(this.props.Store.myPage!=null){
-        const cookies = new Cookies();
-        if (cookies.get('UserSession').roleid!=this.getroleid("Banned")){
-          this.loadAllData();
-        }
-    }
-  }
+  // componentWillMount(){
+  //   if(this.props.Store.myPage!=null){
+  //       const cookies = new Cookies();
+  //       if (cookies.get('UserSession').roleid != this.getroleid("Banned")){
+  //         this.loadAllData();
+  //       }
+  //   }
+  // }
+
   loadAllDialogUser(){
     fetch(this.props.Store.Url["DialogList"]+"/"+this.props.Store.myPage.id, {
     credentials: 'include'
@@ -136,7 +137,7 @@ class MyMenu extends  Component{
   }
   loadAllData(){
     this.updateUsers(this.props.Store.myPage);
-    this.loadAllDialogUser();
+    // this.loadAllDialogUser();
     this.openWebSocketConnection(onlineCheckSocket, null, this.props.Store.myPage.id );
     this.openWebSocketConnection(getGuestList, this.props.DispatchLoadGuests, this.props.Store.myPage.id );
     this.openWebSocketConnection(getLikeList, this.props.DispatchLoadLikeList, this.props.Store.myPage.id );
@@ -167,6 +168,7 @@ class MyMenu extends  Component{
         this.loadAllDialogUser();
     }.bind(this);
   }
+
   onSelectDialogChanged(e, dialog){
     var newState=this.state.selectedDialogs;
     if(e.target.checked)
@@ -217,9 +219,10 @@ class MyMenu extends  Component{
                </div>
         }.bind(this))
         list= <div className="DialogList">
-                  <img className="CloseDialogList" src={Exit} onClick={()=>{this.setState({ShowDialogForm:false});
-                                        this.setState({dialog:null});
-                                        this.setState({dialogList:null});}}/>
+                  <img className="CloseDialogList" src={Exit} onClick={()=>{
+                                        // this.setState({ShowDialogForm:false});
+                                        // this.setState({dialog:null});
+                                        this.setState({ShowDialogForm:false, dialog:null, dialogList:null});}}/>
                   <img className="RemoveDialogs" src={Trash} onClick={this.onRemoveDialogs}/>
                   <p className="Conversaciones">Conversaciones</p>
                   {list}
@@ -264,21 +267,25 @@ class MyMenu extends  Component{
 
   logOut(){
     const cookies = new Cookies();
-    cookies.remove('UserSession');
+    while(cookies.get('UserSession')) { // ну допустим, костыль
+      cookies.remove('UserSession');
+    }
+    // console.log(cookies.get('UserSession'));
 
     // sleep(500).then(() => {
     // onlineCheckSocket.close();
     // getGuestList.close();
     // getLikeList.close();
+
     this.props.history.push('/');
       // window.location.reload();
 
-       onlineCheckSocket.close();
-       getDialogList.close();
-       getGuestList.close();
-       getLikeList.close();
-       getSiteUsers.close();
-       getDialogUsers.close();
+    onlineCheckSocket.close();
+    getDialogList.close();
+    getGuestList.close();
+    getLikeList.close();
+    getSiteUsers.close();
+    getDialogUsers.close();
     // });
 
   }
@@ -327,9 +334,9 @@ class MyMenu extends  Component{
 
     var msg=   <div className="DialogList">
                   <img className="CloseDialogList" src={Exit} onClick={()=>{
-                                        this.setState({ShowDialogForm:false});
-                                        this.setState({dialog:null});
-                                        this.setState({dialogList:null});}}/>
+                                        // this.setState({ShowDialogForm:false});
+                                        // this.setState({dialog:null});
+                                        this.setState({ShowDialogForm:false, dialog:null, dialogList:null});}}/>
                   <img className="RemoveDialogs" src={Trash} onClick={this.onRemoveDialogs}/>
                   <p className="Conversaciones">Conversaciones</p>
                   <div  className="Messages">
@@ -344,8 +351,8 @@ class MyMenu extends  Component{
                     <Messages dialog={dialog} user={user}/>
                   </div>
                </div>
-    this.setState({dialog:msg});
-    this.setState({ShowDialogForm:true});
+    // this.setState({dialog:msg});
+    this.setState({dialog:msg, ShowDialogForm:true});
   }
 
   showDialogForm(){
@@ -406,9 +413,11 @@ class MyMenu extends  Component{
                      <p>Configuration</p>
                      <div className="subMenuBody">
                          <p onClick={()=>{this.props.history.push('/HomePage/Profile/'+this.props.Store.myPage.id)}}>My page</p>
-                         <p onClick={()=>{this.setState({ShowDialogForm:!this.state.ShowDialogForm});
-                                          this.setState({dialog:null});
-                                          this.setState({dialogList:null});}}>Messages</p>
+                         <p onClick={()=>{
+                                          // this.setState({ShowDialogForm:!this.state.ShowDialogForm});
+                                          // this.setState({dialog:null});
+                                          this.setState({ShowDialogForm:!this.state.ShowDialogForm,
+                                            dialog:null, dialogList:null});}}>Messages</p>
                          <p onClick={()=>{this.props.history.push('/HomePage/Favorites/')}}>Favorites</p>
                          <p onClick={()=>{this.props.history.push('/HomePage/MyLikes/All')}}>Likes</p>
                          <p onClick={()=>{this.props.history.push('/HomePage/MyGuests/')}}>Guests</p>
@@ -435,9 +444,11 @@ class MyMenu extends  Component{
                      </div>
                      <div className="SecondBlock">
                          <p>Recommended</p>
-                         <p onClick={()=>{this.setState({ShowDialogForm:!this.state.ShowDialogForm});
-                                          this.setState({dialog:null});
-                                          this.setState({dialogList:null});}}>
+                         <p onClick={()=>{
+                                          // this.setState({ShowDialogForm:!this.state.ShowDialogForm});
+                                          // this.setState({dialog:null});
+                                          this.setState({ShowDialogForm:!this.state.ShowDialogForm,
+                                             dialog:null, dialogList:null});}}>
                                           Conversations
                             <span>{messages}</span>
                          </p>
@@ -519,9 +530,11 @@ class MyMenu extends  Component{
                          <p onClick={()=>{this.props.history.push('/HomePage/Filter/')}}>Filter</p>
 
                          <p onClick={()=>{this.props.history.push('/HomePage/Profile/'+this.props.Store.myPage.id)}}>My page</p>
-                         <p onClick={()=>{this.setState({ShowDialogForm:!this.state.ShowDialogForm});
-                                               this.setState({dialog:null});
-                                               this.setState({dialogList:null});}}>Dialogs</p>
+                         <p onClick={()=>{
+                                               // this.setState({ShowDialogForm:!this.state.ShowDialogForm});
+                                               // this.setState({dialog:null});
+                                               this.setState({ShowDialogForm:!this.state.ShowDialogForm,
+                                                 dialog:null, dialogList:null});}}>Dialogs</p>
                          <p onClick={()=>{this.props.history.push('/HomePage/MassMessage')}}>Mass Messages</p>
                          <p onClick={()=>{this.props.history.push('/HomePage/EditHobbyList')}}>Edit hobbies</p>
                          <p onClick={this.logOut}>Log Out</p>
@@ -557,7 +570,7 @@ class MyMenu extends  Component{
     return this.props.Store.roles.filter(x=> x.roleName==role)[0].id
   }
   render(){
-    if(this.props.Store.myPage==null )//Если не все данные были загружены или мы не авторизировались, то ожидаем загрузки
+    if(this.props.Store.myPage == null )//Если не все данные были загружены или мы не авторизировались, то ожидаем загрузки
         return this.unauthorisedInterface();
     else if(!this.state.isDataLoaded && this.props.Store.users.length!=0){
       this.loadAllData();

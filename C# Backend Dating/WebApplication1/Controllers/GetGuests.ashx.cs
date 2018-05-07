@@ -66,7 +66,7 @@ namespace WebApplication1.Controllers
             {
                 //var res = clientSocket.ReceiveAsync(buffer, CancellationToken.None);//Единственный ответ, который мы можем получить- инф о закрытии сокета и => мы завершим его обработку
                 await GetGuestList(context, id);
-                Thread.Sleep(3000);
+                Thread.Sleep(30000);
             }
         }
         public bool IsReusable

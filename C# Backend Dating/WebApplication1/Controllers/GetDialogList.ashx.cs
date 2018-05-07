@@ -64,7 +64,7 @@ namespace WebApplication1.Controllers
             {
                 //var res = clientSocket.ReceiveAsync(buffer, CancellationToken.None);//Единственный ответ, который мы можем получить- инф о закрытии сокета и => мы завершим его обработку
                 await GetDialogs(context, id);
-                Thread.Sleep(3000);
+                Thread.Sleep(30000);
 
             }
 

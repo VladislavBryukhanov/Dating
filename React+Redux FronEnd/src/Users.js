@@ -21,20 +21,23 @@ class Users extends  Component{
     this.getGalleryCount=this.getGalleryCount.bind(this);
     this.getUsers=this.getUsers.bind(this);
   }
+
   componentWillMount(){
     this.getUsers(this.state.page);
   }
+
   getUsers(currentPage){
       // fetch(this.props.Store.Url["Users"]+"/?id="+this.props.Store.myPage.id+"&page="+currentPage)
 
-      this.setState({isLoaded:false});
+      // this.setState({isLoaded:false});
       var path;
-      if(this.props.Store.myPage.nameFilter!=undefined){
+      if(this.props.Store.myPage.nameFilter){
         path=this.props.Store.Url["Users"]+"/?id="+this.props.Store.myPage.id+"&page="+currentPage+
             "&name="+this.props.Store.myPage.nameFilter+"&isOnline="+this.props.Store.myPage.onlineFilter;
       }
       else
         path=this.props.Store.Url["Users"]+"/?id="+this.props.Store.myPage.id+"&page="+currentPage;
+
       fetch(path)
       .then(function(response){
         return response.json();
@@ -53,11 +56,12 @@ class Users extends  Component{
         if(getSiteUsers.readyState === getSiteUsers.OPEN)
            getSiteUsers.send(JSON.stringify(result.id));
 
-        this.setState({isLoaded:true});
+        // this.setState({isLoaded:true});
       })
       this.getGalleryCount();
-      this.setState({page:currentPage});
+      this.setState({page:currentPage, isLoaded:true});
   }
+
   getGalleryCount(){
     fetch(this.props.Store.Url["Gallery"], {
           method: 'get',
@@ -78,11 +82,11 @@ class Users extends  Component{
   showUsers(user){
     var count=0;
     if(this.state.imgCount.length!=0){
-          count=this.state.imgCount.filter(x=>x.id==user.id)[0];
-          if(count!=undefined)//Если в галлерее не было найдено изображений значит их 0
-            count=count.count;
-          else
-            count=0;
+        count=this.state.imgCount.filter(x=>x.id==user.id)[0];
+        if(count!=undefined)//Если в галлерее не было найдено изображений значит их 0
+          count=count.count;
+        else
+          count=0;
     }
 
     var age =  getYearOld(user.birthDay);
@@ -95,60 +99,15 @@ class Users extends  Component{
                            onClick={()=>{this.props.history.push('/HomePage/Profile/'+user.id);}}/>
                    <p className="userName">{user.name}</p>
                    <p className="userAge">{age} years old</p>
-                   <p>{user.typeForSearch}<div className={isOnline}></div></p>
+                   <p>{user.typeForSearch}<span className={isOnline}></span></p>
                    <p>{user.city}<span>{count}</span></p>
 
             </div>
   }
-  // checkWithFilter(user){
-  //   var now = new Date();
-  //   var age;
-  //   age=parseInt(user.birthDay.split('-')[0]);
-  //   age=parseInt(now.getFullYear())-age;
-  //   var from=parseInt(this.props.Store.myPage.ageForSearch.split(' ')[0]);
-  //   var to=parseInt(this.props.Store.myPage.ageForSearch.split(' ')[2]);
-  //
-  //
-  //   // настраиваем промежуток "от 53 и более", тут нет точной границы для
-  //   //конечного возраста, поэтому ставим произвольное недостижимое число
-  //   if(from==53)
-  //     to=200;
-  //   //если юзер выбирает "couple", то должны отображаться
-  //   // особи противоположного пола, в остальных случаях отображаются все
-  //   var correctGender=true;
-  //   if(this.props.Store.myPage.genderForSearch=="Couple"){
-  //     if(this.props.Store.myPage.gender!=user.gender)
-  //       correctGender=true;
-  //     else
-  //       correctGender=false;
-  //   }
-  //
-  //   var nameFilter=true;//по умолчанию допускаем, что юзер не ввел имя и не сортируем по нему
-  //   if(this.props.Store.myPage.nameFilter!=undefined){//Если пользователь ввел имя в фильтр, то начинаем сортировку
-  //       if(user.name.toLowerCase().indexOf(this.props.Store.myPage.nameFilter.toLowerCase(), 0)!=-1)
-  //         nameFilter=true;
-  //       else
-  //         nameFilter=false;
-  //   }
-  //
-  //   if((user.genderForSearch==this.props.Store.myPage.genderForSearch || this.props.Store.myPage.genderForSearch=="All")  &&
-  //        (user.city==this.props.Store.myPage.cityForSearch || this.props.Store.myPage.cityForSearch=="All") &&
-  //        ((age>=from && age<=to) || this.props.Store.myPage.ageForSearch=="All") &&
-  //        nameFilter && correctGender)//совпадают ли поля+ проверка находится ли возраст в диапазоне
-  //     return this.showUsers(user);
-  //   else
-  //     return;
-  // }
-//this.checkWithFilter(user);
+
   render(){
     var Banned=this.props.Store.roles.filter(x=> x.roleName=="Banned")[0].id;//Получаем id роли юзера
 
-
-
-    // console.log(this.props.Store.users);
-    // console.log(this.props.Store.users.length);
-    // console.log(this.props.Store.avatar.length);
-    //
     if(this.state.isLoaded){
       return <div>
                    {

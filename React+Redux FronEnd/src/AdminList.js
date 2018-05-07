@@ -64,7 +64,7 @@ class Users extends  Component{
     var roleAssoc=this.props.Store.roles.filter(x=> x.id==user.roleid)[0].roleName;
     return <tr key={user.id}>
                 <td>
-                   <img width="50px" src={user.avatar.base64}
+                   <img height="60px" width="60px" src={user.avatar.base64}
                            onClick={()=>{this.props.history.push('/HomePage/Profile/'+user.id);}}/>
                    {user.name}
                 </td>

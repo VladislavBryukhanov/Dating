@@ -187,6 +187,7 @@ onAuthorisation(e)
      this.getUsers(user);
    })
 }
+
 onResetPassword(e)
 {
   if(e!=null)
@@ -206,6 +207,7 @@ onResetPassword(e)
   .then(result => {
   })
 }
+
 SignIn()
 {
   fetch(this.props.Store.Url["Authorize"], {
@@ -235,7 +237,7 @@ SignIn()
 render() {
   if(this.state.isAvatarsLoaded && this.state.isDataLoaded){//this.props.Store.avatar.length>0){
             if(this.props.withoutGUI && this.state.cookieAccess!="Denied"){
-              this.SignIn();
+              // this.SignIn();
               return <div className="Loading"><img src={Loading}/></div>
             }
             return  <div>
@@ -251,7 +253,7 @@ render() {
                                     <input type="password" placeholder="Password" onChange={this.onPasswordChange}/>
                                     <button className="logIn" onChange={()=>{this.onAuthorisation}}>Log in</button>
                                 </form>
-                                <button className="btn btn-link" onClick={this.onResetPassword}>Forgot password?</button>
+                                <button className="btn btn-link" onClick={()=>{this.onResetPassword}}>Forgot password?</button>
                             </div>
                         </div>
                         <div className="registrationBody">
