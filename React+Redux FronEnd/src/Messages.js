@@ -18,7 +18,7 @@ class Messages extends Component{
       this.props.DispatchAddMessage(msg);
     }.bind(this);
 
-      fetch(this.props.Store.Url["Messages"]+"/"+this.state.dialog.id,{credentials: 'include'})//Не безопасно, т к любой юзер сможет читать сообщения подставив эти значения в урл
+      fetch(this.props.Store.Url["Messages"]+"/"+this.state.dialog.id,{credentials: 'include'})
       .then(function(response){
         if(response.status==404)//Если диалог пуст
           return [];
@@ -49,6 +49,7 @@ class Messages extends Component{
      return(response.json());
     })
     .then(result => {
+        console.log(result);
         this.props.DispatchAddDialogList(result);
 
         // var dialogUsers=bindAvatar(result.userList, result.avatars);
@@ -76,6 +77,7 @@ class Messages extends Component{
         to:otherUserId,
         content:this.state.content
       }
+      console.log(messageObject);
       this.state.socket.send(JSON.stringify(messageObject));
       this.setState({content:""});
     }

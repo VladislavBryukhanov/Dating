@@ -84,23 +84,23 @@ namespace WebApplication1.Controllers
                 }
 
 
-                for (int i=0;i< dialogClients.Count(); i++)
+                for (int i = 0; i < dialogClients.Count(); i++)
                 {
-                        WebSocket client = dialogClients[i];
-                        try
+                    WebSocket client = dialogClients[i];
+                    try
+                    {
+                        if (client.State == WebSocketState.Open)
                         {
-                            if (client.State == WebSocketState.Open)
-                            {
-                                await client.SendAsync(new ArraySegment<byte>(cleanBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
-                            }
+                            await client.SendAsync(new ArraySegment<byte>(cleanBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
                         }
-                        catch (ObjectDisposedException)
-                        {
-                                Dialogs[authDate.dialogId].Remove(client);
-                                i--;
-                        }
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        Dialogs[authDate.dialogId].Remove(client);
+                        i--;
+                    }
                 }
-               
+
             }
         }
         public bool IsReusable

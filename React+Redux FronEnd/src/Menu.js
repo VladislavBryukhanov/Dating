@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import {  Route, Router, Switch } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-
 import App from './App.js';
 import EditProfile from './EditProfile';
 import MyGallery from './MyGallery';
@@ -16,7 +15,6 @@ import Filter from './Filter.js'
 import EditHobbies from './EditHobbies.js'
 import AdminList from './AdminList.js'
 import MassMessage from './MassMessage.js'
-
 import Logo from './Layout/logo.svg';
 import Gift from './Layout/hand-with-gift-box-icon_1978785.svg';
 import NewFaces from './Layout/newfaces.png';
@@ -25,11 +23,7 @@ import Birthday from './Layout/birthday.png';
 import ChatRoom from './Layout/chat-room.png';
 import Exit from './Layout/arrow-button-right-next-green-round.png';
 import Trash from './Layout/trash.png';
-
-
 import Loading from './Layout/bx_loader.gif';
-
-
 import {  bindAvatar } from './App.js'
 import SplitterLayout from 'react-splitter-layout';
 
@@ -45,7 +39,6 @@ class MyMenu extends  Component{
   constructor(props){
     super(props);
     this.state={
-      // profile: "##''",
       isDataLoaded:false,
       dialogList:null,
       dialog:null,
@@ -79,21 +72,6 @@ class MyMenu extends  Component{
                                       && nextProps.Store.myDialogList!=undefined)
       this.setState({dialogList: null});
   }
-  // componentDidReceiveProps(){
-  //   if(this.props.Store.myPage!=null){
-  //     if(this.state.dialogList==null )
-  //       this.loadDialogList();
-  //   }
-  // }
-
-  // componentWillMount(){
-  //   if(this.props.Store.myPage!=null){
-  //       const cookies = new Cookies();
-  //       if (cookies.get('UserSession').roleid != this.getroleid("Banned")){
-  //         this.loadAllData();
-  //       }
-  //   }
-  // }
 
   loadAllDialogUser(){
     fetch(this.props.Store.Url["DialogList"]+"/"+this.props.Store.myPage.id, {
@@ -106,13 +84,6 @@ class MyMenu extends  Component{
       var dialogUsers=bindAvatar(result.userList, result.avatars);
       this.props.DispatchLoadDialogUsers(dialogUsers);
       this.loadDialogList();
-
-      // DispatchLoadDialogUsers
-
-      // this.props.DispathcLoadAvatars(result.avatars);
-      // var loadUsers=bindAvatar(result.userList, result.avatars);
-      // this.props.DispatchLoadUsers(loadUsers);
-
 
       getDialogUsers.onopen= function (msg) {
       getDialogUsers.send(JSON.stringify(result.id));
@@ -128,7 +99,6 @@ class MyMenu extends  Component{
              user.online=users.filter(x=>x.id==user.id)[0].online;
              update.push(user);
            })
-           //users=bindAvatar(users, this.props.Store.dialogUsers.avatars);
            this.props.DispatchLoadDialogUsers(update);
            this.loadDialogList();
          }
@@ -137,23 +107,46 @@ class MyMenu extends  Component{
   }
   loadAllData(){
     this.updateUsers(this.props.Store.myPage);
-    // this.loadAllDialogUser();
     this.openWebSocketConnection(onlineCheckSocket, null, this.props.Store.myPage.id );
     this.openWebSocketConnection(getGuestList, this.props.DispatchLoadGuests, this.props.Store.myPage.id );
-    this.openWebSocketConnection(getLikeList, this.props.DispatchLoadLikeList, this.props.Store.myPage.id );
-    // this.openWebSocketConnection(getDialogList, this.props.DispatchLoadDialogList, this.props.Store.myPage.id );
+    // this.openWebSocketConnectionForLike(getLikeList, this.props.DispatchLoadLikeList, this.props.Store.myPage.id );
+    this.getLikes();
     this.updateDialogListWebSocket();
-
-    // if(this.state.dialogList==null )
-    //   this.loadDialogList();
     this.setState({isDataLoaded:true});
   }
-  // componentWillUpdate(){
-  //   if(this.props.Store.myPage!=null){
-  //     console.log("+");
-  //     this.loadAllData();
-  //   }
-  // }
+
+  getLikes(){
+    fetch(this.props.Store.Url["LikeList"] + "/" + this.props.Store.myPage.id,
+    {credentials: 'include'})
+    .then(function(response){
+      return response.json();
+    })
+    .then(function(json){
+      return(json);
+    })
+    .then(result => {
+      this.props.DispatchLoadLikeList(result);
+      this.openWebSocketConnectionForLike(getLikeList, this.props.DispatchAddLike, this.props.DispatchDeleteLike, this.props.Store.myPage.id );
+    });
+  }
+
+  openWebSocketConnectionForLike(socket, dispatchAdd, dispatchRemove, params){
+    socket.onopen = function (msg) {
+      socket.send(params);
+    };
+    if(socket.readyState === socket.OPEN) {
+      socket.send(params);
+    }
+    socket.onmessage = function (msg) {
+      let data = JSON.parse( msg.data );
+       if(data.action === "Add"){
+         dispatchAdd(data.like);
+       }
+       else if(data.action === "Remove"){
+         dispatchRemove(data.like);
+       }
+    };
+  }
 
   updateDialogListWebSocket(){
     getDialogList.onopen= function (msg) {
@@ -179,12 +172,6 @@ class MyMenu extends  Component{
   }
 
   loadDialogList(){
-   //  fetch(this.props.Store.Url["DialogList"]+"/"+this.props.Store.myPage.id,{credentials: 'include'})//Не безопасно, т к любой юзер сможет читать сообщения подставив эти значения в урл
-   //  .then(function(response){
-   //   return(response.json());
-   // })
-   //  .then(result => {
-   //    this.props.DispatchLoadDialogList(result);
       var list=this.props.Store.myDialogList.map(function(dialogs){
         var user;
         var otherUserId;
@@ -201,11 +188,6 @@ class MyMenu extends  Component{
         if(user.online)
           isOnline="Online";
 
-        // if(user==undefined){
-        //   user={};
-        //   user.avatar={};
-        //   user.avatar.base64=this.props.Store.avatar.filter(x=>x.siteUserId==0)[0].base64;
-        // }
         return <div key={dialogs.id} className="DialogBody">
                   <input onChange={(e)=>{this.onSelectDialogChanged(e, dialogs)}} type="checkbox"/>
                   <img height="50px" src={user.avatar.base64}
@@ -228,8 +210,6 @@ class MyMenu extends  Component{
                   {list}
               </div>
         this.setState({dialogList: list});  //Недосягаемый код ?
-
-    // });
   }
 
   updateUsers(){
@@ -261,33 +241,20 @@ class MyMenu extends  Component{
        socket.send(params);
     socket.onmessage = function (msg) {
       dispatch(JSON.parse( msg.data ));
-      // this.state.getGuestList.close();
     };
   }
 
   logOut(){
     const cookies = new Cookies();
-    while(cookies.get('UserSession')) { // ну допустим, костыль
-      cookies.remove('UserSession');
-    }
-    // console.log(cookies.get('UserSession'));
-
-    // sleep(500).then(() => {
-    // onlineCheckSocket.close();
-    // getGuestList.close();
-    // getLikeList.close();
+    cookies.remove('UserSession');
 
     this.props.history.push('/');
-      // window.location.reload();
-
     onlineCheckSocket.close();
     getDialogList.close();
     getGuestList.close();
     getLikeList.close();
     getSiteUsers.close();
     getDialogUsers.close();
-    // });
-
   }
   onRemoveDialogs(e){
     e.preventDefault();
@@ -322,11 +289,6 @@ class MyMenu extends  Component{
       else
         user=this.props.Store.dialogUsers.filter(x=>x.id==dialog.secondUserId)[0];
     }
-    // var user;
-    // if(dialog.firstUserId!=this.props.Store.myPage.id)
-    //   user=this.props.Store.dialogUsers.filter(x=>x.id==dialog.firstUserId)[0];
-    // else
-    //   user=this.props.Store.dialogUsers.filter(x=>x.id==dialog.secondUserId)[0];
 
     var isOnline="Offline";
     if(user.online)
@@ -373,7 +335,6 @@ class MyMenu extends  Component{
     else {
       this.props.history.push('/');
       return false;
-      // window.location.reload();
     }
   }
   bannedInterface(){
@@ -591,9 +552,6 @@ export default connect(
       Store: state
     }),
     dispatch => ({
-      // DispatchLoadDialogList:(dl)=>{
-      //   dispatch({type:'LoadDialogList', DialogList: dl});
-      // },
       DispatchRemoveDialog:(dl)=>{
         dispatch({type:"RemoveDialog", RemoveDialog:dl});
       },
@@ -629,7 +587,13 @@ export default connect(
       },
       DispatchLoadDialogUsers:(users)=>{
         dispatch({type:"LoadDalogUsers", DUsers: users})
+      },
+      DispatchDeleteLike:(like)=>{
+        dispatch({type:'DeleteLike', Likes: like});
+      },
+      DispatchAddLike:(like)=>{
+        dispatch({type:'AddLike', Likes: like});
       }
   })
 )(MyMenu);
-export { getSiteUsers };
+export { getSiteUsers, getLikeList };

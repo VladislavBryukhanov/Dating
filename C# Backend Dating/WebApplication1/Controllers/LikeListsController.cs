@@ -64,39 +64,19 @@ namespace WebApplication1.Controllers
             return Ok(SelectionWithId(usersId.Distinct().ToArray()));
         }
 
-
-
-        // POST: api/LikeLists
         [ResponseType(typeof(LikeList))]
-        public IHttpActionResult PostLikeList(LikeList likeList)
+        public IHttpActionResult GetLikeList(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
+            if (!CheckAccess.IsAccess(cookie, id, "User"))
+                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
-            LikeList WillReturn;
-            LikeList like = db.LikeList.FirstOrDefault(x => x.from == likeList.from &&
-                                                            x.to == likeList.to);
+            List<LikeList> likes = db.LikeList.Where(x => x.from == id ||
+                                               x.to == id).ToList();
 
-
-            if (like != null)
-            {
-                db.LikeList.Remove(like);
-                WillReturn = like;
-            }
-            else
-            {
-                db.LikeList.Add(likeList);
-                WillReturn = likeList;
-            }
-
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = WillReturn.id }, WillReturn);
+            return Ok(likes.ToArray());
         }
 
-        
 
         protected override void Dispose(bool disposing)
         {

@@ -221,7 +221,6 @@ SignIn()
    return(response.json());
   })
   .then(result => {
-    console.log(result);
     if(result=="Access denied!"){
       this.setState({cookieAccess: "Denied"});
       return;
