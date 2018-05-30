@@ -20,24 +20,9 @@ class MyLikes extends  Component{
   }
 
   componentWillMount(){
-  // var likes=this.props.Store.likes;
-  // var id=[];
-  // likes.map((like)=>{
-  //   if(like.from!=this.props.Store.myPage.id)
-  //     id.push(like.from);
-  //   else
-  //     id.push(like.to);
-  // });
-  // if(id.length!=0){
-  //   var filter={
-  //     id:this.props.Store.myPage.id,
-  //     getUsersWithId:id,
-  //     page: 1
-  //   }
-  //   // getSiteUsers.send(JSON.stringify(filter));
-  // }
-  this.getUsers(this.state.page);
+    this.getUsers(this.state.page);
   }
+
   getUsers(currentPage){
     this.setState({isLoaded:false});
     fetch(this.props.Store.Url["LikeList"]+"/?id="+this.props.Store.myPage.id+"&page="+currentPage, {
@@ -59,15 +44,6 @@ class MyLikes extends  Component{
      });
      this.setState({page:currentPage});
   }
-  // getLikeList(){
-  //   fetch(this.props.Store.Url["LikeList"]+"/"+this.props.Store.myPage.id,{credentials: 'include'})
-  //   .then(function(response){
-  //    return(response.json());
-  //   })
-  //   .then(result => {
-  //     this.props.DispatchLoadLikeList(result);
-  //    })
-  // }
 
   showUsers(user, answer){
     var age =  getYearOld(user.birthDay);

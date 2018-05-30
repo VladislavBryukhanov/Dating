@@ -426,7 +426,7 @@
   position:relative;
   border-radius: 10px;
   width:220px;
-  height: 360px;
+  height: 330px;
   border: 2px solid white;
   background-color: #F6F8F9;
   display:inline-block;
@@ -636,7 +636,7 @@ height: 100%;
   width:41%;
   font-size: 18px;
 }
-.BodyRight>p>div{
+.BodyRight>p>span{
   float: left;
   margin-top: 1%;
   margin-right: 2%;

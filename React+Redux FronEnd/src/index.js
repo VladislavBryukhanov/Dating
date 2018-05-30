@@ -64,14 +64,13 @@ const initialState={
 	guests:[],
 	myPage:null
 }
-
 	const Edit=(data, actionData)=>{
-		for(var i = 0; i<data.length; i++){
-			if(data[i].id == actionData.id){
+		for(var i = 0; i < data.length; i++) {
+			if(data[i].id == actionData.id) {
 				data[i]=actionData;
 			}
-			return [...data];
 		}
+    return [...data];
 	}
 
 	const Reducer = handleActions({
@@ -153,6 +152,12 @@ const initialState={
 		LoadGuests: (state, action) => ({
 			...state, guests: action.Guest
 		}),
+		EditGuest: (state, action) => ({
+			...state, guests:Edit(state.guests, action.Guest)
+		}),
+		AddGuest: (state, action) => ({
+			...state, guests:[...state.guests, action.Guest]
+		})
 	}, initialState);
 
 store  = createStore(Reducer,initialState, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());//создаем стор только после выкачивания данных из бэекенда и закидываем эти данные в стор, это будет его начальный контент

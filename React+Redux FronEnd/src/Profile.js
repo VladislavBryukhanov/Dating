@@ -7,6 +7,8 @@ import {  bindAvatar } from './App.js';
 import Loading from './Layout/bx_loader.gif';
 import {OpenPhoto} from './OpenPhoto.js';
 import { getLikeList } from './Menu.js';
+import { getGuestList } from './Menu.js';
+
 class MyProfile extends  Component{
 constructor(props){
   super(props);
@@ -80,16 +82,17 @@ constructor(props){
           this.setState({likeBtnName:"Remove like"});
       }.bind(this))
       //Записывает нас в список гостей юзера
-      if(this.props.Store.myPage.id!=this.props.match.params.id){
-        fetch(this.props.Store.Url["GuestsList"], {
-            method: 'post',
-            body:  JSON.stringify({who:this.props.Store.myPage.id, to:this.props.match.params.id}),
-            headers: {
-              'Content-Type': 'application/json;charset=utf-8'
-              },
-              credentials: 'include'
-        })
-      }
+      // if(this.props.Store.myPage.id!=this.props.match.params.id){
+      //   fetch(this.props.Store.Url["GuestsList"], {
+      //       method: 'post',
+      //       body:  JSON.stringify({who:this.props.Store.myPage.id, to:this.props.match.params.id}),
+      //       headers: {
+      //         'Content-Type': 'application/json;charset=utf-8'
+      //         },
+      //         credentials: 'include'
+      //   })
+      // }
+      this.newVisit();
       if(loadUsers.roleid==this.getroleid("Banned"))//this.props.Store.users.filter(x=>x.id==this.props.match.params.id)[0].roleid==this.getroleid("Banned"))
           this.setState({banBtn:"Reject ban"});
       //находит диалог с этим пользователем или создает новый
@@ -133,6 +136,11 @@ constructor(props){
 
   getroleid(role) {
     return this.props.Store.roles.filter(x=> x.roleName==role)[0].id
+  }
+
+  newVisit() {
+    var guest = JSON.stringify({who:this.props.Store.myPage.id, to:this.props.match.params.id});
+    getGuestList.send(guest);
   }
 
   onLike() {
@@ -308,26 +316,26 @@ constructor(props){
           }
           else{
                 userInterface = <div className="ChangeAva">
-                                      {
-                                          this.props.Store.avatar.map(function(ava){
-                                            if(ava.confirmState=="PrevAva" && ava.siteUserId==this.props.match.params.id){
-                                              return  <div>
-                                                        <img className="PrevAva" height="90px" src={ava.base64}/>
-                                                        <img height="40px" src={Next}/>
-                                                      </div>
-                                            }
-                                          }.bind(this))
-                                       }
-                                       {
-                                        this.props.Store.avatar.map(function(ava){
-                                          if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
-                                            return  <div>
-                                                        <img className="NewAva" height="90px" src={ava.base64}/>
-                                                    </div>
-                                          }
-                                        }.bind(this))
-                                       }
-                                  </div>
+              {
+                  this.props.Store.avatar.map(function(ava){
+                    if(ava.confirmState=="PrevAva" && ava.siteUserId==this.props.match.params.id){
+                      return  <div>
+                                <img className="PrevAva" height="90px" src={ava.base64}/>
+                                <img height="40px" src={Next}/>
+                              </div>
+                    }
+                  }.bind(this))
+               }
+               {
+                this.props.Store.avatar.map(function(ava){
+                  if(ava.confirmState=="Waiting" && ava.siteUserId==this.props.match.params.id){
+                    return  <div>
+                                <img className="NewAva" height="90px" src={ava.base64}/>
+                            </div>
+                  }
+                }.bind(this))
+               }
+          </div>
           }
           var status="Offline";
           if(user.online)

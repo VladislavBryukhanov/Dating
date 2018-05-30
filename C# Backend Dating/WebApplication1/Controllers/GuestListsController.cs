@@ -18,7 +18,7 @@ namespace WebApplication1.Controllers
     public class GuestListsController : ApiController
     {
         private DatingContext db = new DatingContext();
-        int guestExpire = 1;
+        public static int guestExpire = 1;
 
 
         // GET: api/GuestLists/5
@@ -46,38 +46,50 @@ namespace WebApplication1.Controllers
             return Ok(LikeListsController.SelectionWithId(usersId.ToArray()));
         }
 
-
-        // POST: api/GuestLists
         [ResponseType(typeof(GuestList))]
-        public IHttpActionResult PostGuestList(GuestList newGuest)
+        public IHttpActionResult GetGuestList(int id)
         {
-            newGuest.lastVisit = DateTime.Now;
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
-            if (!CheckAccess.IsAccess(cookie, newGuest.who, "User") && !CheckAccess.IsAccess(cookie, newGuest.to, "User"))
+            if (!CheckAccess.IsAccess(cookie, id, "User"))
                 return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
 
-            GuestList guest = db.Guests.FirstOrDefault(x => x.who == newGuest.who &&
-                                                            x.to == newGuest.to);
-            if(guest==null)
-            {
-                newGuest.count = 1;
-                db.Guests.Add(newGuest);
-            }
-            else if((newGuest.lastVisit-guest.lastVisit).Minutes>= guestExpire)
-            {
-                guest.count++;
-                guest.lastVisit = DateTime.Now;
-                db.Entry(guest).State = EntityState.Modified;
-            }
+            List<GuestList> guests = db.Guests.Where(x => x.to == id).ToList();
 
-            db.SaveChanges();
+            return Ok(guests.ToArray());
+        }
 
-            return Ok(newGuest);
-            }
+
+        // POST: api/GuestLists
+        //[ResponseType(typeof(GuestList))]
+        //public IHttpActionResult PostGuestList(GuestList newGuest)
+        //{
+        //    newGuest.lastVisit = DateTime.Now;
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+        //    CookieHeaderValue cookie = Request.Headers.GetCookies("UserSession").FirstOrDefault();
+        //    if (!CheckAccess.IsAccess(cookie, newGuest.who, "User") && !CheckAccess.IsAccess(cookie, newGuest.to, "User"))
+        //        return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
+
+        //    GuestList guest = db.Guests.FirstOrDefault(x => x.who == newGuest.who &&
+        //                                                    x.to == newGuest.to);
+        //    if(guest==null)
+        //    {
+        //        newGuest.count = 1;
+        //        db.Guests.Add(newGuest);
+        //    }
+        //    else if((newGuest.lastVisit-guest.lastVisit).Minutes>= guestExpire)
+        //    {
+        //        guest.count++;
+        //        guest.lastVisit = DateTime.Now;
+        //        db.Entry(guest).State = EntityState.Modified;
+        //    }
+
+        //    db.SaveChanges();
+
+        //    return Ok(newGuest);
+        //    }
 
 
         protected override void Dispose(bool disposing)

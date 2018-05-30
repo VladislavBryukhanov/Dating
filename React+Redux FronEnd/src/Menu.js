@@ -55,7 +55,6 @@ class MyMenu extends  Component{
       this.loadAllDialogUser=this.loadAllDialogUser.bind(this);
       this.updateDialogListWebSocket=this.updateDialogListWebSocket.bind(this);
 
-
       this.userInterface=this.userInterface.bind(this);
       this.adminInterface=this.adminInterface.bind(this);
 
@@ -108,10 +107,11 @@ class MyMenu extends  Component{
   loadAllData(){
     this.updateUsers(this.props.Store.myPage);
     this.openWebSocketConnection(onlineCheckSocket, null, this.props.Store.myPage.id );
-    this.openWebSocketConnection(getGuestList, this.props.DispatchLoadGuests, this.props.Store.myPage.id );
-    // this.openWebSocketConnectionForLike(getLikeList, this.props.DispatchLoadLikeList, this.props.Store.myPage.id );
-    this.getLikes();
     this.updateDialogListWebSocket();
+    // this.openWebSocketConnection(getGuestList, this.props.DispatchLoadGuests, this.props.Store.myPage.id );
+    // this.openWebSocketConnectionForLike(getLikeList, this.props.DispatchLoadLikeList, this.props.Store.myPage.id );
+    this.getGuests();
+    this.getLikes();
     this.setState({isDataLoaded:true});
   }
 
@@ -146,6 +146,39 @@ class MyMenu extends  Component{
          dispatchRemove(data.like);
        }
     };
+  }
+
+  getGuests(){
+    fetch(this.props.Store.Url["GuestsList"] + "/" + this.props.Store.myPage.id,
+    {credentials: 'include'})
+    .then(function(response){
+      return response.json();
+    })
+    .then(function(json){
+      return(json);
+    })
+    .then(result => {
+      this.props.DispatchLoadGuests(result);
+      this.openWebSocketConnectionForGuest(getGuestList, this.props.DispatchAddGuest, this.props.DispatchEditGuest, this.props.Store.myPage.id );
+    });
+  }
+
+  openWebSocketConnectionForGuest(socket, dispatchAdd, dispatchEdit, params){
+    socket.onopen = function (msg) {
+      socket.send(params);
+    };
+    if(socket.readyState === socket.OPEN) {
+      socket.send(params);
+    }
+    socket.onmessage = function (msg) {
+      let data = JSON.parse( msg.data );
+      if(this.props.Store.guests.filter(item => item.id != data.id).length < this.props.Store.guests.length) {
+        dispatchEdit(data);
+      } else {
+        dispatchAdd(data);
+      }
+
+    }.bind(this);
   }
 
   updateDialogListWebSocket(){
@@ -593,7 +626,13 @@ export default connect(
       },
       DispatchAddLike:(like)=>{
         dispatch({type:'AddLike', Likes: like});
+      },
+      DispatchAddGuest:(like)=>{
+        dispatch({type:'AddGuest', Guest: like});
+      },
+      DispatchEditGuest:(like)=>{
+        dispatch({type:'EditGuest', Guest: like});
       }
   })
 )(MyMenu);
-export { getSiteUsers, getLikeList };
+export { getSiteUsers, getLikeList, getGuestList };

@@ -74,10 +74,11 @@ namespace WebApplication1.Controllers
                         object response = new { like, action };
                         json = JsonConvert.SerializeObject(response);
                         cleanBuffer = Encoding.UTF8.GetBytes(json);
+
+                        await users[id].SendAsync(new ArraySegment<byte>(cleanBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
                         if (ws.State == WebSocketState.Open)
                         {
                             await ws.SendAsync(new ArraySegment<byte>(cleanBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
-                            await users[id].SendAsync(new ArraySegment<byte>(cleanBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
                         }
                     }
                 }
