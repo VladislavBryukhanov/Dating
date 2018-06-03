@@ -45,18 +45,18 @@ class MyGuests extends  Component{
 
   showUsers(user, guest) {
     var age =  getYearOld(user.birthDay);
-    var isOnline="Offline";
+    var status="Offline";
     if(user.online)
-      isOnline="Online";
-    return <div className="GuestUser">
+      status="Online";
+    return <div className="User">
                    <img height="100px" src={user.avatar.base64}
                            onClick={()=>{this.props.history.push('/HomePage/Profile/'+user.id);}}/>
                    <p className="userName">{user.name}</p>
                    <p className="userAge">{age} years old</p>
-                   <p>{user.genderForSearch}<span className={isOnline}></span></p>
+                   <p>{user.genderForSearch}<span className={status}></span></p>
                    <p>{user.city}</p>
-                   <p>Count of visits: <span>{guest.count}</span></p>
-                   <p>Last visit: <span>{guest.lastVisit.split('T')[0]}<br/>
+                   <p className="colorBlock">Count of visits: <span>{guest.count}</span></p>
+                   <p className="colorBlock">Last visit: <span>{guest.lastVisit.split('T')[0]}<br/>
                                          {guest.lastVisit.split('T')[1].split('.')[0]} </span></p>
             </div>
   }

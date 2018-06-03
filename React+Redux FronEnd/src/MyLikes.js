@@ -48,15 +48,15 @@ class MyLikes extends  Component{
   showUsers(user, answer){
     var age =  getYearOld(user.birthDay);
 
-    var isOnline="Offline";
+    var status="Offline";
     if(user.online)
-      isOnline="Online";
-    return <div className="LikeUser">
+      status="Online";
+    return <div className="User">
                    <img height="100px" src={user.avatar.base64}
                            onClick={()=>{this.props.history.push('/HomePage/Profile/'+user.id);}}/>
                    <p className="userName">{user.name}</p>
                    <p className="userAge">{age} years old</p>
-                   <p>{user.genderForSearch}<div className={isOnline}></div></p>
+                   <p>{user.genderForSearch}<span className={status}></span></p>
                    <p>{user.city}</p>
                    <p>{answer}</p>
             </div>

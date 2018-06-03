@@ -1,0 +1,161 @@
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutFromRight {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.DialogList {
+  position: fixed;
+  right: 0;
+  top:0;
+  height: 100%;
+  width:35%;
+  background-color: #D7DBE0;
+  overflow: scroll;
+  box-shadow: 7px 10px 17px 13px grey;
+
+  animation: 0.5s ease-out 0s 1 slideInFromRight;
+  /* animation: 0.5s ease-in 0s 1 slideOutFromRight; */
+  z-index: 5;
+}
+.CloseDialogList{
+  margin:5%;
+  display: inline-block;
+  height: 44px;
+  cursor:pointer;
+}
+.RemoveDialogs{
+  margin:5%;
+  display: inline-block;
+  height: 35px;
+  cursor:pointer;
+  float:right;
+}
+.DialogBody{
+  height: 80px;
+  margin:5%;
+  margin-bottom:2px;
+  margin-top:2px;
+  background-color: white;
+  font-weight:bold;
+  font-size:18px;
+  color:#319DD4;
+  cursor:pointer;
+}
+.DialogBody>img{
+  position: relative;
+  margin: 15px;
+
+  float:left;
+  height: 50px;
+  width:  50px;
+}
+.DialogBody>input{
+  position: relative;
+  /* top: 40%; */
+  top:25px;
+  right: 5%;
+
+  float:right;
+  height: 20px;
+  width:  20px;
+}
+.Dialog>.Offline{
+  position: relative;
+  top:33px;
+  /* margin-top: 10%; */
+  margin-right: 15%;
+}
+.Dialog>.Online{
+  position: relative;
+  top:30px;
+  /* margin-top: 10%; */
+  margin-right: 15%;
+}
+
+.Dialog{
+width: 100%;
+height: 100%;
+}
+
+.Dialog>img{
+  margin: 15px;
+  height: 50px;
+  width: 50px;
+}
+.Dialog>span{
+  position: relative;
+  top:25px;
+}
+.Conversaciones{
+  display: inline-block;
+  font-size:26px;
+  color:grey;
+}
+.Messages{
+  border: 2px solid #319DD4;
+  margin:5%;
+  margin-bottom:2px;
+  margin-top:2px;
+  background-color: #EAF5FB;
+}
+.Messages>div>textarea {
+  margin:4%;
+  width: 92%;
+  min-height: 50px;
+  margin-bottom: 0px;
+}
+.Messages>div>button{
+  background-color: #319DD4;
+  padding: 5px;
+  padding-right: 15px;
+  padding-left: 15px;
+  color:white;
+  border-radius: 3px;
+  margin: 5%;
+  border:0px;
+}
+.Messages>div>button:hover{
+  background-color: #247FAD;
+}
+.ToMe{
+  width:85%;
+  border-radius:5px;
+  float: left;
+  margin:2%;
+  margin-left: 4%;
+  background-color: #D7E4E0;
+}
+.ToMe>*{
+  margin:2%;
+}
+.ToMe>p{
+  word-wrap:break-word;
+}
+.FromMe{
+  width:85%;
+  border-radius:5px;
+  float:right;
+  margin:2%;
+  margin-right: 4%;
+  background-color: #D1E6EF;
+}
+.FromMe>*{
+  margin:2%;
+}
+.FromMe>p{
+  word-wrap:break-word;
+}

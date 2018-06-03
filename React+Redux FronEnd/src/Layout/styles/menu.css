@@ -1,0 +1,70 @@
+.menu{
+    position: relative;
+    width:100%;
+    /* height:11%; */
+    height: 70px;
+    background-color:#319DD4;
+    z-index: 4;
+}
+.logoImg{
+  /* width:12%; */
+  height: 60%;
+  margin: 1%;
+  margin-left: 6%;
+  cursor: pointer;
+}
+
+.subMenu{
+  cursor: pointer;
+  margin: 0px;
+  color:white;
+  font-size: 17px;
+  float: right;
+}
+
+.subMenu>p{
+  margin-top:20%;
+}
+
+.subMenu:hover>.subMenuBody{
+  display: block;
+}
+
+.subMenuBody{
+  position: absolute;
+  cursor: pointer;
+  color:black;
+  display: none;
+  width:160px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  z-index: 5;
+}
+
+.subMenuBody>p{
+  height: 55%;
+  padding-left: 5px;
+  font-size: 15px;
+  padding: 8px;
+  margin: 0px;
+}
+
+.subMenuBody>p:hover{
+  background-color: #EEEEEE;
+}
+
+.subMenuBody>p:active{
+    background-color: #DDDDDD;
+}
+
+.Avatar{
+  position: relative;
+  height: 80%;
+  width:  auto;
+  margin: 6px;
+  float: right;
+  margin-right: 6%;
+  cursor: pointer;
+  border-radius: 10px;
+  border: 2px solid white;
+}

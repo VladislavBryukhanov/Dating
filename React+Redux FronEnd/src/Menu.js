@@ -217,9 +217,9 @@ class MyMenu extends  Component{
         if(user==undefined)//Еслиюзер еще не успел задиспатчиться в стор
           return <div className="Loading"><img src={Loading}/></div>
 
-        var isOnline="Offline";
+        let status="Offline";
         if(user.online)
-          isOnline="Online";
+          status="Online";
 
         return <div key={dialogs.id} className="DialogBody">
                   <input onChange={(e)=>{this.onSelectDialogChanged(e, dialogs)}} type="checkbox"/>
@@ -229,7 +229,7 @@ class MyMenu extends  Component{
                             this.props.history.push('/HomePage/Profile/'+user.id);}}/>
                   <div className="Dialog" onClick={()=>{this.onOpenDialog(dialogs)}}>
                       <span>{user.name}</span>
-                      <div className={isOnline}></div>
+                      <span className={status}></span>
                   </div>
                </div>
         }.bind(this))
@@ -281,13 +281,15 @@ class MyMenu extends  Component{
     const cookies = new Cookies();
     cookies.remove('UserSession');
 
-    this.props.history.push('/');
     onlineCheckSocket.close();
     getDialogList.close();
     getGuestList.close();
     getLikeList.close();
     getSiteUsers.close();
     getDialogUsers.close();
+
+    this.forceUpdate();
+    // this.props.history.push('/');
   }
   onRemoveDialogs(e){
     e.preventDefault();
@@ -323,9 +325,9 @@ class MyMenu extends  Component{
         user=this.props.Store.dialogUsers.filter(x=>x.id==dialog.secondUserId)[0];
     }
 
-    var isOnline="Offline";
+    var status="Offline";
     if(user.online)
-      isOnline="Online";
+      status="Online";
 
     var msg=   <div className="DialogList">
                   <img className="CloseDialogList" src={Exit} onClick={()=>{
@@ -340,7 +342,7 @@ class MyMenu extends  Component{
                         <div className="Dialog" onClick={()=>{this.setState({dialog:null});}}>
                             <img height="50px" src={user.avatar.base64}/>
                             {user.name}
-                            <div className={isOnline}></div>
+                            <span className={status}></span>
                         </div>
                       </div>
                     <Messages dialog={dialog} user={user}/>
@@ -363,7 +365,7 @@ class MyMenu extends  Component{
   }
   unauthorisedInterface(){
     const cookies = new Cookies();
-    if(cookies.get('UserSession') != undefined)
+    if(cookies.get('UserSession'))
       return <App withoutGUI={true}/>
     else {
       this.props.history.push('/');
@@ -463,6 +465,7 @@ class MyMenu extends  Component{
                               <span>{this.props.Store.guests.length}</span>
                          </p>
                      </div>
+
                      <div className="Search"  onClick={()=>{this.props.history.push('/HomePage/Filter/')}}>
                           Search users</div>
 
@@ -559,12 +562,12 @@ class MyMenu extends  Component{
           </div>
   }
 
-
   getroleid(role){
     return this.props.Store.roles.filter(x=> x.roleName==role)[0].id
   }
+
   render(){
-    if(this.props.Store.myPage == null )//Если не все данные были загружены или мы не авторизировались, то ожидаем загрузки
+    if(!this.props.Store.myPage)//Если не все данные были загружены или мы не авторизировались, то ожидаем загрузки
         return this.unauthorisedInterface();
     else if(!this.state.isDataLoaded && this.props.Store.users.length!=0){
       this.loadAllData();
@@ -572,6 +575,9 @@ class MyMenu extends  Component{
     }
 
     const cookies = new Cookies();
+    if(!cookies.get('UserSession')) {
+        return this.unauthorisedInterface();
+    }
     if(cookies.get('UserSession').roleid==this.getroleid("Admin") || cookies.get('UserSession').roleid==this.getroleid("Moder"))
       return this.adminInterface();
     else if (cookies.get('UserSession').roleid==this.getroleid("User"))

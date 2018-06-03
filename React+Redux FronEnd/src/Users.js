@@ -12,12 +12,11 @@ class Users extends  Component{
   constructor(props){
     super(props);
     this.state={
-      page:1,
-      isLoaded:false,
+      page: 1,
+      isLoaded: false,
       imgCount: []
     }
     this.showUsers=this.showUsers.bind(this);
-    // this.checkWithFilter=this.checkWithFilter.bind(this);
     this.getGalleryCount=this.getGalleryCount.bind(this);
     this.getUsers=this.getUsers.bind(this);
   }
@@ -27,10 +26,7 @@ class Users extends  Component{
   }
 
   getUsers(currentPage){
-      // fetch(this.props.Store.Url["Users"]+"/?id="+this.props.Store.myPage.id+"&page="+currentPage)
-
-      // this.setState({isLoaded:false});
-      var path;
+      let path;
       if(this.props.Store.myPage.nameFilter){
         path=this.props.Store.Url["Users"]+"/?id="+this.props.Store.myPage.id+"&page="+currentPage+
             "&name="+this.props.Store.myPage.nameFilter+"&isOnline="+this.props.Store.myPage.onlineFilter;
@@ -47,7 +43,7 @@ class Users extends  Component{
       })
       .then(result => {
         this.props.DispathcLoadAvatars(result.avatars);
-        var loadUsers=bindAvatar(result.userList, this.props.Store.avatar);
+        let loadUsers=bindAvatar(result.userList, this.props.Store.avatar);
         this.props.DispatchLoadUsers(loadUsers);
 
         getSiteUsers.onopen= function (msg) {
@@ -57,9 +53,9 @@ class Users extends  Component{
            getSiteUsers.send(JSON.stringify(result.id));
 
         // this.setState({isLoaded:true});
+        this.setState({page:currentPage, isLoaded:true});
       })
       this.getGalleryCount();
-      this.setState({page:currentPage, isLoaded:true});
   }
 
   getGalleryCount(){
@@ -80,7 +76,7 @@ class Users extends  Component{
   }
 
   showUsers(user){
-    var count=0;
+    let count=0;
     if(this.state.imgCount.length!=0){
         count=this.state.imgCount.filter(x=>x.id==user.id)[0];
         if(count!=undefined)//Если в галлерее не было найдено изображений значит их 0
@@ -89,24 +85,24 @@ class Users extends  Component{
           count=0;
     }
 
-    var age =  getYearOld(user.birthDay);
+    let age =  getYearOld(user.birthDay);
 
-    var isOnline="Offline";
+    let status="Offline";
     if(user.online)
-      isOnline="Online";
-    return <div key={user.id} className="User">
-                   <img height="100px" src={user.avatar.base64}
-                           onClick={()=>{this.props.history.push('/HomePage/Profile/'+user.id);}}/>
+      status="Online";
+    return <div key={user.id} className="User"
+                onClick={()=>{this.props.history.push('/HomePage/Profile/'+user.id);}}>
+                   <img height="100px" src={user.avatar.base64}/>
                    <p className="userName">{user.name}</p>
                    <p className="userAge">{age} years old</p>
-                   <p>{user.typeForSearch}<span className={isOnline}></span></p>
-                   <p>{user.city}<span>{count}</span></p>
+                   <p>{user.typeForSearch}<span className={status}></span></p>
+                   <p className="colorBlock">{user.city}<span>{count}</span></p>
 
             </div>
   }
 
   render(){
-    var Banned=this.props.Store.roles.filter(x=> x.roleName=="Banned")[0].id;//Получаем id роли юзера
+    let Banned=this.props.Store.roles.filter(x=> x.roleName=="Banned")[0].id;//Получаем id роли юзера
 
     if(this.state.isLoaded){
       return <div>
@@ -135,10 +131,10 @@ class Users extends  Component{
 }
 
 function pagingButtons(page, users, method){
-  var nextBtn= <button className="Paging" onClick={()=>{method(page+1);}}>
+  let nextBtn= <button className="Paging" onClick={()=>{method(page+1);}}>
                <img src={Right}/>
             </button>;
-  var backBtn=  <button className="Paging" onClick={()=>{method(page-1);}}>
+  let backBtn=  <button className="Paging" onClick={()=>{method(page-1);}}>
                 <img src={Left}/>
               </button>
   if(users.length<12)//12 юзеров + мой профиль = 13 и это макс кол-во профилей в сторе

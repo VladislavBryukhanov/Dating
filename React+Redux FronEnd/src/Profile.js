@@ -38,23 +38,21 @@ constructor(props){
   }
 
   componentWillMount() {
-    this.getUser();
+    this.getUser(this.props.match.params.id);
   }
 
   componentWillReceiveProps(nextProps) {
-    if(this.state.currentUser!=null) {
-      if(this.props.match.params.id!=this.state.currentUser.id){
-        this.getUser();
+      if(this.props.match.params.id !== nextProps.match.params.id) { // this.state.currentUser.id
+          this.getUser(nextProps.match.params.id);
       }
-    }
   }
 
-  getUser() {
+  getUser(id) {
     //ПРоверяем есть ли юзер у нас в друзяьх, ставили ли мы ему лайки и в зависимости от этого меняет кнопку на лайкнуть/удалить лайк,
     //добавить в избранное/удалить из избранного
     this.loadHobby();
 
-    fetch(this.props.Store.Url["Users"]+"/"+this.props.match.params.id,)
+    fetch(this.props.Store.Url["Users"]+"/"+id,)
     .then(function(response){
       return response.json();
     })
@@ -81,20 +79,11 @@ constructor(props){
         if(like.from == this.props.Store.myPage.id && like.to==this.props.match.params.id)
           this.setState({likeBtnName:"Remove like"});
       }.bind(this))
-      //Записывает нас в список гостей юзера
-      // if(this.props.Store.myPage.id!=this.props.match.params.id){
-      //   fetch(this.props.Store.Url["GuestsList"], {
-      //       method: 'post',
-      //       body:  JSON.stringify({who:this.props.Store.myPage.id, to:this.props.match.params.id}),
-      //       headers: {
-      //         'Content-Type': 'application/json;charset=utf-8'
-      //         },
-      //         credentials: 'include'
-      //   })
-      // }
+
       this.newVisit();
-      if(loadUsers.roleid==this.getroleid("Banned"))//this.props.Store.users.filter(x=>x.id==this.props.match.params.id)[0].roleid==this.getroleid("Banned"))
+      if(loadUsers.roleid==this.getroleid("Banned")) {
           this.setState({banBtn:"Reject ban"});
+      }
       //находит диалог с этим пользователем или создает новый
       //Получаем из списка всех наших диалогов только тот, который проводился между нашим и этим пользователем
       var currentDlg=this.props.Store.myDialogList.filter(x => x.firstUserId==this.props.Store.myPage.id &&
@@ -503,7 +492,7 @@ constructor(props){
   render(){
     const cookies = new Cookies();
     var profileForRender;
-    if(this.state.currentUser==null){
+    if(!this.state.currentUser){
       return <div className="Loading"><img src={Loading}/></div>
     }
     if(cookies.get('UserSession').roleid==this.getroleid("Admin") || cookies.get('UserSession').roleid==this.getroleid("Moder"))

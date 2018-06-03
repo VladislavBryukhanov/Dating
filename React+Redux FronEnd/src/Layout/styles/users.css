@@ -1,0 +1,76 @@
+
+.User{
+  position:relative;
+  border-radius: 10px;
+  box-shadow: 7px 0 17px -3px grey;
+  width:220px;
+  border: 2px solid white;
+  background-color: #F6F8F9;
+  display:inline-block;
+  margin:1%;
+  border: 2px solid #DEE3E8;
+  cursor: pointer;
+}
+
+
+.User:hover {
+    /* box-shadow: 0 0 24px 7px black; */
+    /* box-shadow: 7px 0 17px -3px black; */
+    box-shadow: 4px 0 18px 0 #387190;
+}
+.User:active {
+    background-color: rgba(240, 240, 240, 0.1);
+    /* color: white; */
+}
+
+.User>img{
+  border-radius: 10px 10px 0 0;
+  width: 216px;
+  height: 200px;
+}
+.User>p{
+  margin: 5%;
+}
+.User > .colorBlock > span{
+  background-color:#FF7C2E;
+  border-radius:4px;
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-bottom:2px;
+  padding-top:2px;
+  color:white;
+  float: right;
+}
+.userName{
+  color: white;
+  font-size: 18px;
+  top:150px;
+  text-shadow: 2px 0 2px black;
+  position: absolute;
+}
+.userAge{
+  color: white;
+  top:170px;
+  text-shadow: 2px 0 2px black;
+  position: absolute;
+}
+.Offline{
+  padding: 0;
+  float: right;
+  width: 14px;
+  height: 14px;
+  border-radius: 45px;
+  background-color: grey;
+}
+.Online{
+  padding: 0;
+  float: right;
+  width: 14px;
+  height: 14px;
+  border-radius: 45px;
+  background-color: #1EB416;
+}
+
+.User > :nth-last-child(1) > span {
+  margin-bottom: 15px;
+}

@@ -6,23 +6,24 @@ import Trash from './Layout/trash.png';
 class MyGallery extends  Component{
   constructor(props){
     super(props);
-    this.state={
-      Gallery:[],
-      ownerOfGallery:null
+    this.state = {
+      Gallery: [],
+      ownerOfGallery: this.props.Store.myPage.id
     }
-    this.onGalleryChange=this.onGalleryChange.bind(this);
-    this.removeFromBuffer=this.removeFromBuffer.bind(this);
-    this.onPostFiles=this.onPostFiles.bind(this);
+    this.onGalleryChange = this.onGalleryChange.bind(this);
+    this.removeFromBuffer = this.removeFromBuffer.bind(this);
+    this.onPostFiles = this.onPostFiles.bind(this);
   }
-  componentWillMount() {
-    var  owner;
-    if(this.props.match.params.id!=undefined)
-      owner=this.props.match.params.id;
-    else
-      owner=this.props.Store.myPage.id;
 
-    this.setState({ownerOfGallery:owner});
-    //setState не успеват выполнится и в фетч идет занчение по умолчанию (null), посему используем вар
+  componentWillMount() {
+    let  owner;
+    if(this.props.match.params.id) {
+        owner = this.props.match.params.id;
+    } else {
+        owner = this.props.Store.myPage.id;
+    }
+    this.setState({ownerOfGallery: owner});
+    //setState не успеват выполнится и в фетч идет занчение по умолчанию (null), посему используем let
 
     fetch(this.props.Store.Url["Gallery"]+"/"+owner, {
       method: 'get',
@@ -41,16 +42,17 @@ class MyGallery extends  Component{
         this.setState({Gallery:result});
       });
   }
-  onPostFiles(e)
-  {
+
+  onPostFiles(e) {
     e.preventDefault();
     var contentForSending;
-    if(this.state.Gallery.length!=0)
-      contentForSending=this.state.Gallery;
-    else{
-      contentForSending=[];
-      contentForSending[0]={siteUserid:this.state.ownerOfGallery};//Если мы удалим все изображения то на сервер полетит id юзера, у которого мы сможем удалить контент
+    if(this.state.Gallery.length > 0) {
+        contentForSending = this.state.Gallery;
+    } else{
+      contentForSending = [];
+      contentForSending[0] = {siteUserid: this.state.ownerOfGallery};//Если мы удалим все изображения то на сервер полетит id юзера, у которого мы сможем удалить контент
     }
+    console.log(contentForSending);
 
     fetch(this.props.Store.Url["Gallery"], {
       method: 'post',
@@ -61,40 +63,40 @@ class MyGallery extends  Component{
       credentials: 'include'
     })
   }
+
   onGalleryChange(e){
-    for (var i = 0; i < e.target.files.length; i++)
-        {
-            (this.getBase64(e.target.files[i], i));
-        }
-        this.forceUpdate();
+    for (let i = 0; i < e.target.files.length; i++) {
+            this.getBase64(e.target.files[i], i);
+    }
+    this.forceUpdate();
   }
+
   getBase64(file, index) {
        var reader = new FileReader();
        reader.onload = () => {
-           index = this.state.Gallery.length;
-           var GalleryModel = {id:-1,
-                               content: null,
-                               siteUserid: null};
+           let GalleryModel = {
+               id:-1,
+               content: null,
+               siteUserid: null
+           };
 
-               GalleryModel.content = reader.result;
-               GalleryModel.siteUserid = this.state.ownerOfGallery;
+           GalleryModel.content = reader.result;
+           GalleryModel.siteUserid = this.state.ownerOfGallery;
 
-               var GalleryTmp=this.state.Gallery;
-               GalleryTmp[index]=GalleryModel;
+           let GalleryTmp=this.state.Gallery;
+           GalleryTmp.push(GalleryModel);
 
            this.setState({ Gallery: GalleryTmp });
        };
        reader.readAsDataURL(file);
    }
+
   removeFromBuffer(img){
      let index=this.state.Gallery.indexOf(img);
      var newGallery=this.state.Gallery;
      newGallery.splice(index, 1);
      this.setState(this.state.Gallery: newGallery);
   }
-
-
-
 
   render(){
     return <div>
@@ -103,7 +105,7 @@ class MyGallery extends  Component{
                 <button className="btn btn-success" onClick={this.onPostFiles}>Save</button>
             </form>
                  {
-                   this.state.Gallery.map(function(img){
+                   this.state.Gallery.map(function(img) {
                          return <div className="GalleryEdit">
                                        <img width="200px" src={img.content}/>
                                        <img onClick={(e)=>{

@@ -1,10 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux'
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
+import './Layout/styles/index.css';
+import './Layout/styles/dialog.css';
+import './Layout/styles/menu.css';
+import './Layout/styles/users.css';
+import './Layout/styles/profile.css';
+import './Layout/styles/leftMenu.css';
 
 import Avatar from './Ava.jpg';
 import Clock from './Clock.jpg';
